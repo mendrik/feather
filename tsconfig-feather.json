@@ -1,0 +1,42 @@
+{
+  "compileOnSave": true,
+  "compilerOptions": {
+    "pretty": true,
+    "sourceMap": true,
+    "sourceRoot" : "/",
+    "inlineSources": true,
+    "noImplicitAny": false,
+    "declaration": false,
+    "noEmitOnError": false,
+    "noEmitHelpers": true,
+    "removeComments": true,
+    "rootDir": "./",
+    "target": "es5",
+    "experimentalDecorators": true,
+    "out": "out/javascripts/feather.js"
+  },
+  "files": [
+    "src/typescript/feather/utils/functions.ts",
+    "src/typescript/feather/utils/objects.ts",
+    "src/typescript/feather/utils/arrays.ts",
+    "src/typescript/feather/utils/dom.ts",
+    "src/typescript/feather/utils/types.ts",
+    "src/typescript/feather/utils/strings.ts",
+    "src/typescript/feather/boot.ts",
+    "src/typescript/feather/annotations/template.ts",
+    "src/typescript/feather/annotations/event.ts",
+    "src/typescript/feather/annotations/hub.ts",
+    "src/typescript/feather/annotations/route.ts",
+    "src/typescript/feather/annotations/bind.ts",
+    "src/typescript/feather/annotations/factory.ts",
+    "src/typescript/feather/annotations/xhr.ts",
+    "src/typescript/feather/widget.ts"
+  ],
+  "exclude": [
+    ".",
+    "node_modules",
+    "jspm_packages",
+    "test/**/*.spec.ts",
+    "src/typescript/demo"
+  ]
+}

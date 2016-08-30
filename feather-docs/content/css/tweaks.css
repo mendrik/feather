@@ -1,0 +1,11 @@
+.project .logo img {
+    background: none;
+    border-radius: 0;
+    box-shadow: none !important;
+    transition: 0.5s linear;
+}
+
+.project:hover .logo img {
+    transform: scale(1.5);
+    transform-origin: 50% 50%;
+}

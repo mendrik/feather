@@ -1,0 +1,60 @@
+.strings {
+
+    tr.no-formatters {
+
+        td[stringA="first"][stringB="second"]:nth-child(1) {
+            background-color: #008000;
+            &:after {
+                content: 'OK';
+            }
+        }
+
+        td[data-prop-a="first"][data-prop-b="second"]:nth-child(2) {
+            background-color: #008000;
+            &:after {
+                content: 'OK';
+            }
+        }
+
+        td[contains*="first second"]:nth-child(3) {
+            background-color: #008000;
+            color: #ffffff;
+        }
+
+        td.first.second:nth-child(4) {
+            background-color: #008000;
+            &:after {
+                content: 'OK';
+            }
+        }
+    }
+
+    tr.formatters {
+
+        td[stringA="FIRST"][stringB="dnoces"]:nth-child(1) {
+            background-color: #008000;
+            &:after {
+                content: 'OK';
+            }
+        }
+
+        td[data-prop-a="FIRST"][data-prop-b="dnoces"]:nth-child(2) {
+            background-color: #008000;
+            &:after {
+                content: 'OK';
+            }
+        }
+
+        td[contains*="FIRST dnoces"]:nth-child(3) {
+            background-color: #008000;
+            color: #ffffff;
+        }
+
+        td.FIRST.dnoces:nth-child(4) {
+            background-color: #008000;
+            &:after {
+                content: 'OK';
+            }
+        }
+    }
+}

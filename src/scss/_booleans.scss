@@ -1,0 +1,48 @@
+.booleans {
+
+    tr.no-formatters {
+
+        td[booleana]:nth-child(1) {
+            background-color: #008000;
+            &:after {
+                content: 'OK';
+            }
+        }
+
+        td[data-prop-a]:nth-child(2) {
+            background-color: #008000;
+            &:after {
+                content: 'OK';
+            }
+        }
+    }
+
+    tr.formatters {
+
+        td[booleana="selected"]:nth-child(1) {
+            background-color: #008000;
+            &:after {
+                content: 'OK';
+            }
+        }
+
+        td[data-prop-a="yes"]:nth-child(2) {
+            background-color: #008000;
+            &:after {
+                content: 'OK';
+            }
+        }
+
+        td[contains*='yes false']:nth-child(3) {
+            background-color: #008000;
+            color: white;
+        }
+
+        td.selected:nth-child(4) {
+            background-color: #008000;
+            &:after {
+                content: 'OK';
+            }
+        }
+    }
+}

@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Demo page for feather-ts</title>
+        <base href="/">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <link rel="shortcut icon" href="favicon.ico">
+        <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700" rel="stylesheet">
+        <link rel="stylesheet" type="text/css" href="stylesheets/feather.css">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <script src="javascripts/libs.min.js"></script>
+        <script src="javascripts/feather.js" routing="hash"></script>
+        <script src="javascripts/demo.js"></script>
+    </head>
+    <body>
+        <div class="application"></div>
+        <script>
+            console.time && console.time('start');
+            feather.start();
+            console.timeEnd && console.timeEnd('start');
+        </script>
+        <script src="validator.js"></script>
+    </body>
+</html>

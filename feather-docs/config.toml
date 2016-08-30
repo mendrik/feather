@@ -1,0 +1,68 @@
+baseurl = "http://www.feather-ts.com/"
+languageCode = "en-us"
+title = "Featherₜₛ"
+theme = "hugo-material-docs"
+metadataformat = "yaml"
+canonifyurls = true
+# Enable Google Analytics by entering your tracking id
+googleAnalytics = "UA-84969611-1"
+
+[params]
+	# General information
+	author = "Andreas Prudzilko"
+	description = "Feather TS - official Website"
+	copyright = ""
+
+	# Repository
+	provider = "None"
+	repo_url = ""
+
+	version = "ᴮᵉᵗᵃ"
+	logo = "images/logo.svg"
+	favicon = ""
+
+	permalink = "#"
+
+	# Custom assets
+	custom_css = ["css/tweaks.css"]
+	custom_js  = []
+
+	# Syntax highlighting theme
+	highlight_css  = ""
+
+	[params.palette]
+    	primary = "deep-purple"
+    	accent  = "cyan"
+
+    [params.font]
+    	text = "Ubuntu"
+    	code = "Ubuntu Mono"
+
+
+[social]
+	twitter = ""
+	github  = "mendrik"
+	email   = "mendrik76@gmail.com"
+
+
+[[menu.main]]
+	name   = "Introduction"
+	url    = "/"
+	weight = 0
+
+[[menu.main]]
+	name   = "Getting started"
+	url    = "getting-started/"
+	weight = 10
+
+[[menu.main]]
+	name   = "API"
+	url    = "api/"
+	weight = 20
+
+
+[blackfriday]
+	smartypants	= true
+	fractions = true
+	smartDashes = true
+	plainIDAnchors = true

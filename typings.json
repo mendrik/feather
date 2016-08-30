@@ -1,0 +1,13 @@
+{
+  "name": "feather",
+  "globalDependencies": {
+    "assert": "registry:dt/assert#0.0.0+20160317120654",
+    "chai": "github:DefinitelyTyped/DefinitelyTyped/chai/chai.d.ts#73f7bb99692823f1811817f9753a02b57af5305e",
+    "es6-shim": "registry:dt/es6-shim#0.31.2+20160602141504",
+    "jsdom": "registry:dt/jsdom#2.0.0+20160906180921",
+    "mocha": "github:DefinitelyTyped/DefinitelyTyped/mocha/mocha.d.ts#73f7bb99692823f1811817f9753a02b57af5305e",
+    "node": "github:DefinitelyTyped/DefinitelyTyped/node/node.d.ts#e0abafb1a6ff652f7ff967120e312d5c1916eaef",
+    "sinon": "registry:dt/sinon#1.16.0+20160924120326",
+    "sinon-chai": "registry:dt/sinon-chai#2.7.0+20160317120654"
+  }
+}

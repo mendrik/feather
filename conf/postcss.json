@@ -1,0 +1,32 @@
+{
+  "use": [
+    "stylelint",
+    "autoprefixer",
+    "precss",
+    "postcss-each",
+    "postcss-math",
+    "postcss-import",
+    "postcss-discard-comments",
+    "autoprefixer",
+    "css-mqpacker"
+  ],
+  "local-plugins": true,
+  "output": "out/stylesheets/feather.css",
+  "syntax": "postcss-scss",
+  "autoprefixer": {
+    "browsers": [
+      "> 1%",
+      "last 3 versions",
+      "IE >= 9",
+      "Android >= 4.0",
+      "iOS >= 7"
+    ],
+    "cascade": false
+  },
+  "stylelint": {
+     "reporters": [{
+        "formatter": "string",
+        "console": true
+     }]
+  }
+}

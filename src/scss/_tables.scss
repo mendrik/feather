@@ -1,0 +1,38 @@
+table {
+    font-size: 14px;
+    border-collapse: collapse;
+
+    td,
+    th {
+        vertical-align: top;
+        padding: 5px;
+        border: 1px solid black;
+    }
+
+    th {
+        width: 150px;
+    }
+
+    th,
+    td.delimiter {
+        background-color: #ededed;
+    }
+
+    td.delimiter {
+        color: #919191;
+        text-align: center;
+    }
+
+    td {
+        text-align: center;
+
+        &:empty {
+            background-color: #940000;
+            color: white;
+
+            &::after {
+                content: 'Failed'
+            }
+        }
+    }
+}
