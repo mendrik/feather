@@ -1,9 +1,9 @@
 {
   "name": "Feather",
-  "version": "1.0.47",
+  "version": "1.0.48",
   "description": "My framework",
   "repository": "https://github.com/mendrik/feather",
-  "main": "index.js",
+  "main": "feather.min.js",
   "directories": {
     "test": "test"
   },

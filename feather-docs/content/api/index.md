@@ -52,7 +52,7 @@ Putting it all together, a very simple widget might look like this:
          @Template('default')
          protected getBaseTemplate() {
              return (`
-                Hello $[this.who}!                                    
+                Hello ${this.who}!                                    
              `)
          }
      }
@@ -67,7 +67,7 @@ Call then ```feather.start()``` and your application should render itself into `
 
 The above example is quite rudimentary and if you wanted to change the variable ```who``` you would need to call ```render(...)``` again to see it.
 This is a little bit cumbersome and expensive, since the widget would then re-render the entire template with any sub widgets referenced within. To 
-avoid this you can annotate primitive members (currently only booleans, strings and numbers) with ```@Bind()``` like this:
+avoid this you can annotate primitive members (currently only booleans, strings and numbers) with ```@Bind()``` like this (note the use of double-curlies):
 
 ```
 @Construct({selector: 'body'})
