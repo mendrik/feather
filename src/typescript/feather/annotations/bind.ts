@@ -1,29 +1,22 @@
 /// <reference path="../../../../typings/globals/es6-shim/index.d.ts" />
 module feather.observe {
 
-    import Constructable       = feather.core.Constructable
     import Widget              = feather.core.Widget
     import Hook                = feather.annotations.Hook
     import HookType            = feather.annotations.HookType
-    import Subscribable        = feather.hub.Subscribable
     import TypedMap            = feather.types.TypedMap
     import Primitive           = feather.types.Primitive
-    import SimpleMap           = feather.types.SimpleMap
     import isObject            = feather.objects.isObject
     import observeArray        = feather.arrays.observeArray
     import ArrayListener       = feather.arrays.ArrayListener
-    import removeFromArray     = feather.arrays.removeFromArray
     import from                = feather.arrays.from
     import hasListeners        = feather.arrays.hasListeners
     import changeArrayListener = feather.arrays.changeArrayListener
-    import format              = feather.strings.format
     import insertBefore        = feather.dom.insertBefore
     import getInheritedMethods = feather.functions.getInheritedMethods
-    import RouteAware          = feather.routing.RouteAware
     import isFunction          = feather.functions.isFunction
     import FuncOne             = feather.functions.FuncOne
     import compose             = feather.functions.compose
-    import values              = feather.objects.values
 
     const boundProperties      = new WeakMap<Widget, TypedMap<Function[]>>()
     const binders              = new WeakMap<Observable, TypedMap<BindProperties>>()
@@ -33,7 +26,7 @@ module feather.observe {
         changeOn?:     string[] // when pushing new widgets into an array, the template name to render the children with
     }
 
-    function setOrRemoveAttribute(el: HTMLElement, attribute: string, condition: boolean, val: any) {
+    function setOrRemoveAttribute(el: HTMLElement, attribute: string, condition: boolean, val: string) {
         if (condition) {
             el.setAttribute(attribute, val)
         } else {
@@ -53,7 +46,7 @@ module feather.observe {
         }
     }
 
-    function createListener(obj: Widget, property: string, cb: (newVal?: any, oldVal?: any) => void) {
+    function createListener(obj: Widget, property: string, cb: (newVal?: Primitive, oldVal?: Primitive) => void) {
         let value = obj[property]
 
         if (Array.isArray(value)) { // arrays are special case so we sort of fake getters and setters
@@ -65,7 +58,7 @@ module feather.observe {
             let listeners = boundProperties.get(obj)
             if (!listeners) {
                 boundProperties.set(obj, listeners = {
-                    [property]:  []
+                    [property]: []
                 })
             } else if (!listeners[property]) {
                 listeners[property] = []
@@ -123,7 +116,7 @@ module feather.observe {
 
         if (hook.type === HookType.TEXT) { // <p>some text {{myVar}} goes here</p>
             createListener(this, property, function updateDom() {
-                hook.node.textContent = format(hook.text, widget, widget)
+                hook.node.textContent = feather.strings.format(hook.text, widget, widget)
                 return updateDom
             }())
         } else if (hook.type === HookType.CLASS) { // <p class="red {{myVar}}">text goes here</p>
@@ -158,7 +151,7 @@ module feather.observe {
         }
     }
 
-    function defaultArrayListener(hook, conf, widget): ArrayListener<Widget> {
+    function defaultArrayListener(hook: Hook, conf: BindProperties, widget: Widget): ArrayListener<Widget> {
         let el = hook.node as HTMLElement
         return {
             reverse() {
@@ -177,7 +170,7 @@ module feather.observe {
 
                 let childWidgets = widget.childWidgets
 
-                removeFromArray(childWidgets, deleted || [])
+                feather.arrays.removeFromArray(childWidgets, deleted || [])
 
                 if (added && added.length) {
                     let frag = document.createDocumentFragment()
@@ -237,7 +230,7 @@ module feather.observe {
         }
     }
 
-    export class Observable extends RouteAware {
+    export class Observable extends feather.routing.RouteAware {
 
         protected attachHooks(hooks: Hook[]) {
             for (let hook of hooks) {
