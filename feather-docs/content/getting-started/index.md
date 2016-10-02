@@ -38,8 +38,8 @@ them if you wish.
 }
 ```
 
-Then write your widgets, and include the output together with feather.js (from node_modules) in your html site.
-After the DOM and the scripts have has been loaded make the following call. It will boot strap the widgets and route listeners. 
+Then write your widgets and include the output together with feather.js (from node_modules) in your page.
+After the DOM and the scripts have been loaded make the following call; it will bootstrap the widgets and route listeners. 
 
 ```
 feather.start();
@@ -108,7 +108,7 @@ module todomvc.feather {
 }
 ```
 
-See the full todo app in action [here](http://todo.feather-ts.com/)
+See the full todo app in action [here](http://todo.feather-ts.com/). Take a peek at the typescript source maps, too.
 
 {{< note title="Note" >}}
 The bindings in the HTML code are very simple. The only extra syntax on top of regular HTML is {{variable:methodA:methodB}}. Methods 
