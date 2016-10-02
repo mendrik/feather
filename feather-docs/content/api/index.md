@@ -61,7 +61,9 @@ Putting it all together, a very simple widget might look like this:
  
 Call then ```feather.start()``` and your application should render itself into ```<body>```. 
 
-### Observable primitives
+## Observable
+
+### Primitives
 
 The above example is quite rudimentary and if you wanted to change the variable ```who``` you would need to call ```render(...)``` again to see it.
 This is a little bit cumbersome and expensive, since the widget would then re-render the entire template with any sub widgets referenced within. To 
@@ -91,7 +93,7 @@ Now whenever the value of ```who``` changes, the text node will update automatic
 ... write the rest ...
 
 
-### Obserable arrays
+### Arrays
 
-### Obserable objects
+### Objects
 
