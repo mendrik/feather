@@ -71,7 +71,8 @@ avoid this you can annotate primitive members (currently only booleans, strings 
 @Construct({selector: 'body'})
 export class MyApplication extends Widget {
     
-    @Bind() who = 'world'   
+    @Bind() who = 'world'
+       
     init(element: HTMLElement) {
        this.render('default')
     }
