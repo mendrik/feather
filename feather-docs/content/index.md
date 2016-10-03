@@ -32,3 +32,9 @@ This project is in its infancy, so if you want something production ready, you
 should probably check out react, angular or any of the myriad of MVC frameworks out there with way
 better documenation and community support than feather will ever have.
 {{< /note >}}
+
+As soon as the framework is stable enough to be released to the public I will disclose the github repository. 
+Right now it is just work in progress, thus use it at your own risk. If you find any problems feel free to 
+drop me an [email](mailto:mendrik76@gmail.com).
+<br><br>
+

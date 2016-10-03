@@ -71,12 +71,23 @@ avoid this you can annotate primitive members (currently only booleans, strings 
 
 <script async src="//jsfiddle.net/00wL5ypc/embed/js,result"></script>
 
-Now whenever the value of ```who``` changes, the text node will update automatically.
+Now whenever the value of ```who``` changes, the text node will update automatically. You can bind variables in 4 different places within 
+a dom tree and in combation with the variable type, only some of them make sense. The hooks can be inserted in these ways:
  
-... write the rest ...
+ * ```<div class="right {{variable}} large">...</div>``` As a new class in the class attribute (only strings)
+ * ```<div class="red" style="{{variable}}">...</div>``` Within an arbitrary attribute (only strings and booleans)
+ * ```<div class="red" {{variable}}>...</div>``` As a property hook (booleans and arrays)
+ * ```<div class="red">Some {{variable}} text!</div>``` Within a text node (only strings)
+ 
+Note that any binding can convert booleans, numbers or arrays into strings. This is done but declaring a function in the widget class,
+that converts the value into a string. you can then bind it like this: ```<div class="{{variable:formatAsString}}">...</div>```
 
-
+### Booleans
+ 
 ### Arrays
 
 ### Objects
+
+... write the rest ...
+
 
