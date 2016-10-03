@@ -7,7 +7,7 @@
 ---
 **THIS PROJECT IS WORK IN PROGRESS, DO NOT USE YET**
 
-A feather-light (bah dum tsshh) framework written in typescript with support for
+A feather-light :D framework written in typescript with support for
 
 * One-directional binding
 * REST consumption
@@ -17,7 +17,7 @@ A feather-light (bah dum tsshh) framework written in typescript with support for
 * Templates are regular HTML
 * Clean and simple code
 * Runs on modern browsers and IE9+
-* Less than 10kb gzipped
+* Less than 8kb gzipped
 
 ---
 

@@ -7,7 +7,7 @@ weight: 0
 
 Featherₜₛ is a small component framework written in [TypeScript](https://www.typescriptlang.org/). 
 Whether you are writing embeddable javascript widgets or a single page application this framework 
-might be of use. With around 8kb in size it is suited for mobile apps and desktop alike.
+might be of use. With less than 8kb in size it is suited for mobile apps and desktop alike.
 It is especially well suited for the consumption of restful services.
 
 The framework offers the following features:
