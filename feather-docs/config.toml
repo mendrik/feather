@@ -60,6 +60,11 @@ googleAnalytics = "UA-84969611-1"
 	url    = "api/"
 	weight = 20
 
+[[menu.main]]
+	name   = "Example"
+	url    = "example/"
+	weight = 30
+
 
 [blackfriday]
 	smartypants	= true

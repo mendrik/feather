@@ -79,8 +79,8 @@ a dom tree and in combation with the variable type, only some of them make sense
  * ```<div class="red" {{variable}}>...</div>``` As a property hook (booleans and arrays)
  * ```<div class="red">Some {{variable}} text!</div>``` Within a text node (only strings)
  
-Note that any binding can convert booleans, numbers or arrays into strings. This is done but declaring a function in the widget class,
-that converts the value into a string. you can then bind it like this: ```<div class="{{variable:formatAsString}}">...</div>```
+Note that any binding can convert booleans, numbers or arrays into strings. This is done but declaring a "filter" function in the widget 
+class. you can then bind it like this: ```<div class="{{variable:formatAsString}}">...</div>```
 
 ### Booleans
  
