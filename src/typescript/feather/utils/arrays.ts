@@ -68,7 +68,7 @@ module feather.arrays {
         return gen.map(x => x + start);
     }
 
-    export function forgetArray<T>(arr: T[], listener: ArrayListener<T>) {
+    export function forgetListener<T>(arr: T[], listener: ArrayListener<T>) {
         let l = observers.get(arr),
             index
         if (l && ~(index = l.indexOf(listener))) {
