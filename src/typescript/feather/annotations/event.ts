@@ -34,7 +34,7 @@ module feather.event {
 
     function attachEvent(context: EventAware, handler: Handler, scope: EventTarget, event: string) {
         scope.addEventListener(event, (ev: Event) => {
-            if (!handler.scope) {
+            if (typeof handler.scope === 'undefined') {
                 let el: HTMLElement = ev.target as HTMLElement
                 do {
                     if (el.nodeType === 1 && (!handler.selector || selectorMatches(el, handler.selector))) {
@@ -55,7 +55,7 @@ module feather.event {
         attachEvents(element: HTMLElement) {
             let handlers = eventHandlers.get(Object.getPrototypeOf(this))
             for (let handler of handlers || []) {
-                let scope: EventTarget = !handler.scope ? element : getScope(handler.scope)
+                let scope: EventTarget = typeof handler.scope === 'undefined' ? element : getScope(handler.scope)
                 for (let event of handler.event.split(' ')) {
                     attachEvent(this, handler, scope, event)
                 }
