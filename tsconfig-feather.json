@@ -23,6 +23,7 @@
     "src/typescript/feather/utils/types.ts",
     "src/typescript/feather/utils/strings.ts",
     "src/typescript/feather/boot.ts",
+    "src/typescript/feather/annotations/timings.ts",
     "src/typescript/feather/annotations/template.ts",
     "src/typescript/feather/annotations/event.ts",
     "src/typescript/feather/annotations/hub.ts",
