@@ -69,7 +69,7 @@ The above example is quite rudimentary and if you wanted to change the variable 
 This is a little bit cumbersome and expensive, since the widget would then re-render the entire template with any sub widgets referenced within. To 
 avoid this you can annotate primitive members (currently only booleans, strings and numbers) with ```@Bind()``` like this (note the use of double-curlies):
 
-<script async src="//jsfiddle.net/00wL5ypc/embed/js,result/"></script>
+<script async src="//jsfiddle.net/phbw6sdj/embed/js,result/"></script>
 
 Now whenever the value of ```who``` changes, the text node will update automatically. You can bind variables in 4 different places within 
 a dom tree and in combation with the variable type, only some of them make sense. The hooks can be inserted in these ways:
