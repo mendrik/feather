@@ -265,7 +265,7 @@ module feather.observe {
             }
         }
 
-        // attrbutes are case insensitive, so let's try to find the matching property like this
+        // attributes are case insensitive, so let's try to find the matching property like this
         findProperty(ci: string): string {
             return Object.getOwnPropertyNames(this)
                 .find(p => p.toLowerCase() === ci.toLowerCase()) || ci
