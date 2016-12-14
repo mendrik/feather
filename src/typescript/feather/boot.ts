@@ -38,7 +38,7 @@ module feather.boot {
 
                 for (let info of componentInfos) {
                     let args = info.attributes.map(key => node.getAttribute(key)),
-                        widget: Widget = new (Function.prototype.bind.apply(info.component, [null].concat(args)))
+                        widget: Widget = new (Function.prototype.bind.apply(info.component, ([null] as String[]).concat(args)))
                     if (parentWidget) {
                         widget.parentWidget = parentWidget
                         parentWidget.childWidgets.push(widget)
