@@ -21,3 +21,4 @@ tmp
 /node_modules
 /typings
 npm-debug.log.*
+/feather-docs/public

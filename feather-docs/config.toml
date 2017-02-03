@@ -14,8 +14,8 @@ googleAnalytics = "UA-84969611-1"
 	copyright = ""
 
 	# Repository
-	provider = "None"
-	repo_url = ""
+	provider = "GitHub"
+	repo_url = "https://github.com/mendrik/feather"
 
 	version = "ᴮᵉᵗᵃ"
 	logo = "images/logo.svg"
