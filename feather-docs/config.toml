@@ -1,4 +1,4 @@
-baseurl = "//"
+baseurl = "//www.feather-ts.com"
 languageCode = "en-us"
 title = "Featherₜₛ"
 theme = "hugo-material-docs"
