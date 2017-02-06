@@ -1,7 +1,7 @@
 # Feather TS
 
 <img src="http://cd.feather-ts.com/mendrik/feather/badge/?branch=master" height="20">
-<img src="http://www.feather-ts.com/bin/sizebadge.svg?v=7" height="20">
+<img src="http://dist.feather-ts.com/size.svg" height="20">
 <img src="http://www.feather-ts.com/images/licence.svg" height="20">
 
 ---
@@ -24,7 +24,7 @@ A feather-light :D framework written in typescript with support for
 # Installation
 ```
 npm install feather-ts --save
-typings install npm:feather-ts
+typings install npm:feather-ts -G --save
 ```
 ---
 

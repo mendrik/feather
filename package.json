@@ -1,6 +1,6 @@
 {
   "name": "Feather",
-  "version": "1.0.61",
+  "version": "1.0.62",
   "description": "My framework",
   "repository": "https://github.com/mendrik/feather",
   "main": "feather.min.js",
@@ -17,7 +17,7 @@
     "watch:demo": "node node_modules/typescript/lib/tsc.js -d -w -p tsconfig-demo.json",
     "build:test": "node node_modules/typescript/lib/tsc.js -d -p tsconfig-test.json",
     "min:feather": "node conf/uglify-libs.js && npm run build:feather && node conf/uglify.js",
-    "build": "npm run min:feather && node -p -e \"require('./package.json').version\" > out/javascripts/version.txt",
+    "build": "npm run min:feather",
     "start": "node node_modules/npm-run-all/bin/npm-run-all/index.js --parallel watch:feather watch:demo min:lib watch:css server",
     "server": "node conf/server.js",
     "min:lib": "node conf/uglify-libs.js",
