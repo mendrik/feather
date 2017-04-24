@@ -23,5 +23,5 @@ tmp
 npm-debug.log.*
 /feather-docs/public
 /feather-docs/typings
-deploy.sh
+/deploy.sh
 
