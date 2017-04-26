@@ -11,7 +11,7 @@ describe('Hub', () => {
     describe('messages', () => {
 
         it('are sent and received', () => {
-            let app = window['app2'],
+            let app = window.ef,
             spy = this.sinon.spy(app, 'sendMessage'),
             spy2 = this.sinon.spy(app, 'receiveMessage'),
             spy3 = this.sinon.spy(app, 'receiveMessageFromChild')

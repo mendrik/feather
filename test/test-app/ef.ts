@@ -23,7 +23,7 @@ module testApp {
 
         init(element: HTMLElement) {
             this.render('default')
-            window['app2'] = this
+            window['ef'] = this
         }
 
         @Rest({url: '/get/{{post.data.test}}'})

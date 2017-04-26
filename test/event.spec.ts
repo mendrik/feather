@@ -9,13 +9,12 @@ describe('Events', () => {
     describe('click', () => {
 
         it('is received with selector', () => {
-            let app = window['app2'],
+            let app = window.ef,
                 child = app.childWidgets[0],
                 i = document.querySelector('i'),
-                event = new (window as any).MouseEvent('click'),
+                event = document.createEvent("HTMLEvents"),
                 spy = this.sinon.spy(child, 'click')
-
-            event.initMouseEvent('click', true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 1, null)
+            event.initEvent('click', true, true)
             i.dispatchEvent(event)
             spy.should.have.been.calledOnce
             spy.should.have.been.calledOn(child)
@@ -27,9 +26,9 @@ describe('Events', () => {
                 child = app.childWidgets[0] as feather.core.Widget,
                 root = child.element,
                 i = document.querySelector('i'),
-                event = new (window as any).MouseEvent('click'),
+                event = document.createEvent("HTMLEvents"),
                 spy = this.sinon.spy(child, 'clickRoot')
-            event.initMouseEvent('click', true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 1, null)
+            event.initEvent('click', true, true)
             root.dispatchEvent(event)
             i.dispatchEvent(event)
             spy.should.have.been.calledTwice

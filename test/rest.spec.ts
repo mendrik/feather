@@ -2,9 +2,9 @@ import {document, expect, sinon, window} from './test-head';
 
 let clock = sinon.useFakeTimers(),
     sandbox
+
 beforeEach(() => this.sinon = sandbox = sinon.sandbox.create())
 afterEach(() => sandbox.restore())
-
 after(() => clock.restore())
 
 describe('XHR', () => {
@@ -12,15 +12,15 @@ describe('XHR', () => {
     describe('App loads', () => {
 
         it('should show rendered', () => {
-            let app2 = document.querySelector('.extra-features')
-            expect(app2.firstChild.textContent).to.be.equal('Rendered')
+            let ef = document.querySelector('.extra-features')
+            expect(ef.firstChild.textContent).to.be.equal('Rendered')
         })
     })
 
     describe('Rest', () => {
 
         it('GET fetches data', () => {
-            let app = window['app2'],
+            let app = window.ef,
                 spy = this.sinon.spy(app.getData, 'original')
             app.getData()
             clock.tick(2)
@@ -32,7 +32,7 @@ describe('XHR', () => {
         })
 
         it('POST fetches data', () => {
-            let app = window['app2'],
+            let app = window.ef,
                 spy = this.sinon.spy(app.postData, 'original')
 
             app.postData()

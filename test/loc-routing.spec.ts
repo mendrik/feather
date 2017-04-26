@@ -21,7 +21,7 @@ describe('Routes', () => {
         it('after navigation event', () => {
             let proto = testApp.ExtraFeatures.prototype,
                 spy = this.sinon.spy(proto, 'subsection');
-            let app = window['app2']
+            let app = window.ef
             app.route('/mypath')
             expect(document.location.pathname).to.be.equal('/mypath')
 

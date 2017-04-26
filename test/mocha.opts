@@ -1,4 +1,1 @@
---compilers ts:ts-node/register test/**/*.spec.ts
---require chai
---require assert
---require sinon
+--compilers ts:ts-node/register

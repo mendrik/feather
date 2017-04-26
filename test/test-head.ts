@@ -13,7 +13,7 @@ let jsdom = require('./utils/dom.js');
 chai.should();
 chai.use(require('sinon-chai'));
 
-interface EnrichedWindow extends Window {
+interface EnrichedWindow extends Window, MouseEvent {
     demo: any,
     feather: any,
     app: Application,
@@ -28,11 +28,10 @@ before((done) => {
         window = jsdom.window
         document = jsdom.document
         window.app = window['app'] as Application;
-        window.ef = window['app2'] as ExtraFeatures;
+        window.ef = window['ef'] as ExtraFeatures;
         done()
     })
 })
 
 let exp = chai.expect;
-
 export {chai, sinon, window, document, exp as expect, assert}

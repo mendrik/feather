@@ -33,7 +33,7 @@
     "test-app/app/string.ts",
     "test-app/app/array.ts",
     "test-app/app.ts",
-    "test-app/app2.ts"
+    "test-app/ef.ts"
   ],
   "exclude": [
     "node_modules",
