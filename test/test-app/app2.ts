@@ -1,5 +1,4 @@
-/// <reference path='../../out/javascripts/feather.d.ts' />
-module demo {
+module testApp {
 
     import Widget    = feather.core.Widget
     import Construct = feather.annotations.Construct

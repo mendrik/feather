@@ -1,12 +1,4 @@
-/// <reference path="../typings/index.d.ts" />
-/// <reference path="../out/javascripts/feather.d.ts" />
-/// <reference path="../tmp/test-app.d.ts" />
-
-import chai = require('chai')
-import assert = require('assert')
-
-let expect = chai.expect,
-    jsdom = require('./utils/dom.js');
+import {document, expect, assert} from './test-head';
 
 function Plan(count, done) {
     this.done = done;
@@ -26,16 +18,6 @@ Plan.prototype.ok = function(expression) {
         this.done();
     }
 }
-
-let window: Window, document: Document;
-
-before((done) => {
-    jsdom('./test/pages/application.html', () => {
-        window = jsdom.window
-        document = jsdom.document
-        done()
-    })
-})
 
 describe('Arrays', () => {
     describe('Arrays.from', () => {

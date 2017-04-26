@@ -1,0 +1,43 @@
+{
+  "compilerOptions": {
+    "pretty": true,
+    "sourceMap": true,
+    "noImplicitAny": false,
+    "declaration": false,
+    "noEmitOnError": false,
+    "noEmitHelpers": false,
+    "removeComments": true,
+    "rootDir": "./",
+    "target": "es5",
+    "experimentalDecorators": true,
+    "out": "tmp/test-app.js",
+    "typeRoots": [
+      "../node_modules/@types"
+    ],
+    "types": [
+      "assert",
+      "chai",
+      "es6-shim",
+      "jsdom",
+      "mocha",
+      "node",
+      "sinon",
+      "sinon-chai"
+    ]
+  },
+  "files": [
+    "../out/javascripts/feather.d.ts",
+    "test-app/helpers/array-element.ts",
+    "test-app/helpers/widget.ts",
+    "test-app/app/boolean.ts",
+    "test-app/app/string.ts",
+    "test-app/app/array.ts",
+    "test-app/app.ts",
+    "test-app/app2.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "jspm_packages",
+    "test/**/*.spec.ts"
+  ]
+}

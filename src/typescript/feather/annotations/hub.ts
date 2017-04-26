@@ -1,4 +1,3 @@
-/// <reference path="../../../../typings/globals/es6-shim/index.d.ts" />
 module feather.hub {
 
     import TypedMap   = feather.types.TypedMap

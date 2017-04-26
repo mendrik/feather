@@ -1,30 +1,4 @@
-/// <reference path='../typings/index.d.ts' />
-/// <reference path='../out/javascripts/feather.d.ts' />
-/// <reference path='../tmp/test-app.d.ts' />
-
-import chai = require('chai')
-import assert = require('assert')
-
-let expect = chai.expect,
-    jsdom = require('./utils/dom.js');
-
-chai.should()
-
-let window: EnrichedWindow,
-    document: Document
-
-interface EnrichedWindow extends Window {
-    demo: any,
-    feather: any,
-}
-
-before((done) => {
-    jsdom('./test/pages/application.html', () => {
-        window = jsdom.window
-        document = jsdom.document
-        done()
-    })
-})
+import {chai, sinon, document, window, expect} from './test-head';
 
 describe('Filtered arrays', () => {
 
@@ -41,9 +15,9 @@ describe('Filtered arrays', () => {
             let app = window['app'],
                 ul = document.getElementById('filtered-list')
 
-            app.filterState = demo.FilterState.FALSE
+            app.filterState = testApp.FilterState.FALSE
             expect(ul.children.length).to.be.equal(2)
-            app.filterState = demo.FilterState.TRUE
+            app.filterState = testApp.FilterState.TRUE
             expect(ul.children.length).to.be.equal(2)
         })
 
@@ -65,9 +39,9 @@ describe('Filtered arrays', () => {
             expect(ul.getAttribute('truthy')).to.be.equal('3')
             expect(ul.children.length).to.be.equal(3)
 
-            app.filterState = demo.FilterState.WIDGET
+            app.filterState = testApp.FilterState.WIDGET
             expect(ul.children.length).to.be.equal(3)
-            app.filteredList[2].childWidgets[0].name = 'ItemC'
+            app.filteredList[2].childWidgets[0]['name'] = 'ItemC'
             expect(ul.children.length).to.be.equal(4)
         })
 
@@ -75,7 +49,7 @@ describe('Filtered arrays', () => {
             let app = window['app'],
                 ul = document.getElementById('filtered-list')
 
-            app.filteredList.push(new demo.ArrayElement(false, 'ObjectC'))
+            app.filteredList.push(new testApp.ArrayElement(false, 'ObjectC'))
             expect(ul.children.length).to.be.equal(4)
             expect(app.filteredList.length).to.be.equal(5)
         })

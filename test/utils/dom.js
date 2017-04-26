@@ -7,7 +7,7 @@ let jsdom = require('jsdom'),
 module.exports = (page, ready, noboot) => {
     let htmlSource = fs.readFileSync(page, "utf8"),
         appSource = [
-            fs.readFileSync("./src/javascripts/typescript.js", "utf8"),
+            fs.readFileSync("./node_modules/tslib/tslib.js", "utf8"),
             fs.readFileSync("./out/javascripts/feather.js", "utf8"),
             fs.readFileSync("./tmp/test-app.js", "utf8")
         ]
@@ -52,10 +52,10 @@ module.exports = (page, ready, noboot) => {
             module.exports.document = window.document
 
             let feather = window['feather'],
-                demo = window['demo']
+                testApp = window['testApp']
 
             global.feather = feather
-            global.demo = demo
+            global.testApp = testApp
             if (!noboot) {
                 feather.boot.WidgetFactory.start()
             }

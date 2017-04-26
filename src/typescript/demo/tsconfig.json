@@ -1,0 +1,29 @@
+{
+  "compileOnSave": true,
+  "compilerOptions": {
+    "pretty": true,
+    "sourceMap": true,
+    "sourceRoot": "./",
+    "rootDir": "./",
+    "inlineSources": true,
+    "noImplicitAny": false,
+    "declaration": false,
+    "noEmitOnError": false,
+    "noEmitHelpers": true,
+    "importHelpers": true,
+    "removeComments": true,
+    "target": "es5",
+    "experimentalDecorators": true,
+    "out": "out/javascripts/demo.js"
+  },
+  "include": [],
+  "files": [
+    "helpers/array-element.ts",
+    "helpers/widget.ts",
+    "app/boolean.ts",
+    "app/string.ts",
+    "app/array.ts",
+    "application.ts",
+    "../../../out/javascripts/feather.d.ts"
+  ]
+}

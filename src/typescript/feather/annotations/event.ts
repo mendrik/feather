@@ -1,4 +1,3 @@
-/// <reference path="../../../../typings/globals/es6-shim/index.d.ts" />
 module feather.event {
 
     import TypedMap = feather.types.TypedMap
@@ -61,6 +60,7 @@ module feather.event {
                 }
             }
         }
+
     }
 
     export let On = (ec: EventConfig) => (proto: EventAware, method: string) => {

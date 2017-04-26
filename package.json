@@ -11,11 +11,11 @@
     "build:css": "node node_modules/postcss-cli/index.js -l -c conf/postcss.json -i src/scss/feather.scss",
     "watch:css": "node node_modules/fsmonitor/bin/fsmonitor.js -s -q -d src/scss node node_modules/postcss-cli/index.js -l -c conf/postcss.json -i src/scss/feather.scss",
     "tslint": "node node_modules/tslint/lib/tslint-cli.js -c conf/tslint.json src/typescript/**/*.ts",
-    "build:feather": "node node_modules/typescript/lib/tsc.js -d -p tsconfig-feather.json",
-    "build:demo": "node node_modules/typescript/lib/tsc.js -d -p tsconfig-demo.json",
-    "watch:feather": "node node_modules/typescript/lib/tsc.js -w -d -p tsconfig-feather.json",
-    "watch:demo": "node node_modules/typescript/lib/tsc.js -d -w -p tsconfig-demo.json",
-    "build:test": "node node_modules/typescript/lib/tsc.js -d -p tsconfig-test.json",
+    "build:feather": "node node_modules/typescript/lib/tsc.js -d -p src/typescript/feather/tsconfig.json",
+    "build:demo": "node node_modules/typescript/lib/tsc.js -d -p src/typescript/demo/tsconfig.json",
+    "watch:feather": "node node_modules/typescript/lib/tsc.js -w -d -p src/typescript/feather/tsconfig.json",
+    "watch:demo": "node node_modules/typescript/lib/tsc.js -d -w -p src/typescript/demo/tsconfig.json",
+    "build:test": "node node_modules/typescript/lib/tsc.js -d -p test/tsconfig.json",
     "min:feather": "node conf/uglify-libs.js && npm run build:feather && node conf/uglify.js",
     "build": "npm run min:feather",
     "start": "node node_modules/npm-run-all/bin/npm-run-all/index.js --parallel watch:feather watch:demo min:lib watch:css server",
@@ -28,6 +28,14 @@
   "author": "Andreas Prudzilko",
   "license": "ISC",
   "devDependencies": {
+    "@types/assert": "0.0.31",
+    "@types/chai": "^3.5.1",
+    "@types/es6-shim": "^0.31.33",
+    "@types/jsdom": "^2.0.30",
+    "@types/mocha": "^2.2.41",
+    "@types/node": "^7.0.13",
+    "@types/sinon": "^2.1.3",
+    "@types/sinon-chai": "^2.7.27",
     "assert": "^1.4.1",
     "autoprefixer": "^6.3.6",
     "chai": "^3.5.0",
@@ -51,19 +59,33 @@
     "postcss-use": "^2.1.0",
     "precss": "^1.4.0",
     "replace": "^0.3.0",
-    "sinon": "^1.17.6",
+    "sinon": "^1.17.7",
     "sinon-chai": "^2.8.0",
     "spa-server": "^1.0.0",
     "stylelint": "^7.2.0",
     "stylelint-scss": "^1.3.4",
     "ts-node": "^1.3.0",
+    "tslib": "^1.6.1",
     "tslint": "^3.9.0",
     "typescript": "^2.0.0",
     "typings": "^1.3.3",
     "uglify-js": "^2.7.3"
   },
+  "typeRoots": [
+    "node_modules/@types"
+  ],
   "dependencies": {
     "classlist-polyfill": "^1.0.3",
     "weakmap-polyfill": "^2.0.0"
-  }
+  },
+  "types": [
+    "mocha",
+    "node",
+    "assert",
+    "chai",
+    "sinon-chai",
+    "jsdom",
+    "es6-shim",
+    "sinone"
+  ]
 }

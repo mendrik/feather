@@ -1,4 +1,4 @@
-module demo {
+module testApp {
 
     import Widget    = feather.core.Widget;
     import Construct = feather.annotations.Construct;

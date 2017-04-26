@@ -19,7 +19,6 @@ tmp
 /out/stylesheets
 /out/images
 /node_modules
-/typings
 npm-debug.log.*
 /feather-docs/public
 /feather-docs/typings

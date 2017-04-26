@@ -1,34 +1,8 @@
-/// <reference path='../typings/index.d.ts' />
-/// <reference path='../out/javascripts/feather.d.ts' />
-/// <reference path='../tmp/test-app.d.ts' />
-
-import chai = require('chai')
-import assert = require('assert')
-import sinon = require('sinon')
-import sinonChai = require('sinon-chai')
-
-let expect = chai.expect,
-    jsdom = require('./utils/dom.js');
-
-chai.should()
-chai.use(sinonChai)
-
-let window: Window,
-    document: Document,
-    server: Sinon.SinonFakeServer
+import {document, expect, sinon, window} from './test-head';
 
 let sandbox
 beforeEach(() => this.sinon = sandbox = sinon.sandbox.create())
 afterEach(() => sandbox.restore())
-
-before((done) => {
-    jsdom('./test/pages/features.html', () => {
-        window = jsdom.window
-        document = jsdom.document
-        server = jsdom.server
-        done()
-    })
-})
 
 describe('Events', () => {
 
@@ -49,8 +23,8 @@ describe('Events', () => {
         })
 
         it('is received on root', () => {
-            let app = window['app2'],
-                child = app.childWidgets[0],
+            let app = window.ef,
+                child = app.childWidgets[0] as feather.core.Widget,
                 root = child.element,
                 i = document.querySelector('i'),
                 event = new (window as any).MouseEvent('click'),

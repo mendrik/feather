@@ -1,22 +1,5 @@
-/// <reference path='../typings/index.d.ts' />
-/// <reference path='../out/javascripts/feather.d.ts' />
-/// <reference path='../tmp/test-app.d.ts' />
-
-import chai = require('chai')
-import assert = require('assert')
-
-let expect = chai.expect,
-    jsdom = require('./utils/dom.js');
-
-let window: Window, document: Document;
-
-before((done) => {
-    jsdom('./test/pages/application.html', () => {
-        window = jsdom.window
-        document = jsdom.document
-        done()
-    })
-})
+import {chai, sinon, document, window, expect} from './test-head';
+import Strings = testApp.Strings;
 
 describe('String', () => {
 
@@ -86,7 +69,7 @@ describe('String', () => {
 
     describe('Switch values', () => {
         it('should apply', () => {
-            let strWidget = window['app'].childWidgets.find(c => c.constructor.name === 'Strings')
+            let strWidget = window['app'].childWidgets.find(c => c.constructor['name'] === 'Strings') as any as Strings
             expect(strWidget).to.not.be.undefined
             strWidget.stringA = 'changed'
             strWidget.stringB = 'switched'

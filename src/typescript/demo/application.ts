@@ -1,5 +1,3 @@
-/// <reference path="../../../out/javascripts/feather.d.ts" />
-
 module demo {
 
     import Widget    = feather.core.Widget

@@ -1,4 +1,3 @@
-/// <reference path="../../../../typings/globals/es6-shim/index.d.ts" />
 module feather.observe {
 
     import Widget              = feather.core.Widget
@@ -161,7 +160,7 @@ module feather.observe {
             },
             sort(indices: any[]) {
                 let children = from<HTMLElement>(el.children)
-                indices.map(i => children[i]).map(el.appendChild)
+                indices.map(i => children[i]).map(c => el.appendChild(c))
             },
             splice(index: number, deleteCount: number, added: any[], deleted: any[]) {
                 from<HTMLElement>(el.children)

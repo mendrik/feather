@@ -1,22 +1,5 @@
-/// <reference path='../typings/index.d.ts' />
-/// <reference path='../out/javascripts/feather.d.ts' />
-/// <reference path='../tmp/test-app.d.ts' />
-
-import chai = require('chai')
-import assert = require('assert')
-
-let expect = chai.expect,
-    jsdom = require('./utils/dom.js');
-
-let window: Window, document: Document;
-
-before((done) => {
-    jsdom('./test/pages/application.html', () => {
-        window = jsdom.window
-        document = jsdom.document
-        done()
-    })
-})
+import {document, expect, window} from './test-head';
+import Booleans = testApp.Booleans;
 
 describe('Booleans', () => {
 
@@ -69,7 +52,7 @@ describe('Booleans', () => {
 
     describe('Switch values', () => {
         it('should apply', () => {
-            let boolWidget = window['app'].childWidgets.find(c => c.constructor.name === 'Booleans')
+            let boolWidget = window.app.childWidgets.find(c => c.constructor['name'] === 'Booleans') as any as Booleans
             expect(boolWidget).to.not.be.undefined
             boolWidget.booleanA = false
             boolWidget.booleanB = true

@@ -1,35 +1,17 @@
-/// <reference path='../typings/index.d.ts' />
-/// <reference path='../out/javascripts/feather.d.ts' />
-/// <reference path='../tmp/test-app.d.ts' />
-
-import chai = require('chai')
-import assert = require('assert')
-
-let expect = chai.expect,
-    jsdom = require('./utils/dom.js');
-
-let window: Window, document: Document;
-
-before((done) => {
-    jsdom('./test/pages/application.html', () => {
-        window = jsdom.window
-        document = jsdom.document
-        done()
-    })
-})
+import {document, window, expect} from './test-head';
 
 describe('Array', () => {
 
     describe('childWidget', () => {
         it('should propagate from arrays', () => {
-            let app = window['app'],
+            let app = window.app,
                 childWidgets = app.childWidgets
             expect(childWidgets.length).to.be.equal(7)
             expect(childWidgets[0].parentWidget).to.be.equal(app)
         })
 
         it('should have subwidgets in arrays', () => {
-            let app = window['app'],
+            let app = window.app,
                 childWidgets = app.childWidgets
             expect(childWidgets[3].childWidgets.length).to.be.equal(1)
             expect(childWidgets[4].childWidgets.length).to.be.equal(1)
@@ -90,15 +72,15 @@ describe('Array', () => {
 
     describe('Switch values', () => {
         it('should apply', () => {
-            let arrWidget = window['app'].childWidgets.find(c => c.constructor.name === 'Arrays')
+            let arrWidget = window.app.childWidgets.find(c => c.constructor['name'] === 'Arrays') as any as testApp.Arrays
             expect(arrWidget).to.not.be.undefined
             arrWidget.listA.splice(1, 1,
-                new demo.ArrayElement(true, 'third'),
-                new demo.ArrayElement(true, 'forth')
+                new testApp.ArrayElement(true, 'third'),
+                new testApp.ArrayElement(true, 'forth')
             )
             arrWidget.listB.push(
-                new demo.ArrayElement(false, 'fifth'),
-                new demo.ArrayElement(false, 'sixth')
+                new testApp.ArrayElement(false, 'fifth'),
+                new testApp.ArrayElement(false, 'sixth')
             )
             arrWidget.listA[0].booleanA = false
             arrWidget.listA[0].stringA = 'switched'

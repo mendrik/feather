@@ -1,4 +1,3 @@
-/// <reference path="../../../../typings/globals/es6-shim/index.d.ts" />
 module feather.timings {
 
     function debounce(fn, delay) {
