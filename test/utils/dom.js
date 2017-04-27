@@ -51,11 +51,8 @@ module.exports = (page, ready) => {
             module.exports.window = window
             module.exports.document = window.document
 
-            let feather = window['feather'],
-                testApp = window['testApp']
-
-            global.feather = feather
-            global.testApp = testApp
+            global.feather = window['feather']
+            global.testApp = window['testApp']
             ready()
         }
     })

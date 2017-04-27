@@ -1,7 +1,11 @@
-import {chai, sinon, document, window, expect} from './test-head';
-before(() => window.feather.boot.WidgetFactory.start())
+import {expect, loadPage} from './test-head'
 
 describe('Functions', () => {
+
+    before(done => {
+        loadPage(() => {})
+        done()
+    })
 
     describe('isFunction', () => {
 

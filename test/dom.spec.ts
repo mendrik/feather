@@ -1,7 +1,17 @@
-import {chai, sinon, document, window, expect} from './test-head';
-before(() => window.feather.boot.WidgetFactory.start())
+import {expect, featherStart} from './test-head'
 
 describe('Dom', () => {
+    let window, app, ef, document;
+
+    before(done => {
+        featherStart(r => {
+            window = r.window
+            document = r.window.document
+            app = r.app
+            ef = r.ef
+        });
+        done()
+    })
 
     describe('selectorMatches', () => {
 

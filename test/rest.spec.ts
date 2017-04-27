@@ -1,14 +1,21 @@
-import {document, expect, sinon, window} from './test-head';
-before(() => window.feather.boot.WidgetFactory.start())
-
-let clock = sinon.useFakeTimers(),
-    sandbox
-
-beforeEach(() => this.sinon = sandbox = sinon.sandbox.create())
-afterEach(() => sandbox.restore())
-after(() => clock.restore())
+import {expect, featherStart, sinon} from './test-head'
 
 describe('XHR', () => {
+    let sandbox, window, app, ef, document, clock = sinon.useFakeTimers();
+
+    before(done => {
+        featherStart(r => {
+            window = r.window
+            document = r.window.document
+            app = r.app
+            ef = r.ef
+        });
+        done()
+    })
+
+    beforeEach(() => this.sinon = sandbox = sinon.sandbox.create())
+    afterEach(() => sandbox.restore())
+    after(() => clock.restore())
 
     describe('App loads', () => {
 

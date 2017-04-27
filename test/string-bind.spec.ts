@@ -1,9 +1,16 @@
-import {document, expect, window} from './test-head';
+import {expect, featherStart} from './test-head'
 import Strings = testApp.Strings;
 
-before(() => window.feather.boot.WidgetFactory.start())
-
 describe('String', () => {
+    let window, document;
+
+    before(done => {
+        featherStart((r) => {
+            window = r.window
+            document = r.window.document
+        })
+        done()
+    })
 
     describe('property', () => {
 

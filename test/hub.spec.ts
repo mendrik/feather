@@ -1,11 +1,20 @@
-import {sinon, window} from './test-head';
-let sandbox
-
-before(() => window.feather.boot.WidgetFactory.start())
-beforeEach(() => this.sinon = sandbox = sinon.sandbox.create())
-afterEach(() => sandbox.restore())
+import {featherStart, sinon} from './test-head'
 
 describe('Hub', () => {
+    let sandbox, window, app, ef, document;
+
+    before(done => {
+        featherStart(r => {
+            window = r.window
+            document = r.window.document
+            app = r.app
+            ef = r.ef
+        });
+        done()
+    })
+
+    beforeEach(() => this.sinon = sandbox = sinon.sandbox.create())
+    afterEach(() => sandbox.restore())
 
     describe('messages', () => {
 

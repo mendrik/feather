@@ -1,7 +1,20 @@
-import {document, expect, window} from './test-head';
-before(() => window.feather.boot.WidgetFactory.start())
+import {expect, sinon, featherStart} from './test-head'
 
 describe('Array', () => {
+    let sandbox, window, app, ef, document;
+
+    before(done => {
+        featherStart(r => {
+            window = r.window
+            document = r.window.document
+            app = r.app
+            ef = r.ef
+        });
+        done();
+    })
+
+    beforeEach(() => this.sinon = sandbox = sinon.sandbox.create())
+    afterEach(() => sandbox.restore())
 
     describe('childWidget', () => {
         it('should propagate from arrays', () => {

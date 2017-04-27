@@ -8,10 +8,11 @@ import * as assert from 'assert';
 import Application = testApp.Application;
 import ExtraFeatures = testApp.ExtraFeatures;
 
-let jsdom = require('./utils/dom.js');
-
 chai.should();
 chai.use(require('sinon-chai'));
+
+let jsdom = require('./utils/dom.js'),
+    exp = chai.expect;
 
 interface EnrichedWindow extends Window, MouseEvent {
     demo: any,
@@ -20,18 +21,20 @@ interface EnrichedWindow extends Window, MouseEvent {
     ef: ExtraFeatures
 }
 
-let window: EnrichedWindow,
-    document: Document;
-
-before((done) => {
+const loadPage = (done: Function) => {
     jsdom('./test/pages/application.html', () => {
-        window = jsdom.window
-        document = jsdom.document
-        window.app = window['app'] as Application;
-        window.ef = window['ef'] as ExtraFeatures;
-        done()
+        let window = jsdom.window,
+            app = window['app'] as Application,
+            ef = window['ef'] as ExtraFeatures
+        done({window, app, ef})
     })
-})
+}
 
-let exp = chai.expect;
-export {chai, sinon, window, document, exp as expect, assert}
+const featherStart = (callback: Function) => {
+    loadPage(result => {
+        result.window.feather.start()
+        callback(result)
+    })
+}
+
+export {chai, sinon, exp as expect, assert, loadPage, featherStart}

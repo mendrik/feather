@@ -1,5 +1,4 @@
-import {assert, document, expect, window} from './test-head';
-before(() => window.feather.boot.WidgetFactory.start())
+import {assert, expect, featherStart} from './test-head'
 
 function Plan(count, done) {
     this.done = done;
@@ -21,10 +20,21 @@ Plan.prototype.ok = function(expression) {
 }
 
 describe('Arrays', () => {
+    let window, app, ef;
+
+    before(done => {
+        featherStart(r => {
+            window = r.window
+            app = r.app
+            ef = r.ef
+        });
+        done();
+    })
+
     describe('Arrays.from', () => {
 
         it('should convert DomList', () => {
-            let spans = document.querySelectorAll('span'),
+            let spans = window.document.querySelectorAll('span'),
                 asArray = feather.arrays.from(spans)
             expect(asArray.length).to.be.equal(spans.length)
             expect(Array.isArray(asArray)).to.be.true

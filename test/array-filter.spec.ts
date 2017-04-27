@@ -1,7 +1,18 @@
-import {document, expect, window} from './test-head';
-before(() => window.feather.boot.WidgetFactory.start())
+import {expect, featherStart} from './test-head'
 
 describe('Filtered arrays', () => {
+
+    let window, app, ef, document;
+
+    before(done => {
+        featherStart(r => {
+            window = r.window
+            document = r.window.document
+            app = r.app
+            ef = r.ef
+        });
+        done()
+    })
 
     describe('Arrays', () => {
 

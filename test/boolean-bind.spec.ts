@@ -1,8 +1,19 @@
-import {document, expect, window} from './test-head';
-import Booleans = testApp.Booleans;
-before(() => window.feather.boot.WidgetFactory.start())
+import {expect, featherStart} from './test-head'
+import Booleans = testApp.Booleans
 
 describe('Booleans', () => {
+
+    let window, app, ef, document;
+
+    before(done => {
+        featherStart(r => {
+            window = r.window
+            document = r.window.document
+            app = r.app
+            ef = r.ef
+        });
+        done()
+    })
 
     describe('property', () => {
 

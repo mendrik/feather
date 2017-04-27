@@ -1,8 +1,16 @@
-import {expect, window} from './test-head';
-
-before(() => window.feather.boot.WidgetFactory.start())
+import {expect, loadPage} from './test-head'
 
 describe('Strings', () => {
+
+    let window, document;
+
+    before(done => {
+        loadPage((r) => {
+            window = r.window
+            document = r.window.document
+        })
+        done()
+    })
 
     describe('format', () => {
 
