@@ -36,5 +36,5 @@ Furthermore, thanks to [Steve Francia](https://gihub.com/spf13) for creating Hug
 
 ## License
 
-The theme is released under the MIT license. Read the [license](https://github.com/digitalcraftsman/hugo-material-docs/blob/master/LICENSE.md) for more information.
+The theme is released under the MIT license. Read the [license](https://github.com/digitalcraftsman/hugo-material-docs/blob/master/LICENSE.md) for more information
 
