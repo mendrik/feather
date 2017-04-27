@@ -14,13 +14,7 @@
     "rootDir": "./",
     "target": "es5",
     "experimentalDecorators": true,
-    "out": "out/javascripts/feather.js",
-    "typeRoots": [
-      "node_modules/@types"
-    ],
-    "types": [
-      "es6-shim"
-    ]
+    "out": "out/javascripts/feather.js"
   },
   "files": [
     "utils/functions.ts",
