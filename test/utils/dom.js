@@ -4,7 +4,7 @@ let jsdom = require('jsdom'),
     glob = require('glob'),
     path = require('path')
 
-module.exports = (page, ready, noboot) => {
+module.exports = (page, ready) => {
     let htmlSource = fs.readFileSync(page, "utf8"),
         appSource = [
             fs.readFileSync("./node_modules/tslib/tslib.js", "utf8"),
@@ -25,7 +25,7 @@ module.exports = (page, ready, noboot) => {
 
     jsdom.env({
         html: htmlSource,
-        url: noboot ? "http://localhost/" : undefined,
+        url: "http://localhost/",
         virtualConsole: virtualConsole,
         features: {
             FetchExternalResources: ['script'],
@@ -44,7 +44,7 @@ module.exports = (page, ready, noboot) => {
                 autoRespondAfter: 1
             })
             glob.sync(__dirname + '/../xhr/*.json').forEach((file) => {
-                var data = path.parse(file),
+                let data = path.parse(file),
                     url = '/' + data.name.replace("-", "/")
                 mockResponse(server, url,  './test/xhr/' + data.base)
             })
@@ -56,9 +56,6 @@ module.exports = (page, ready, noboot) => {
 
             global.feather = feather
             global.testApp = testApp
-            if (!noboot) {
-                feather.boot.WidgetFactory.start()
-            }
             ready()
         }
     })

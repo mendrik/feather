@@ -1,4 +1,5 @@
-import {chai, sinon, document, window, expect} from './test-head';
+import {expect, window} from './test-head';
+before(() => window.feather.boot.WidgetFactory.start())
 
 describe('Objects', () => {
     describe('isObject', () => {

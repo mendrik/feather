@@ -1,4 +1,5 @@
 import {document, expect, sinon, window} from './test-head';
+before(() => window.feather.boot.WidgetFactory.start())
 
 let clock = sinon.useFakeTimers(),
     sandbox

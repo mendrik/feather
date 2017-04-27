@@ -35,7 +35,7 @@ module testApp {
 
         @On({event: 'click', selector: 'i'})
         click(ev: Event, target: HTMLLIElement) {
-           //
+           // 
         }
 
         @On({event: 'click'})

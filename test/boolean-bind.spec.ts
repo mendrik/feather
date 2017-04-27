@@ -1,5 +1,6 @@
 import {document, expect, window} from './test-head';
 import Booleans = testApp.Booleans;
+before(() => window.feather.boot.WidgetFactory.start())
 
 describe('Booleans', () => {
 

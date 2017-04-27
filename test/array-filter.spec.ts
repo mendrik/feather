@@ -1,4 +1,5 @@
-import {chai, sinon, document, window, expect} from './test-head';
+import {document, expect, window} from './test-head';
+before(() => window.feather.boot.WidgetFactory.start())
 
 describe('Filtered arrays', () => {
 

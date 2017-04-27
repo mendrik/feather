@@ -1,4 +1,5 @@
-import {document, expect, assert} from './test-head';
+import {assert, document, expect, window} from './test-head';
+before(() => window.feather.boot.WidgetFactory.start())
 
 function Plan(count, done) {
     this.done = done;

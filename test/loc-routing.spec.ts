@@ -14,14 +14,15 @@ describe('Routes', () => {
             window.feather.boot.WidgetFactory.start()
             spy2.should.have.been.calledOnce
             spy.should.have.been.calledOnce
-            spy.should.have.been.calledOn(window.app)
+            spy.should.have.been.calledOn(window.ef)
             spy.should.have.been.calledWith({})
         })
 
         it('after navigation event', () => {
             let proto = testApp.ExtraFeatures.prototype,
-                spy = this.sinon.spy(proto, 'subsection');
-            let app = window.ef
+                spy = this.sinon.spy(proto, 'subsection'),
+                app = window.ef
+
             app.route('/mypath')
             expect(document.location.pathname).to.be.equal('/mypath')
 

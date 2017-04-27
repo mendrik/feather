@@ -84,7 +84,7 @@ module feather.routing {
 
     export let runRoutes = () => notifyListeners(getCurrentRoute())
 
-    export let Route = (route: string) => (proto: Widget, method: string, desc: PropertyDescriptor) => {
+    export let Route = (route: string) => (proto: Widget, method: string) => {
         let s = routes.get(proto)
         if (!s) {
             routes.set(proto, s = [])

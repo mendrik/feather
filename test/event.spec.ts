@@ -1,6 +1,7 @@
 import {document, expect, sinon, window} from './test-head';
-
 let sandbox
+
+before(() => window.feather.boot.WidgetFactory.start())
 beforeEach(() => this.sinon = sandbox = sinon.sandbox.create())
 afterEach(() => sandbox.restore())
 
@@ -10,8 +11,8 @@ describe('Events', () => {
 
         it('is received with selector', () => {
             let app = window.ef,
-                child = app.childWidgets[0],
-                i = document.querySelector('i'),
+                child = app.childWidgets[0] as feather.core.Widget,
+                i = child.element.querySelector('i'),
                 event = document.createEvent("HTMLEvents"),
                 spy = this.sinon.spy(child, 'click')
             event.initEvent('click', true, true)
@@ -25,7 +26,7 @@ describe('Events', () => {
             let app = window.ef,
                 child = app.childWidgets[0] as feather.core.Widget,
                 root = child.element,
-                i = document.querySelector('i'),
+                i = root.querySelector('i'),
                 event = document.createEvent("HTMLEvents"),
                 spy = this.sinon.spy(child, 'clickRoot')
             event.initEvent('click', true, true)

@@ -1,8 +1,7 @@
-import {chai, sinon, document, window, expect} from './test-head';
-
-let server: sinon.SinonFakeServer
-
+import {sinon, window} from './test-head';
 let sandbox
+
+before(() => window.feather.boot.WidgetFactory.start())
 beforeEach(() => this.sinon = sandbox = sinon.sandbox.create())
 afterEach(() => sandbox.restore())
 
