@@ -24,14 +24,12 @@ A feather-light :D framework written in typescript with support for
 # Installation
 ```
 npm install feather-ts --save
-typings install npm:feather-ts -G --save
 ```
 ---
 
 # Requirements
 
 - nodejs
-- typings (npm install typings -g)
 - typescript
 - set experimentalDecorators=true in your tsconfig.json
 

@@ -11,7 +11,6 @@ local dependency.
 
 ```
 npm install feather-ts --save
-typings install npm:feather-ts -G --save
 ```
 
 Create a **tsconfig.json** file in your project's root containing the following settings. ES6 output is currently not supported and 
@@ -51,8 +50,6 @@ To get an impression of the code style you will be dealing with, here is a sampl
 very compact and flat.
 
 ```
-/// <reference path="../typings/index.d.ts"/>    /* feather typings */
-
 module todomvc.feather {
 
     import Widget          = feather.core.Widget /* imports of referenced components */

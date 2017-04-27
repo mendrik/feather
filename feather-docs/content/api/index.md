@@ -32,8 +32,6 @@ You can also have different templates in the same widget class and choose which 
 Putting it all together, a very simple widget might look like this:
  
 ```
- /// <reference path="../typings/feather.d.ts" />
- 
  module demo {
  
      import Widget    = feather.core.Widget
