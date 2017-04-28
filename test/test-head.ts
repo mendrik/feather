@@ -3,7 +3,7 @@
 
 import * as chai from 'chai';
 import * as sinon from 'sinon';
-import * as assert from 'assert';
+import * as assert from 'power-assert';
 
 import Application = testApp.Application;
 import ExtraFeatures = testApp.ExtraFeatures;

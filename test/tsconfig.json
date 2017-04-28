@@ -15,7 +15,7 @@
       "../node_modules/@types"
     ],
     "types": [
-      "assert",
+      "power-assert",
       "chai",
       "es6-shim",
       "jsdom",
