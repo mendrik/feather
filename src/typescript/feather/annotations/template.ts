@@ -4,6 +4,7 @@ module feather.annotations {
     import Widget        = feather.core.Widget
     import from          = feather.arrays.from
     import allChildNodes = feather.dom.allChildNodes;
+    import allChildNodes2 = feather.dom.allChildNodes2;
 
     const supportsTemplate  = 'content' in document.createElement('template') && 'firstElementChild' in document.createDocumentFragment()
     const CURLIES           = /\{\{(.*?)}}/
@@ -69,9 +70,7 @@ module feather.annotations {
                     // <div id="2">some text {{myProperty}}</div>
                     let text = node.textContent
                     while ((match = ALL_CURLIES.exec(text)) !== null) {
-                        hooks.push(
-                            new Hook(node, HookType.TEXT, match[1], text)
-                        )
+                        hooks.push(new Hook(node, HookType.TEXT, match[1], text))
                     }
                 } else if (node.nodeType === Node.ELEMENT_NODE) {
                     let attribs = from<Node>(node.attributes),

@@ -16,6 +16,7 @@ module feather.observe {
     import isFunction          = feather.functions.isFunction
     import FuncOne             = feather.functions.FuncOne
     import compose             = feather.functions.compose
+    import RouteAware          = feather.routing.RouteAware;
 
     const boundProperties      = new WeakMap<Widget, TypedMap<Function[]>>()
     const binders              = new WeakMap<Observable, TypedMap<BindProperties>>()
@@ -229,7 +230,7 @@ module feather.observe {
         }
     }
 
-    export class Observable extends feather.routing.RouteAware {
+    export class Observable extends RouteAware {
 
         protected attachHooks(hooks: Hook[]) {
             for (let hook of hooks) {

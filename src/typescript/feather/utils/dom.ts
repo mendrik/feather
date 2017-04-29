@@ -3,6 +3,15 @@ module feather.dom {
     import from      = feather.arrays.from
     import ValidRoot = feather.types.ValidRoot
 
+    const NODE_FILTER = (n: Node) => {
+        if (n.nodeType === Node.DOCUMENT_FRAGMENT_NODE) {
+            return false
+        } else if (n.nodeType === Node.TEXT_NODE && n.textContent.trim() === '') {
+            return false
+        }
+        return true
+    }
+
     export function querySelectorWithRoot(root: ValidRoot, selector: string): Array<HTMLElement> {
         let result = []
         if (root.nodeType === 1 && selectorMatches(root, selector)) {
@@ -19,7 +28,16 @@ module feather.dom {
         return f.call(el, selector)
     }
 
-    export function allChildNodes(doc: Node) {
+    export function allChildNodes(doc: Node, nodes = []) {
+        let children = from<Node>(doc.childNodes).filter(NODE_FILTER);
+        nodes.push(...children)
+        for (let n of children) {
+            allChildNodes(n, nodes)
+        }
+        return [doc, ...nodes]
+    }
+
+    export function allChildNodes2(doc: Node) {
         let filter = (n: Node) => {
             if (n.nodeType === Node.DOCUMENT_FRAGMENT_NODE) {
                 return NodeFilter.FILTER_REJECT
@@ -35,7 +53,7 @@ module feather.dom {
         do {
             nodes.push(walker.currentNode)
         } while (walker.nextNode())
-        return nodes
+        return nodes;
     }
 
     export function insertBefore(parent: Node, el: Node, first?: Node) {
