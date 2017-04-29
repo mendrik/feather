@@ -37,7 +37,7 @@ module feather.arrays {
             let args: any[] = from(arguments)
 
             if (key === 'sort') {
-                // sort is a special case, we need to inform listeners how sorting has change the array
+                // sort is a special case, we need to inform listeners how sorting has changed the array
                 let cmp = args[0],
                     indices = range(0, arr.length - 1)
                 args = cmp ? [arr.map((e, i) => i).sort((a, b) => cmp(arr[a], arr[b])).map(e => indices[e])] : indices
