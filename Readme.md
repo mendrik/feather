@@ -37,6 +37,6 @@ npm install feather-ts --save
 
 Check out the official [website](http://www.feather-ts.com)
 
-#TodoMVC
+# TodoMVC
 
 An example implementation can be be found [here](http://todo.feather-ts.com/)
