@@ -24,9 +24,8 @@ module feather.hub {
 
         triggerDown(event: string, ...data: any[]) {
             feather.hub.Subscribable.trigger(event, this, data)
-            for (let child of this.childWidgets) {
-                child.triggerDown.apply(child, flatten([event, data]))
-            }
+            let argArray = flatten([event, data])
+            this.childWidgets.forEach(child => child.triggerDown.apply(child, argArray))
         }
 
         private static trigger(event: string, context: Subscribable, ...data: any[]) {
