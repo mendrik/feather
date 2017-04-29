@@ -37,25 +37,6 @@ module feather.dom {
         return [doc, ...nodes]
     }
 
-    export function allChildNodes2(doc: Node) {
-        let filter = (n: Node) => {
-            if (n.nodeType === Node.DOCUMENT_FRAGMENT_NODE) {
-                return NodeFilter.FILTER_REJECT
-            } else if (n.nodeType === Node.TEXT_NODE && n.textContent.trim() === '') {
-                return NodeFilter.FILTER_REJECT
-            } else {
-                return NodeFilter.FILTER_ACCEPT
-            }
-        }
-        this.acceptNode = filter
-        let walker = document.createTreeWalker(doc, NodeFilter.SHOW_ALL, filter as any, false),
-            nodes = []
-        do {
-            nodes.push(walker.currentNode)
-        } while (walker.nextNode())
-        return nodes;
-    }
-
     export function insertBefore(parent: Node, el: Node, first?: Node) {
         parent.insertBefore(el, first || null)
     }

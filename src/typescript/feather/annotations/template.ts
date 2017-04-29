@@ -4,7 +4,6 @@ module feather.annotations {
     import Widget        = feather.core.Widget
     import from          = feather.arrays.from
     import allChildNodes = feather.dom.allChildNodes;
-    import allChildNodes2 = feather.dom.allChildNodes2;
 
     const supportsTemplate  = 'content' in document.createElement('template') && 'firstElementChild' in document.createDocumentFragment()
     const CURLIES           = /\{\{(.*?)}}/
