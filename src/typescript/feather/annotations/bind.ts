@@ -163,10 +163,9 @@ module feather.observe {
                 indices.map(i => children[i]).map(c => el.appendChild(c))
             },
             splice(index: number, deleteCount: number, added: any[], deleted: any[]) {
-                requestAnimationFrame(() =>
-                    from<HTMLElement>(el.children)
-                        .slice(index, index + deleteCount)
-                        .map(del => el.removeChild(del)))
+                from<HTMLElement>(el.children)
+                    .slice(index, index + deleteCount)
+                    .map(del => el.removeChild(del))
 
                 let childWidgets = widget.childWidgets
 
@@ -179,7 +178,7 @@ module feather.observe {
                         item.parentWidget = widget
                     }
                     childWidgets.push.apply(childWidgets, added)
-                    requestAnimationFrame(() => insertBefore(el, frag, el.children[index]));
+                    insertBefore(el, frag, el.children[index]);
                 }
             }
         }
