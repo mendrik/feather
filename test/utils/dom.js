@@ -38,6 +38,7 @@ module.exports = (page, ready) => {
                 return
             }
             window.XMLHttpRequest = sinon.useFakeXMLHttpRequest()
+            window.requestAnimationFrame = (func) => func();
             sinon.xhr.supportsCORS = true
             let server = module.exports.server = sinon.fakeServer.create({
                 autoRespond: true,
