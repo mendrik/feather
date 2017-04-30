@@ -9,7 +9,6 @@ module feather.observe {
     import observeArray        = feather.arrays.observeArray
     import ArrayListener       = feather.arrays.ArrayListener
     import from                = feather.arrays.from
-    import hasListeners        = feather.arrays.hasListeners
     import changeArrayListener = feather.arrays.changeArrayListener
     import insertBefore        = feather.dom.insertBefore
     import getInheritedMethods = feather.functions.getInheritedMethods
@@ -17,6 +16,7 @@ module feather.observe {
     import FuncOne             = feather.functions.FuncOne
     import compose             = feather.functions.compose
     import RouteAware          = feather.routing.RouteAware;
+    import notifyListeners = feather.arrays.notifyListeners;
 
     const boundProperties      = new WeakMap<Widget, TypedMap<Function[]>>()
     const binders              = new WeakMap<Observable, TypedMap<BindProperties>>()
@@ -38,10 +38,7 @@ module feather.observe {
         if (obj.parentWidget) {
             let parent = obj.parentWidget as any
             for (let key of Object.keys(parent)) {
-                let value = parent[key] as any[]
-                if (hasListeners(value)) {
-                    value.splice(0, 0)
-                }
+                notifyListeners(parent[key])
             }
         }
     }
@@ -178,7 +175,7 @@ module feather.observe {
                         item.appendTemplateRoot(frag, conf.templateName)
                         item.parentWidget = widget
                     }
-                    childWidgets.push.apply(childWidgets, added)
+                    childWidgets.push(...added)
                     insertBefore(el, frag, el.children[index]);
                 }
             }
@@ -190,7 +187,7 @@ module feather.observe {
             el      = hook.node as HTMLElement
         observeArray(arr, defaultArrayListener(hook, conf, this))
         el.removeAttribute(`{{${hook.curly}}}`)
-        arr.push.apply(arr, removed)
+        arr.push(...removed)
     }
 
     function createObserver(property: string, value: Primitive, hook: Hook, conf: BindProperties, filter: FuncOne) {
@@ -217,8 +214,8 @@ module feather.observe {
             original: Widget[] = this[property],
             doc                = document.createDocumentFragment(),
             copy = () => {
-                original.forEach(item => item.appendTemplateRoot(doc, conf.templateName)) // let's init the items
-                proxy.splice.apply(proxy, [0, proxy.length].concat(original.filter(filter()) as any[]))
+                original.forEach(item => item.appendTemplateRoot(doc, conf.templateName)) // init items
+                proxy.splice(0, proxy.length, ...original.filter(filter()))
             }
 
         copy()
@@ -226,7 +223,7 @@ module feather.observe {
         observeArray(original, changeArrayListener(copy))
 
         for (let prop of conf.changeOn || []) {
-            createListener(this, prop, () => original.splice(0,0))
+            createListener(this, prop, () => original.splice(0, 0))
         }
     }
 
@@ -267,11 +264,17 @@ module feather.observe {
 
         // attributes are case insensitive, so let's try to find the matching property like this
         findProperty(ci: string): string {
+            if (!!this[ci]) {
+                return ci;
+            }
             return Object.getOwnPropertyNames(this)
                 .find(p => p.toLowerCase() === ci.toLowerCase()) || ci
         }
 
         findMethod(ci: string): string {
+            if (!!this[ci]) {
+                return ci;
+            }
             return getInheritedMethods(this)
                     .find(p => p.toLowerCase() === ci.toLowerCase()) || ci
         }

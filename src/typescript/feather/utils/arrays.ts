@@ -1,6 +1,8 @@
 module feather.arrays {
 
-    const proxiedArrayMethods = ['reverse', 'sort', 'splice']
+    type MethodKey = 'reverse' | 'sort' | 'splice'
+
+    const proxiedArrayMethods: MethodKey[] = ['reverse', 'sort', 'splice']
     const observers           = new WeakMap<any[], ArrayListener<any>[]>()
 
     export interface ArrayListener<T> {
@@ -29,7 +31,7 @@ module feather.arrays {
         }
     }
 
-    function createProperty<T>(key: string, arr: T[]) {
+    function createProperty<T>(key: MethodKey, arr: T[]) {
         let old       = arr[key],
             listeners = observers.get(arr)
 
@@ -60,7 +62,14 @@ module feather.arrays {
         }
     }
 
-    export let hasListeners = (source: any[]) => typeof observers.get(source) !== 'undefined'
+    export let notifyListeners = (source: any[]) => {
+        let listeners = observers.get(source);
+        if (listeners) {
+            for (let l of listeners){
+                l.splice(0, 0, [], []);
+            }
+        }
+    }
 
     export function range(start: number, end: number) {
         let len = end - start + 1,
