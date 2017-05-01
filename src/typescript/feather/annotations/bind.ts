@@ -9,7 +9,6 @@ module feather.observe {
     import observeArray        = feather.arrays.observeArray
     import ArrayListener       = feather.arrays.ArrayListener
     import from                = feather.arrays.from
-    import changeArrayListener = feather.arrays.changeArrayListener
     import insertBefore        = feather.dom.insertBefore
     import getInheritedMethods = feather.functions.getInheritedMethods
     import isFunction          = feather.functions.isFunction
@@ -17,6 +16,7 @@ module feather.observe {
     import compose             = feather.functions.compose
     import RouteAware          = feather.routing.RouteAware;
     import notifyListeners = feather.arrays.notifyListeners;
+    import changeArrayListener = feather.arrays.changeArrayListener;
 
     const boundProperties      = new WeakMap<Widget, TypedMap<Function[]>>()
     const binders              = new WeakMap<Observable, TypedMap<BindProperties>>()
@@ -158,12 +158,12 @@ module feather.observe {
             },
             sort(indices: any[]) {
                 let children = from<HTMLElement>(el.children)
-                indices.map(i => children[i]).map(c => el.appendChild(c))
+                indices.forEach(i => el.appendChild(children[i]))
             },
             splice(index: number, deleteCount: number, added: any[], deleted: any[]) {
                 from<HTMLElement>(el.children)
                     .slice(index, index + deleteCount)
-                    .map(del => el.removeChild(del))
+                    .forEach(del => el.removeChild(del))
 
                 let childWidgets = widget.childWidgets
 
@@ -176,7 +176,7 @@ module feather.observe {
                         item.parentWidget = widget
                     }
                     childWidgets.push(...added)
-                    insertBefore(el, frag, el.children[index]);
+                    insertBefore(el, frag, el.children[index])
                 }
             }
         }
@@ -213,17 +213,27 @@ module feather.observe {
         let proxy              = [],
             original: Widget[] = this[property],
             doc                = document.createDocumentFragment(),
-            copy = () => {
+            copy = () => { // doing a complete array sync would be to cumbersome, let's just copy the filtered elements a new
                 original.forEach(item => item.appendTemplateRoot(doc, conf.templateName)) // init items
-                proxy.splice(0, proxy.length, ...original.filter(filter()))
-            }
 
+                let node = hook.node as HTMLElement // delete node content
+                node.innerHTML = ''
+
+                let newElements = document.createDocumentFragment(),
+                    filtered = original.filter(filter());
+                filtered.forEach(widget => newElements.appendChild(widget.element))
+
+                proxy.splice(0, proxy.length, ...filtered)
+                node.appendChild(newElements)
+            }
         copy()
         bindArray.call(this, proxy, hook, conf)
         observeArray(original, changeArrayListener(copy))
 
-        for (let prop of conf.changeOn || []) {
-            createListener(this, prop, () => original.splice(0, 0))
+        if (conf.changeOn) {
+            for (let prop of conf.changeOn) {
+                createListener(this, prop, () => notifyListeners(original))
+            }
         }
     }
 

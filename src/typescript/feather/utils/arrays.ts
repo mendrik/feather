@@ -31,34 +31,39 @@ module feather.arrays {
         }
     }
 
-    function createProperty<T>(key: MethodKey, arr: T[]) {
-        let old       = arr[key],
+    function notifyListenersWithArgs(listeners: ArrayListener<any>[], arr, method: MethodKey, args: any[]) {
+        for (let listener of listeners) {
+            if (!!listener[method]) {
+                listener[method].apply(arr, args)
+            }
+        }
+    }
+
+    function createProperty<T>(key: MethodKey, arr: any) {
+        let old       = arr[key].bind(arr),
             listeners = observers.get(arr)
 
-        arr[key] = function() {
-            let args: any[] = from(arguments)
-
-            if (key === 'sort') {
+        if (key === 'splice') {
+            arr.splice = (index, dels, ...adds) => {
+                let res = old(index, dels, ...adds);
+                notifyListenersWithArgs(listeners, arr, key, [index, dels, adds, res])
+                return res;
+            }
+        } else if (key == 'reverse') {
+            arr.reverse = () =>  {
+                let res = old()
+                notifyListenersWithArgs(listeners, arr, key, [])
+                return res;
+            }
+        } else if (key == 'sort') {
+            arr.sort = (cmp) => {
                 // sort is a special case, we need to inform listeners how sorting has changed the array
-                let cmp = args[0],
-                    indices = range(0, arr.length - 1)
-                args = cmp ? [arr.map((e, i) => i).sort((a, b) => cmp(arr[a], arr[b])).map(e => indices[e])] : indices
+                let indices = range(0, arr.length - 1),
+                    args = cmp ? [arr.map((e, i) => i).sort((a, b) => cmp(arr[a], arr[b])).map(e => indices[e])] : indices,
+                    res = old(cmp)
+                notifyListenersWithArgs(listeners, arr, key, args)
+                return res
             }
-
-            let res = old.apply(arr, args)
-
-            if (key === 'splice') {
-                // convert splice callback to start, deleteCount, added items, deleted items
-                args = [args[0], args[1], args.slice(2), res]
-            }
-
-            for (let listener of listeners) {
-                if (!!listener[key]) {
-                    listener[key].apply(arr, args)
-                }
-            }
-            // todo add index setters/getters here (if possible, meanwhile use set(index, value) instead of arr[index] = value
-            return res
         }
     }
 
@@ -75,14 +80,6 @@ module feather.arrays {
         let len = end - start + 1,
             gen = Array.apply(null, {length: len}).map(Number.call, Number);
         return gen.map(x => x + start);
-    }
-
-    export function forgetListener<T>(arr: T[], listener: ArrayListener<T>) {
-        let l = observers.get(arr),
-            index
-        if (l && ~(index = l.indexOf(listener))) {
-            l.splice(index, 1)
-        }
     }
 
     export function observeArray<T>(arr: T[], listener: ArrayListener<T>) {
