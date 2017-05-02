@@ -1,12 +1,11 @@
 module feather.arrays {
 
-    type MethodKey = 'reverse' | 'sort' | 'splice'
+    type MethodKey = 'sort' | 'splice'
 
-    const proxiedArrayMethods: MethodKey[] = ['reverse', 'sort', 'splice']
+    const proxiedArrayMethods: MethodKey[] = ['sort', 'splice']
     const observers           = new WeakMap<any[], ArrayListener<any>[]>()
 
     export interface ArrayListener<T> {
-        reverse()
         sort(indices: number[])
         splice(start: number, deleteCount: number, items: T[], deleted: T[])
     }
@@ -31,28 +30,22 @@ module feather.arrays {
         }
     }
 
-    function notifyListenersWithArgs(listeners: ArrayListener<any>[], arr, method: MethodKey, args: any[]) {
-        for (let listener of listeners) {
-            if (!!listener[method]) {
-                listener[method].apply(arr, args)
-            }
-        }
-    }
 
     function createProperty<T>(key: MethodKey, arr: any) {
-        let old       = arr[key].bind(arr),
-            listeners = observers.get(arr)
+        let old       = arr[key],
+            listeners = observers.get(arr),
+            notifyListenersWithArgs = (arr, method: MethodKey, args: any[]) => {
+                for (let listener of listeners) {
+                    if (!!listener[method]) {
+                        listener[method].apply(arr, args)
+                    }
+                }
+            }
 
         if (key === 'splice') {
             arr.splice = (index, dels, ...adds) => {
-                let res = old(index, dels, ...adds);
-                notifyListenersWithArgs(listeners, arr, key, [index, dels, adds, res])
-                return res;
-            }
-        } else if (key == 'reverse') {
-            arr.reverse = () =>  {
-                let res = old()
-                notifyListenersWithArgs(listeners, arr, key, [])
+                let res = old.call(arr, index, dels, ...adds);
+                notifyListenersWithArgs(arr, key, [index, dels, adds, res])
                 return res;
             }
         } else if (key == 'sort') {
@@ -60,8 +53,8 @@ module feather.arrays {
                 // sort is a special case, we need to inform listeners how sorting has changed the array
                 let indices = range(0, arr.length - 1),
                     args = cmp ? [arr.map((e, i) => i).sort((a, b) => cmp(arr[a], arr[b])).map(e => indices[e])] : indices,
-                    res = old(cmp)
-                notifyListenersWithArgs(listeners, arr, key, args)
+                    res = old.call(arr, cmp)
+                notifyListenersWithArgs(arr, key, args)
                 return res
             }
         }
@@ -73,6 +66,22 @@ module feather.arrays {
             for (let l of listeners){
                 l.splice(0, 0, [], []);
             }
+        }
+    }
+
+    export function diff<T>(arr1: T[], arr2: T[]): T[] {
+        return arr1.filter(x => !~arr2.indexOf(x))
+    }
+
+    export interface Patch<T> {
+        add: T[],
+        remove: T[]
+    }
+
+    export function patch<T>(target: T[], current: T[]): Patch<T> {
+        return {
+            add: target.filter(x => !~current.indexOf(x)),
+            remove: current.filter(x => !~target.indexOf(x))
         }
     }
 
@@ -90,8 +99,13 @@ module feather.arrays {
                 return arr[arr.length - 1]
             }
             arr.push = function(...items: T[]) {
-                arr.splice.apply(arr, Array.prototype.concat.call([arr.length, 0], items))
+                arr.splice(arr.length, 0, ...items)
                 return arr.length
+            }
+            arr.reverse = function() {
+                let ref = arr.slice();
+                arr.sort((a, b) => ref.indexOf(b) - ref.indexOf(a))
+                return arr;
             }
             arr.shift = function() {
                 let deletee = arr[0]
@@ -99,11 +113,11 @@ module feather.arrays {
                 return deletee
             }
             arr.unshift = function(...items: T[]) {
-                arr.splice.apply(arr, Array.prototype.concat.call([0, 0], items))
+                arr.splice(0, 0, ...items)
                 return arr.length
             }
             arr['set'] = function(index: number, item: T) {
-                arr.splice.apply(arr, Array.prototype.concat.call([index, 1], [item]))
+                arr.splice(index, 1, item)
                 return item;
             }
             for (let key of proxiedArrayMethods) {
@@ -115,9 +129,34 @@ module feather.arrays {
 
     export function changeArrayListener(cb: () => any): ArrayListener<any> {
         return {
-            reverse: cb,
             sort:    cb,
             splice:  cb
         } as ArrayListener<any>
     }
+
+    export function lis(x: number[]) {
+        let n = x.length,
+            len = range(0, n).map(() => 1),
+            pred = range(0, n).map(() => -1)
+        for (let i = 1; i < n; i++) {
+            for (let j = 0; j < i; j++) {
+                if (x[j] < x[i] && len[i] < len[j] + 1) {
+                    len[i] = len[j] + 1
+                    pred[i] = j
+                }
+            }
+        }
+        let bi = 0
+        for (let i = 1; i < n; i++) {
+            if (len[bi] < len[i]) {
+                bi = i
+            }
+        }
+        let cnt = len[bi],
+            res = new Array(cnt)
+        for (let i = bi; i != -1; i = pred[i]) {
+            res[--cnt] = x[i]
+        }
+        return res;
+    }  
 }

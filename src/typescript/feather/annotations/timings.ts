@@ -17,7 +17,10 @@ module feather.timings {
         proto[method] = debounce(old, delayInMs);
     }
 
-    export let AnimationFrame = () => (proto: any, method: string) => {
-        requestAnimationFrame(proto[method])
+    export let AnimationFrame = () => function(proto: any, method: string) {
+        let old = proto[method];
+        proto[method] = function() {
+            requestAnimationFrame(old.bind(this))
+        }
     }
 }

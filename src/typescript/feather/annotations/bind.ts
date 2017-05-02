@@ -15,8 +15,14 @@ module feather.observe {
     import FuncOne             = feather.functions.FuncOne
     import compose             = feather.functions.compose
     import RouteAware          = feather.routing.RouteAware;
-    import notifyListeners = feather.arrays.notifyListeners;
+    import notifyListeners     = feather.arrays.notifyListeners;
     import changeArrayListener = feather.arrays.changeArrayListener;
+    import lis = feather.arrays.lis;
+    import range = feather.arrays.range;
+    import diff = feather.arrays.diff;
+    import patch = feather.arrays.patch;
+    import Patch = feather.arrays.Patch;
+    import removeFromArray = feather.arrays.removeFromArray;
 
     const boundProperties      = new WeakMap<Widget, TypedMap<Function[]>>()
     const binders              = new WeakMap<Observable, TypedMap<BindProperties>>()
@@ -151,16 +157,14 @@ module feather.observe {
     function defaultArrayListener(hook: Hook, conf: BindProperties, widget: Widget): ArrayListener<Widget> {
         let el = hook.node as HTMLElement
         return {
-            reverse() {
-                for (let child of from<HTMLElement>(el.children)) {
-                    insertBefore(el, child, el.firstElementChild)
-                }
-            },
             sort(indices: any[]) {
                 let children = from<HTMLElement>(el.children)
                 indices.forEach(i => el.appendChild(children[i]))
             },
             splice(index: number, deleteCount: number, added: any[], deleted: any[]) {
+                if (index === 0 && deleteCount === 0 && added.length == 0) {
+                    return;
+                }
                 from<HTMLElement>(el.children)
                     .slice(index, index + deleteCount)
                     .forEach(del => el.removeChild(del))
@@ -209,27 +213,39 @@ module feather.observe {
     }
 
     function createFilteredArrayProxy(property: string, hook: Hook, conf: BindProperties,
-                                      filter: () => (widget: Widget) => boolean) {
-        let proxy              = [],
+                                      filterFactory: () => (widget: Widget) => boolean) {
+        let parentWidget = this as Widget,
+            proxy:    Widget[] = [],
             original: Widget[] = this[property],
-            doc                = document.createDocumentFragment(),
-            copy = () => { // doing a complete array sync would be to cumbersome, let's just copy the filtered elements a new
-                original.forEach(item => item.appendTemplateRoot(doc, conf.templateName)) // init items
+            parent             = hook.node as HTMLElement,
+            syncProxy = () => {
+                let target = original.filter(filterFactory()),
+                    p = patch(target, proxy)
+                // let's remove excess elements from UI and proxy array
+                removeFromArray(proxy, p.remove)
+                p.remove.forEach(w => {
+                    parent.removeChild(w.element)
+                })
 
-                let node = hook.node as HTMLElement // delete node content
-                node.innerHTML = ''
+                let doc = document.createDocumentFragment();
+                p.add.forEach(w => {
+                    w.appendTemplateRoot(doc, conf.templateName)
+                    w.parentWidget = parentWidget
+                })
+                // let's add missing elements to UI and array in one go to the end of the list
+                parent.appendChild(doc);
+                proxy.push(...p.add)
 
-                let newElements = document.createDocumentFragment(),
-                    filtered = original.filter(filter());
-                filtered.forEach(widget => newElements.appendChild(widget.element))
-
-                proxy.splice(0, proxy.length, ...filtered)
-                node.appendChild(newElements)
+                // now let's check if some of the elements need repositioning
+                let proxyIndices = proxy.map(x => target.indexOf(x)),
+                    needSorting = diff(proxyIndices, lis(proxyIndices))
+                needSorting.forEach(idx => {
+                    let place = target[idx + 1]
+                    parent.insertBefore(target[idx].element, place ? place.element : null);
+                })
             }
-        copy()
-        bindArray.call(this, proxy, hook, conf)
-        observeArray(original, changeArrayListener(copy))
-
+        syncProxy()
+        observeArray(original, changeArrayListener(syncProxy))
         if (conf.changeOn) {
             for (let prop of conf.changeOn) {
                 createListener(this, prop, () => notifyListeners(original))

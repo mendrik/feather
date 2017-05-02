@@ -59,6 +59,35 @@ describe('Arrays', () => {
         })
     })
 
+    describe('Arrays.diff', () => {
+        it('should diff correctly', () => {
+            let r1 = feather.arrays.range(2, 10),
+                r2 = feather.arrays.range(4, 8),
+                diff = feather.arrays.diff(r1, r2)
+            expect(diff).to.be.deep.equal([2, 3, 9, 10])
+        })
+    })
+
+    describe('Arrays.lis', () => {
+        it('should find longest increasing sequence', () => {
+            let r1 = [1, 4, 8, -7, 2, 5, 3, 7, 9, 6, 10, 0, 13, 8]
+            expect(feather.arrays.lis(r1)).to.be.deep.equal([1, 4, 5, 7, 9, 10, 13])
+            let r2 = [0,3,1,2]
+            expect(feather.arrays.lis(r2)).to.be.deep.equal([0, 1, 2])
+        })
+    })
+
+    describe('Arrays.patch', () => {
+        it('should find a patch', () => {
+            let current = ["a", "b", "e", "f"],
+                target = ["a", "c", "d", "f"],
+
+            patch = feather.arrays.patch(target, current);
+            expect(patch.add).to.be.deep.equal(["c", "d"])
+            expect(patch.remove).to.be.deep.equal(["b", "e"])
+        })
+    })
+
     describe('Arrays.flatten', () => {
         it('should flatten arrays', () => {
             let r1 = [[1,2],[3,4],[5, [6, 7]]]
@@ -198,9 +227,6 @@ describe('Arrays', () => {
             let observeArray = feather.arrays.observeArray,
                 r1 = feather.arrays.range(1, 10)
             observeArray(r1, {
-                reverse() {
-                    throw Error('don\'t come here')
-                },
                 sort(indices: number[]) {
                     throw Error('don\'t come here')
                 },
@@ -223,14 +249,11 @@ describe('Arrays', () => {
             let observeArray = feather.arrays.observeArray,
                 r1 = feather.arrays.range(1, 10)
             observeArray(r1, {
-                reverse() {
+                sort(indices: number[]) {
                     expect(r1.length).to.be.equal(10)
                     expect(r1[0]).to.be.equal(10)
                     expect(r1[9]).to.be.equal(1)
                     done()
-                },
-                sort(indices: number[]) {
-                    throw Error('don\'t come here')
                 },
                 splice(s: number, dc: number, added: number[], deleted: number[]) {
                     throw Error('don\'t come here')
@@ -245,9 +268,6 @@ describe('Arrays', () => {
                 originalR1 = [2, 5, 4, 3, 6, 1],
                 r3 = []
             observeArray(r1, {
-                reverse() {
-                    throw Error('don\'t come here')
-                },
                 sort(indices: number[]) {
                     expect(r1.length).to.be.equal(6)
                     expect(r1[0]).to.be.equal(Math.min.apply(null, r1))
@@ -271,8 +291,6 @@ describe('Arrays', () => {
                 r1 = [2, 5, 4, 3, 6, 1];
 
             observeArray(r1, {
-                reverse() {
-                },
                 sort(indices: number[]) {
                     plan.ok(true)
                 },
@@ -282,10 +300,8 @@ describe('Arrays', () => {
             } as feather.arrays.ArrayListener<number>)
 
             observeArray(r1, {
-                reverse() {
-                    plan.ok(true)
-                },
                 sort(indices: number[]) {
+                    plan.ok(true)
                 },
                 splice(s: number, dc: number, added: number[], deleted: number[]) {
                     throw Error('don\'t come here')
