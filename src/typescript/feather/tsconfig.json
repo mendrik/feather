@@ -24,7 +24,6 @@
     "utils/types.ts",
     "utils/strings.ts",
     "boot.ts",
-    "annotations/timings.ts",
     "annotations/template.ts",
     "annotations/event.ts",
     "annotations/hub.ts",
