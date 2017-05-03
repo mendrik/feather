@@ -250,8 +250,8 @@ module feather.observe {
                 needSorting = diff(proxyIndices, lis(proxyIndices))
 
                 for (let i = 0, n = needSorting.length; i < n; i++) {
-                    outOfPlace = target[i]
-                    place = target[i + 1]
+                    outOfPlace = target[needSorting[i]]
+                    place = target[needSorting[i] + 1]
                     parent.insertBefore(outOfPlace.element, place ? place.element : null)
                 }
                 proxy.splice(0, proxy.length, ...target)
