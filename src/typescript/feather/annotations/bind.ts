@@ -17,12 +17,13 @@ module feather.observe {
     import RouteAware          = feather.routing.RouteAware;
     import notifyListeners     = feather.arrays.notifyListeners;
     import changeArrayListener = feather.arrays.changeArrayListener;
-    import lis = feather.arrays.lis;
-    import range = feather.arrays.range;
-    import diff = feather.arrays.diff;
-    import patch = feather.arrays.patch;
-    import Patch = feather.arrays.Patch;
-    import removeFromArray = feather.arrays.removeFromArray;
+    import format              = feather.strings.format;
+    import lis                 = feather.arrays.lis;
+    import range               = feather.arrays.range;
+    import diff                = feather.arrays.diff;
+    import patch               = feather.arrays.patch;
+    import Patch               = feather.arrays.Patch;
+    import removeFromArray     = feather.arrays.removeFromArray;
 
     const boundProperties      = new WeakMap<Widget, TypedMap<Function[]>>()
     const binders              = new WeakMap<Observable, TypedMap<BindProperties>>()
@@ -119,7 +120,7 @@ module feather.observe {
 
         if (hook.type === HookType.TEXT) { // <p>some text {{myVar}} goes here</p>
             createListener(this, property, function updateDom() {
-                hook.node.textContent = feather.strings.format(hook.text, widget, widget)
+                hook.node.textContent = format(hook.text, widget, widget)
                 return updateDom
             }())
         } else if (hook.type === HookType.CLASS) { // <p class="red {{myVar}}">text goes here</p>

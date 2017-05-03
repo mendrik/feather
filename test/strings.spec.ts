@@ -14,6 +14,12 @@ describe('Strings', () => {
 
     describe('format', () => {
 
+        it('should replace token at beginning', () => {
+            let s = feather.strings,
+                str = '{{test}} hello';
+            expect(s.format(str, {test: 'world'})).to.be.equal('world hello')
+        })
+
         it('should replace simple tokens', () => {
             let s = feather.strings,
                 str = 'hello {{test}}';

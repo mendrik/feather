@@ -287,7 +287,7 @@ describe('Arrays', () => {
 
         it('multiple listeners', (done) => {
             let observeArray = feather.arrays.observeArray,
-                plan = new Plan(2, done),
+                plan = new Plan(4, done),
                 r1 = [2, 5, 4, 3, 6, 1];
 
             observeArray(r1, {

@@ -30,7 +30,6 @@ module feather.arrays {
         }
     }
 
-
     function createProperty<T>(key: MethodKey, arr: any) {
         let old       = arr[key],
             listeners = observers.get(arr),
@@ -87,8 +86,11 @@ module feather.arrays {
 
     export function range(start: number, end: number) {
         let len = end - start + 1,
-            gen = Array.apply(null, {length: len}).map(Number.call, Number);
-        return gen.map(x => x + start);
+            arr = new Array(len)
+        for (let i = 0, l = arr.length; i < l; i++) {
+            arr[i] =  i + start
+        }
+        return arr
     }
 
     export function observeArray<T>(arr: T[], listener: ArrayListener<T>) {

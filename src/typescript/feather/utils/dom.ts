@@ -28,13 +28,14 @@ module feather.dom {
         return f.call(el, selector)
     }
 
-    export function allChildNodes(doc: Node, nodes = []): Node[] {
-        let children = from<Node>(doc.childNodes).filter(NODE_FILTER);
-        nodes.push(...children)
-        for (let n of children) {
-            allChildNodes(n, nodes)
-        }
-        return [doc, ...nodes]
+    export function allChildNodes(doc: Node): Node[] {
+        this.acceptNode = NODE_FILTER
+        let walker = document.createTreeWalker(doc, NodeFilter.SHOW_ALL, NODE_FILTER as any, false),
+            nodes = []
+        do {
+            nodes.push(walker.currentNode)
+        } while (walker.nextNode())
+        return nodes;
     }
 
     export function insertBefore(parent: Node, el: Node, first?: Node) {

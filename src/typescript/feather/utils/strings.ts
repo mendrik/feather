@@ -4,19 +4,29 @@ module feather.strings {
     import deepValue  = feather.objects.deepValue
     import isFunction = feather.functions.isFunction
 
-    export function format(str: string, obj: any, filterLib?: any) {
-        return str.replace(/\{\{(.*?)}}/g, function (match, curly) {
-            let filters = curly.split(/:/),
-                key = filters.shift(),
-                resolved = ~key.indexOf('.') ? deepValue(obj, key) : obj[key]
-            for (let f of filters) {
-                resolved = filterLib[f].call(obj, resolved)
+    export function format(str: string, obj: any, filterLib?: any): string {
+        let splits = str.split(/{{|}}/),
+            l = splits.length,
+            res = new Array(l),
+            current
+        for (let i = 0; i < l; i++) {
+            current = splits[i]
+            if (i % 2) {
+                let filters = current.split(/:/),
+                    key = filters.shift(),
+                    resolved = ~key.indexOf('.') ? deepValue(obj, key) : obj[key]
+                for (let f of filters) {
+                    resolved = filterLib[f].call(obj, resolved)
+                }
+                if (typeof resolved === 'undefined') {
+                    return res[i] = `{{${current}}}`
+                }
+                res[i] = isFunction(resolved) ? resolved.call(obj) : resolved
+            } else {
+                res[i] = current
             }
-            if (typeof resolved === 'undefined') {
-                return match
-            }
-            return isFunction(resolved) ? resolved.call(obj) : resolved
-        })
+        }
+        return res.join('')
     }
 
     export function namedRegexMatch(text, regex, matchNames) {
