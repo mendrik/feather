@@ -246,14 +246,23 @@ module feather.observe {
 
                 // now let's check if some of the elements need repositioning
                 proxyIndices = proxy.map(x => target.indexOf(x))
-                needSorting = diff(proxyIndices, lis(proxyIndices))
-
-                for (let i = 0, n = needSorting.length; i < n; i++) {
-                    outOfPlace = target[needSorting[i]]
-                    place = target[needSorting[i] + 1]
-                    parent.insertBefore(outOfPlace.element, place ? place.element : null)
+                needSorting = false
+                for (let i = 0, n = proxyIndices.length - 1; i < n; i++) { // quick check if sorting is needed
+                    if (proxyIndices[i + 1] - proxyIndices[i] !== 1) {
+                        needSorting = true
+                        break
+                    }
                 }
-                proxy.splice(0, proxy.length, ...target)
+                if (needSorting) {
+                    needSorting = diff(proxyIndices, lis(proxyIndices))
+                    console.log(needSorting)
+                    for (let i = 0, n = needSorting.length; i < n; i++) {
+                        outOfPlace = target[needSorting[i]]
+                        place = target[needSorting[i] + 1]
+                        parent.insertBefore(outOfPlace.element, place ? place.element : null)
+                    }
+                    proxy.splice(0, proxy.length, ...target)
+                }
             }
         syncProxy()
         observeArray(original, changeArrayListener(syncProxy))
