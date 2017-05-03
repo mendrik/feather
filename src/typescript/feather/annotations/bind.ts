@@ -220,9 +220,8 @@ module feather.observe {
             proxy:    Widget[] = [],
             original: Widget[] = this[property],
             parent             = hook.node as HTMLElement,
-            filter             = filterFactory(),
             syncProxy = () => {
-                let target = original.filter(filter),
+                let target = original.filter(filterFactory()),
                     p = patch(target, proxy),
                     outOfPlace, place, proxyIndices, needSorting
                 // let's remove excess elements from UI and proxy array

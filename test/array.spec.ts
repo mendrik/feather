@@ -264,12 +264,15 @@ describe('Arrays', () => {
 
         it('double reverse', (done) => {
             let observeArray = feather.arrays.observeArray,
-                r1 = feather.arrays.range(1, 10)
+                r1 = feather.arrays.range(1, 10),
+                plan = new Plan(2, done)
             observeArray(r1, {
                 sort(indices: number[]) {
-                    expect(r1[0]).to.be.equal(1)
-                    expect(r1[9]).to.be.equal(10)
-                    done()
+                    if (plan.count == 1) {
+                        expect(r1[0]).to.be.equal(1)
+                        expect(r1[9]).to.be.equal(10)
+                    }
+                    plan.ok(true)
                 },
                 splice(s: number, dc: number, added: number[], deleted: number[]) {
                     throw Error('don\'t come here')
