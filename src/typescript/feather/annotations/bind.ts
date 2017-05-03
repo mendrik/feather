@@ -255,7 +255,6 @@ module feather.observe {
                 }
                 if (needSorting) {
                     needSorting = diff(proxyIndices, lis(proxyIndices))
-                    console.log(needSorting)
                     for (let i = 0, n = needSorting.length; i < n; i++) {
                         outOfPlace = target[needSorting[i]]
                         place = target[needSorting[i] + 1]
