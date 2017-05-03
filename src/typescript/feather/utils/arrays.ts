@@ -63,13 +63,13 @@ module feather.arrays {
         let listeners = observers.get(source);
         if (listeners) {
             for (let l of listeners){
-                l.splice(0, 0, [], []);
+                l.splice(0, 0, [], [])
             }
         }
     }
 
     export function diff<T>(arr1: T[], arr2: T[]): T[] {
-        return arr1.filter(x => !~arr2.indexOf(x))
+        return arr1.filter(x => !~arr2.indexOf(x));
     }
 
     export interface Patch<T> {
@@ -163,6 +163,6 @@ module feather.arrays {
         for (let i = bi; i != -1; i = pred[i]) {
             res[--cnt] = x[i]
         }
-        return res;
+        return res
     }  
 }

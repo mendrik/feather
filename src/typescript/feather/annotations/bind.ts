@@ -220,32 +220,41 @@ module feather.observe {
             proxy:    Widget[] = [],
             original: Widget[] = this[property],
             parent             = hook.node as HTMLElement,
+            filter             = filterFactory(),
             syncProxy = () => {
-                let target = original.filter(filterFactory()),
-                    p = patch(target, proxy)
+                let target = original.filter(filter),
+                    p = patch(target, proxy),
+                    outOfPlace, place, proxyIndices, needSorting
                 // let's remove excess elements from UI and proxy array
-                removeFromArray(proxy, p.remove)
-                p.remove.forEach(w => {
-                    parent.removeChild(w.element)
-                })
+                if (p.remove.length) {
+                    removeFromArray(proxy, p.remove)
+                    p.remove.forEach(w => {
+                        parent.removeChild(w.element)
+                    })
+                }
 
-                let doc = document.createDocumentFragment();
-                p.add.forEach(w => {
-                    w.appendTemplateRoot(doc, conf.templateName)
-                    w.parentWidget = parentWidget
-                })
-                parentWidget.childWidgets.push(...p.add)
-                // let's add missing elements to UI and array in one go to the end of the list
-                parent.appendChild(doc)
-                proxy.push(...p.add)
+                if (p.add.length) {
+                    let doc = document.createDocumentFragment();
+                    p.add.forEach(w => {
+                        w.appendTemplateRoot(doc, conf.templateName)
+                        w.parentWidget = parentWidget
+                    })
+                    parentWidget.childWidgets.push(...p.add)
+                    // let's add missing elements to UI and array in one go to the end of the list
+                    parent.appendChild(doc)
+                    proxy.push(...p.add)
+                }
 
                 // now let's check if some of the elements need repositioning
-                let proxyIndices = proxy.map(x => target.indexOf(x)),
-                    needSorting = diff(proxyIndices, lis(proxyIndices))
-                needSorting.forEach(idx => {
-                    let place = target[idx + 1]
-                    parent.insertBefore(target[idx].element, place ? place.element : null);
-                })
+                proxyIndices = proxy.map(x => target.indexOf(x))
+                needSorting = diff(proxyIndices, lis(proxyIndices))
+
+                for (let i = 0, n = needSorting.length; i < n; i++) {
+                    outOfPlace = target[i]
+                    place = target[i + 1]
+                    parent.insertBefore(outOfPlace.element, place ? place.element : null)
+                }
+                proxy.splice(0, proxy.length, ...target)
             }
         syncProxy()
         observeArray(original, changeArrayListener(syncProxy))

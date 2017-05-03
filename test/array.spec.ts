@@ -262,6 +262,22 @@ describe('Arrays', () => {
             r1.reverse()
         })
 
+        it('double reverse', (done) => {
+            let observeArray = feather.arrays.observeArray,
+                r1 = feather.arrays.range(1, 10)
+            observeArray(r1, {
+                sort(indices: number[]) {
+                    expect(r1[0]).to.be.equal(1)
+                    expect(r1[9]).to.be.equal(10)
+                    done()
+                },
+                splice(s: number, dc: number, added: number[], deleted: number[]) {
+                    throw Error('don\'t come here')
+                }
+            } as feather.arrays.ArrayListener<number>)
+            r1.reverse().reverse()
+        })
+
         it('sort', (done) => {
             let observeArray = feather.arrays.observeArray,
                 r1 = [2, 5, 4, 3, 6, 1],

@@ -32,7 +32,7 @@ npm install feather-ts --save
 - nodejs
 - typescript
 - set experimentalDecorators=true in your tsconfig.json
-- older browsers might need polyfills for classlist, weakmap and set
+- older browsers might need polyfills for Classlist, WeakMap (IE9+ with polyfills should work)
 
 # Usage
 
