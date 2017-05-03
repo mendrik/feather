@@ -232,8 +232,9 @@ module feather.observe {
                     w.appendTemplateRoot(doc, conf.templateName)
                     w.parentWidget = parentWidget
                 })
+                parentWidget.childWidgets.push(...p.add)
                 // let's add missing elements to UI and array in one go to the end of the list
-                parent.appendChild(doc);
+                parent.appendChild(doc)
                 proxy.push(...p.add)
 
                 // now let's check if some of the elements need repositioning

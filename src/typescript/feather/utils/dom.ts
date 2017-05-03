@@ -28,7 +28,7 @@ module feather.dom {
         return f.call(el, selector)
     }
 
-    export function allChildNodes(doc: Node, nodes = []) {
+    export function allChildNodes(doc: Node, nodes = []): Node[] {
         let children = from<Node>(doc.childNodes).filter(NODE_FILTER);
         nodes.push(...children)
         for (let n of children) {

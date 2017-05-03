@@ -56,14 +56,5 @@ describe('Filtered arrays', () => {
             app.filteredList[2].childWidgets[0]['name'] = 'ItemC'
             expect(ul.children.length).to.be.equal(4)
         })
-
-        it('can filter by subwidgets', () => {
-            let app = window['app'],
-                ul = document.getElementById('filtered-list')
-
-            app.filteredList.push(new testApp.ArrayElement(false, 'ObjectC'))
-            expect(ul.children.length).to.be.equal(4)
-            expect(app.filteredList.length).to.be.equal(5)
-        })
     })
 })

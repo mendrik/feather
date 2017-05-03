@@ -8,6 +8,7 @@ module feather.core {
     import Primitive       = feather.types.Primitive
     import insertBefore    = feather.dom.insertBefore
     import TypedMap        = feather.types.TypedMap;
+    import WidgetFactory   = feather.boot.WidgetFactory;
 
     export interface Initializable {
     }
@@ -36,11 +37,10 @@ module feather.core {
         }
 
         private getParsed(templateName: string): ParsedTemplate {
-            let template = TemplateFactory.getTemplate(this, templateName),
-                parsed = template.asParsedFragment(this)
-            feather.boot.WidgetFactory.start(parsed.doc, this)
-            this.attachHooks(parsed.hooks)
-            return parsed
+            let template = TemplateFactory.getTemplate(this, templateName)
+            WidgetFactory.start(template.doc, this)
+            this.attachHooks(template.hooks)
+            return template
         }
 
         init(element: HTMLElement) {
