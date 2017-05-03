@@ -18,14 +18,13 @@ module feather.hub {
         triggerUp(event: string, ...data: any[]) {
             feather.hub.Subscribable.trigger(event, this, data)
             if (this.parentWidget) {
-                this.parentWidget.triggerUp.apply(this.parentWidget, flatten([event, data]))
+                this.parentWidget.triggerUp(event, ...data)
             }
         }
 
         triggerDown(event: string, ...data: any[]) {
             feather.hub.Subscribable.trigger(event, this, data)
-            let argArray = flatten([event, data])
-            this.childWidgets.forEach(child => child.triggerDown.apply(child, argArray))
+            this.childWidgets.forEach(child => child.triggerDown(event, ...data))
         }
 
         private static trigger(event: string, context: Subscribable, ...data: any[]) {

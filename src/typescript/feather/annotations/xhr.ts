@@ -44,7 +44,7 @@ module feather.xhr {
     export let sendRequest = (conf: RestConfig, success: (data) => void, error: (err: string|Event, xhr?: XMLHttpRequest) => void) => {
         let xhr = new XMLHttpRequest()
 
-        conf = Object.assign({}, defaultRestConfig, conf)
+        conf = {...defaultRestConfig, ...conf}
 
         xhr.open(conf.method, conf.url, conf.async)
 

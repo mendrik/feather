@@ -88,8 +88,8 @@ module feather.annotations {
             match
         nodes.forEach((node, pos) => {
             if (node.nodeType === Node.TEXT_NODE) {
-                // <div id="2">some text {{myProperty}}</div>
                 let text = node.textContent
+                // <div id="2">some text {{myProperty}}</div>
                 while ((match = ALL_CURLIES.exec(text)) !== null) {
                     hooks.push(new HookInfo(pos, HookType.TEXT, match[1], text))
                 }

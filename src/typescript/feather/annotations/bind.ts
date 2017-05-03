@@ -27,6 +27,7 @@ module feather.observe {
 
     const boundProperties      = new WeakMap<Widget, TypedMap<Function[]>>()
     const binders              = new WeakMap<Observable, TypedMap<BindProperties>>()
+    const attributeMapper      = {} as Map<string, string>
 
     export interface BindProperties {
         templateName?: string // when pushing new widgets into an array, the template name to render the children with
@@ -120,7 +121,7 @@ module feather.observe {
 
         if (hook.type === HookType.TEXT) { // <p>some text {{myVar}} goes here</p>
             createListener(this, property, function updateDom() {
-                hook.node.textContent = format(hook.text, widget, widget)
+                el.textContent = format(hook.text, widget, widget)
                 return updateDom
             }())
         } else if (hook.type === HookType.CLASS) { // <p class="red {{myVar}}">text goes here</p>
@@ -292,19 +293,23 @@ module feather.observe {
 
         // attributes are case insensitive, so let's try to find the matching property like this
         findProperty(ci: string): string {
-            if (!!this[ci]) {
-                return ci;
+            let prop = attributeMapper[ci]
+            if (!prop) {
+                prop = Object.getOwnPropertyNames(this)
+                        .find(p => p.toLowerCase() === ci.toLowerCase()) || ci
+                attributeMapper[ci] = prop;
             }
-            return Object.getOwnPropertyNames(this)
-                .find(p => p.toLowerCase() === ci.toLowerCase()) || ci
+            return prop
         }
 
         findMethod(ci: string): string {
-            if (!!this[ci]) {
-                return ci;
+            let prop = attributeMapper[ci]
+            if (!prop) {
+                prop = getInheritedMethods(this)
+                        .find(p => p.toLowerCase() === ci.toLowerCase()) || ci
+                attributeMapper[ci] = prop
             }
-            return getInheritedMethods(this)
-                    .find(p => p.toLowerCase() === ci.toLowerCase()) || ci
+            return prop
         }
     }
 

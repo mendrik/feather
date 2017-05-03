@@ -138,8 +138,12 @@ module feather.arrays {
 
     export function lis(x: number[]) {
         let n = x.length,
-            len = range(0, n).map(() => 1),
-            pred = range(0, n).map(() => -1)
+            len = new Array(n),
+            pred = new Array(n)
+        for (let i = 0, nn = n + 1; i < nn; i++) {
+            len[i] = 1
+            pred[i] = -1
+        }
         for (let i = 1; i < n; i++) {
             for (let j = 0; j < i; j++) {
                 if (x[j] < x[i] && len[i] < len[j] + 1) {

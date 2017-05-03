@@ -17,7 +17,7 @@ A feather-light :D framework written in typescript with support for
 * Templates are regular HTML
 * Clean and simple code
 * Runs on modern browsers and IE9+
-* Less than 8kb gzipped
+* Less than 10kb gzipped
 
 ---
 
@@ -32,6 +32,7 @@ npm install feather-ts --save
 - nodejs
 - typescript
 - set experimentalDecorators=true in your tsconfig.json
+- older browsers might need polyfills for classlist, weakmap and set
 
 # Usage
 

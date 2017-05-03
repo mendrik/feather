@@ -6,7 +6,7 @@ module feather.dom {
     const NODE_FILTER = (n: Node) => {
         if (n.nodeType === Node.DOCUMENT_FRAGMENT_NODE) {
             return false
-        } else if (n.nodeType === Node.TEXT_NODE && n.textContent.trim() === '') {
+        } else if (n.nodeType === Node.TEXT_NODE && /^\s*$/.test(n.textContent)) {
             return false
         }
         return true

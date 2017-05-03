@@ -1,6 +1,6 @@
 {
   "name": "Feather",
-  "version": "1.0.81",
+  "version": "1.0.82",
   "description": "My framework",
   "repository": "https://github.com/mendrik/feather",
   "main": "feather.min.js",
@@ -74,8 +74,6 @@
     "node_modules/@types"
   ],
   "dependencies": {
-    "classlist-polyfill": "^1.0.3",
-    "weakmap-polyfill": "^2.0.0"
   },
   "types": [
     "mocha",
