@@ -54,7 +54,7 @@ module.exports = (page, ready) => {
 
             global.feather = window['feather']
             global.testApp = window['testApp']
-            ready()
+            ready(window)
         }
     })
 }

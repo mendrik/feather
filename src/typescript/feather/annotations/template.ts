@@ -34,15 +34,6 @@ module feather.annotations {
                     public type: HookType,
                     public curly: string,
                     public text?: string) {}
-
-        asHook(nodeList: Node[]): Hook {
-            return new Hook(
-                nodeList[this.nodePosition],
-                this.type,
-                this.curly,
-                this.text
-            )
-        }
     }
 
     export interface ParsedTemplate {
@@ -147,5 +138,12 @@ module feather.annotations {
             templates.set(proto, widgetTemplates = {})
         }
         widgetTemplates[name] = new TemplateMethod(proto[method])
+
+        try {
+            let str = proto[method].call({})
+            parsedTemplateCache[str] = getPreparsedTemplate(str)
+        } catch (e) {
+            // ignore, probably failed because template function wasn't pure
+        }
     }
 }

@@ -4,28 +4,28 @@ module feather.dom {
     import ValidRoot = feather.types.ValidRoot
 
     const NODE_FILTER = (n: Node) => {
-        if (n.nodeType === Node.DOCUMENT_FRAGMENT_NODE) {
+        let nodeType = n.nodeType;
+        if (nodeType === Node.ELEMENT_NODE) {
+            return true;
+        } else if (nodeType === Node.DOCUMENT_FRAGMENT_NODE) {
             return false
-        } else if (n.nodeType === Node.TEXT_NODE && /^\s*$/.test(n.textContent)) {
+        } else if (nodeType === Node.TEXT_NODE && /^\s*$/.test(n.textContent)) {
             return false
         }
         return true
     }
 
-    export function querySelectorWithRoot(root: ValidRoot, selector: string): Array<HTMLElement> {
-        let result = []
-        if (root.nodeType === 1 && selectorMatches(root, selector)) {
-            result.push(root)
-        }
+    const _selectorMatches = ['matches' , 'webkitMatchesSelector', 'mozMatchesSelector', 'msMatchesSelector', 'matchesSelector']
+        .reduce((p, c) => Element.prototype[c] || p) as any as (s: string) => boolean
+
+    export function querySelectorWithRoot(root: ValidRoot, selector: string): HTMLElement[] {
+        let result: any[] = root.nodeType === 1 && selectorMatches(root, selector) ? [root] : []
         result.push.apply(result, root.querySelectorAll(selector))
         return result
     }
 
     export function selectorMatches(el: ValidRoot, selector: string): boolean {
-        let elp = Element.prototype,
-            f = ['matches' , 'webkitMatchesSelector', 'mozMatchesSelector', 'msMatchesSelector', 'matchesSelector']
-                .reduce((p, c) => elp[c] || p) as any as (s: string) => boolean
-        return f.call(el, selector)
+        return _selectorMatches.call(el, selector)
     }
 
     export function allChildNodes(doc: Node): Node[] {
@@ -38,7 +38,7 @@ module feather.dom {
         return nodes;
     }
 
-    export function insertBefore(parent: Node, el: Node, first?: Node) {
-        parent.insertBefore(el, first || null)
+    export function insertBefore(parent: Node, el: Node, first: Node = null) {
+        parent.insertBefore(el, first)
     }
 }

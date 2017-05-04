@@ -14,17 +14,9 @@ chai.use(require('sinon-chai'));
 let jsdom = require('./utils/dom.js'),
     exp = chai.expect;
 
-interface EnrichedWindow extends Window, MouseEvent {
-    demo: any,
-    feather: any,
-    app: Application,
-    ef: ExtraFeatures
-}
-
 const loadPage = (done: Function) => {
-    jsdom('./test/pages/application.html', () => {
-        let window = jsdom.window,
-            app = window['app'] as Application,
+    jsdom('./test/pages/application.html', (window) => {
+        let app = window['app'] as Application,
             ef = window['ef'] as ExtraFeatures
         done({window, app, ef})
     })
@@ -32,7 +24,8 @@ const loadPage = (done: Function) => {
 
 const featherStart = (callback: Function) => {
     loadPage(result => {
-        result.window.feather.start()
+        let {window} = result
+        window.feather.start()
         callback(result)
     })
 }

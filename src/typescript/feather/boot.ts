@@ -9,6 +9,7 @@ module feather.boot {
     import from                  = feather.arrays.from
     import flatMap               = feather.arrays.flatMap
     import selectorMatches       = feather.dom.selectorMatches
+    import HTML = feather.types.HTML;
 
     export interface Blueprint {
         selector: string
@@ -26,19 +27,15 @@ module feather.boot {
     export class WidgetFactory {
         private static widgetRegistry: ComponentInfo[] = []
 
-        static start(context?: ValidRoot, parentWidget?: Widget): Widget[] {
-            let selector = WidgetFactory.widgetRegistry.map(info => info.selector).join(','),
-                scope: ValidRoot = context ? context : document
-            if (!selector) {
-                return []
-            }
-            let widgetNodes = querySelectorWithRoot(scope, selector)
-            for (let node of widgetNodes) {
-                let componentInfos = WidgetFactory.widgetRegistry.filter(info => selectorMatches(node, info.selector))
-
-                for (let info of componentInfos) {
-                    let args = info.attributes.map(key => node.getAttribute(key)),
-                        widget: Widget = new (Function.prototype.bind.apply(info.component, ([null] as String[]).concat(args)))
+        static start(scope: ValidRoot = document, parentWidget?: Widget) {
+            let reg = WidgetFactory.widgetRegistry;
+            for (let i = 0, n = reg.length; i < n; i++) {
+                let info = reg[i],
+                    nodes = querySelectorWithRoot(scope, info.selector)
+                for (let j = 0, m = nodes.length; j < m; j++) {
+                    let node = nodes[j],
+                        args = info.attributes.map(key => node.getAttribute(key)),
+                        widget: Widget = new (Function.prototype.bind.apply(info.component, [null, ...args]))
                     if (parentWidget) {
                         widget.parentWidget = parentWidget
                         parentWidget.childWidgets.push(widget)
@@ -46,7 +43,7 @@ module feather.boot {
                     widget.bindToElement(node)
                 }
             }
-            if (!context) {
+            if (scope === document) {
                 feather.routing.runRoutes()
             }
         }

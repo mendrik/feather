@@ -2,8 +2,7 @@ module feather.arrays {
 
     type MethodKey = 'sort' | 'splice'
 
-    const proxiedArrayMethods: MethodKey[] = ['sort', 'splice']
-    const observers           = new WeakMap<any[], ArrayListener<any>[]>()
+    const observers          = new WeakMap<any[], ArrayListener<any>[]>()
 
     export interface ArrayListener<T> {
         sort(indices: number[])
@@ -35,9 +34,7 @@ module feather.arrays {
             listeners = observers.get(arr),
             notifyListenersWithArgs = (arr, method: MethodKey, args: any[]) => {
                 for (let listener of listeners) {
-                    if (!!listener[method]) {
-                        listener[method].apply(arr, args)
-                    }
+                    listener[method].apply(arr, args)
                 }
             }
 
@@ -62,7 +59,7 @@ module feather.arrays {
     export let notifyListeners = (source: any[]) => {
         let listeners = observers.get(source);
         if (listeners) {
-            for (let l of listeners){
+            for (let l of listeners) {
                 l.splice(0, 0, [], [])
             }
         }
@@ -79,8 +76,8 @@ module feather.arrays {
 
     export function patch<T>(target: T[], current: T[]): Patch<T> {
         return {
-            add: target.filter(x => !~current.indexOf(x)),
-            remove: current.filter(x => !~target.indexOf(x))
+            add: diff(target, current),
+            remove: diff(current, target)
         }
     }
 
@@ -93,38 +90,41 @@ module feather.arrays {
         return arr
     }
 
+    // essentially we can reduce array modifying functions to two implementations: sort and splice
     export function observeArray<T>(arr: T[], listener: ArrayListener<T>) {
         if (!observers.get(arr)) {
             observers.set(arr, [])
-            arr.pop = function() {
+            arr.pop = function(): T {
                 arr.splice(arr.length - 1, 1)
                 return arr[arr.length - 1]
             }
-            arr.push = function(...items: T[]) {
+            arr.push = function(...items: T[]): number {
                 arr.splice(arr.length, 0, ...items)
                 return arr.length
+            }
+            arr.fill = function(): T[] {
+                throw Error('observed arrays cannot be filled. items must be unique, use Array.splice instead!')
             }
             arr.reverse = function() {
                 let ref = arr.slice();
                 arr.sort((a, b) => ref.indexOf(b) - ref.indexOf(a))
                 return arr;
             }
-            arr.shift = function() {
+            arr.shift = function(): T {
                 let deletee = arr[0]
                 arr.splice(0, 1)
                 return deletee
             }
-            arr.unshift = function(...items: T[]) {
+            arr.unshift = function(...items: T[]): number {
                 arr.splice(0, 0, ...items)
                 return arr.length
             }
-            arr['set'] = function(index: number, item: T) {
+            arr['set'] = function(index: number, item: T): T {
                 arr.splice(index, 1, item)
                 return item;
             }
-            for (let key of proxiedArrayMethods) {
-                createProperty(key, arr)
-            }
+            createProperty('splice', arr)
+            createProperty('sort', arr)
         }
         observers.get(arr).push(listener)
     }

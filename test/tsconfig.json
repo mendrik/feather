@@ -36,6 +36,7 @@
     "test-app/ef.ts"
   ],
   "exclude": [
+    "typescript",
     "node_modules",
     "jspm_packages",
     "test/**/*.spec.ts"

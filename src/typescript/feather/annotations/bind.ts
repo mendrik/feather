@@ -221,9 +221,10 @@ module feather.observe {
             original: Widget[] = this[property],
             parent             = hook.node as HTMLElement,
             syncProxy = () => {
+
                 let target = original.filter(filterFactory()),
                     p = patch(target, proxy),
-                    outOfPlace, place, proxyIndices, needSorting
+                    outOfPlace, place, proxyIndices, needSorting, addLength
                 // let's remove excess elements from UI and proxy array
                 if (p.remove.length) {
                     removeFromArray(proxy, p.remove)
@@ -232,36 +233,30 @@ module feather.observe {
                     })
                 }
 
-                if (p.add.length) {
-                    let doc = document.createDocumentFragment();
+                addLength = p.add.length;
+                if (addLength) {
+                    let doc = addLength !== 1 ? document.createDocumentFragment() : parent;
                     p.add.forEach(w => {
                         w.appendTemplateRoot(doc, conf.templateName)
                         w.parentWidget = parentWidget
                     })
                     parentWidget.childWidgets.push(...p.add)
                     // let's add missing elements to UI and array in one go to the end of the list
-                    parent.appendChild(doc)
+                    if (addLength !== 1) {
+                        parent.appendChild(doc)
+                    }
                     proxy.push(...p.add)
                 }
 
                 // now let's check if some of the elements need repositioning
                 proxyIndices = proxy.map(x => target.indexOf(x))
-                needSorting = false
-                for (let i = 0, n = proxyIndices.length - 1; i < n; i++) { // quick check if sorting is needed
-                    if (proxyIndices[i + 1] - proxyIndices[i] !== 1) {
-                        needSorting = true
-                        break
-                    }
+                needSorting = diff(proxyIndices, lis(proxyIndices))
+                for (let i = 0, n = needSorting.length; i < n; i++) {
+                    outOfPlace = target[needSorting[i]]
+                    place = target[needSorting[i] + 1]
+                    parent.insertBefore(outOfPlace.element, place ? place.element : null)
                 }
-                if (needSorting) {
-                    needSorting = diff(proxyIndices, lis(proxyIndices))
-                    for (let i = 0, n = needSorting.length; i < n; i++) {
-                        outOfPlace = target[needSorting[i]]
-                        place = target[needSorting[i] + 1]
-                        parent.insertBefore(outOfPlace.element, place ? place.element : null)
-                    }
-                    proxy.splice(0, proxy.length, ...target)
-                }
+                proxy.splice(0, proxy.length, ...target)
             }
         syncProxy()
         observeArray(original, changeArrayListener(syncProxy))
@@ -270,6 +265,7 @@ module feather.observe {
                 createListener(this, prop, () => notifyListeners(original))
             }
         }
+        parent.removeAttribute(`{{${hook.curly}}}`)
     }
 
     export class Observable extends RouteAware {
