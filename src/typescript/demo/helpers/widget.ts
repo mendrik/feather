@@ -6,6 +6,7 @@ module demo {
     import HTML      = feather.types.HTML
     import Bind      = feather.observe.Bind
     import On        = feather.event.On
+    import Subscribe = feather.hub.Subscribe
 
     @Construct({selector: '.widget', attributes: ['name']})
     export class SubWidget extends Widget {
@@ -23,7 +24,22 @@ module demo {
 
         @Template('default')
         protected getBaseTemplate() {
-            return `<span>Widget {{name}}</span>`
+            return `<span>Widget {{name}}</span><i></i>`
+        }
+
+        @Subscribe('message-down')
+        receiveMessage() {
+            this.triggerUp('message-up', 'up')
+        }
+
+        @On({event: 'click', selector: 'i'})
+        click(ev: Event, target: HTMLLIElement) {
+            //
+        }
+
+        @On({event: 'click'})
+        clickRoot(ev: Event) {
+            //
         }
     }
 }

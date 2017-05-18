@@ -4,9 +4,9 @@ module feather.dom {
     import ValidRoot = feather.types.ValidRoot
 
     const NODE_FILTER = (n: Node) => {
-        let nodeType = n.nodeType;
+        let nodeType = n.nodeType
         if (nodeType === Node.ELEMENT_NODE) {
-            return true;
+            return true
         } else if (nodeType === Node.DOCUMENT_FRAGMENT_NODE) {
             return false
         } else if (nodeType === Node.TEXT_NODE && /^\s*$/.test(n.textContent)) {
@@ -19,7 +19,7 @@ module feather.dom {
         .reduce((p, c) => Element.prototype[c] || p) as any as (s: string) => boolean
 
     export function querySelectorWithRoot(root: ValidRoot, selector: string): HTMLElement[] {
-        let result: any[] = root.nodeType === 1 && selectorMatches(root, selector) ? [root] : []
+        let result: any[] = root.nodeType === Node.ELEMENT_NODE && selectorMatches(root, selector) ? [root] : []
         result.push.apply(result, root.querySelectorAll(selector))
         return result
     }
@@ -35,7 +35,7 @@ module feather.dom {
         do {
             nodes.push(walker.currentNode)
         } while (walker.nextNode())
-        return nodes;
+        return nodes
     }
 
     export function insertBefore(parent: Node, el: Node, first: Node = null) {

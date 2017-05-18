@@ -38,7 +38,7 @@ module feather.routing {
         let path = location.pathname
         if (!historyAPI) {
             if (path !== '/') {
-                document.location.replace('/#' + path)
+                location.replace('/#' + path)
             } else {
                 path = !location.hash ? '/' : location.hash.replace(/^#/, '')
             }
@@ -82,7 +82,11 @@ module feather.routing {
         route = (path: string) => navigateRoute(path)
     }
 
-    export let runRoutes = () => notifyListeners(getCurrentRoute())
+    export let runRoutes = () => {
+        if (!window['blockRouting']) {
+            notifyListeners(getCurrentRoute())
+        }
+    }
 
     export let Route = (route: string) => (proto: Widget, method: string) => {
         let s = routes.get(proto)

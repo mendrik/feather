@@ -1,4 +1,7 @@
-import {assert, expect, featherStart} from './test-head'
+import {featherStart} from './test-head'
+import {expect} from 'chai'
+import {assert} from 'chai'
+import ArrayListener = feather.arrays.ArrayListener;
 
 function Plan(count, done) {
     this.done = done;
@@ -20,21 +23,18 @@ Plan.prototype.ok = function(expression) {
 }
 
 describe('Arrays', () => {
-    let window, app, ef;
 
-    before(done => {
-        featherStart(r => {
-            window = r.window
-            app = r.app
-            ef = r.ef
-        });
-        done();
-    })
+    let window, feather, document;
+    before(done => featherStart(w => (
+        window = w,
+        feather = w.feather,
+        document = w.document
+    ) && done()))
 
     describe('Arrays.from', () => {
 
         it('should convert DomList', () => {
-            let spans = window.document.querySelectorAll('span'),
+            let spans = document.querySelectorAll('span'),
                 asArray = feather.arrays.from(spans)
             expect(asArray.length).to.be.equal(spans.length)
             expect(Array.isArray(asArray)).to.be.true
@@ -82,7 +82,7 @@ describe('Arrays', () => {
             let current = ["a", "b", "e", "f"],
                 target = ["a", "c", "d", "f"],
 
-            patch = feather.arrays.patch(target, current);
+                patch = feather.arrays.patch(target, current);
             expect(patch.add).to.be.deep.equal(["c", "d"])
             expect(patch.remove).to.be.deep.equal(["b", "e"])
         })
@@ -120,35 +120,35 @@ describe('Arrays', () => {
                     expect(deleted.length).to.be.equal(0)
                     done()
                 }
-            } as feather.arrays.ArrayListener<number>)
+            } as ArrayListener<number>)
             r1.push(1, 2, 3)
         })
 
         it('unshift', (done) => {
             let observeArray = feather.arrays.observeArray,
                 r1 = feather.arrays.range(1, 10);
-                observeArray(r1, {
-                    reverse() {
-                        throw Error('don\'t come here')
-                    },
-                    sort(indices: number[]) {
-                        throw Error('don\'t come here')
-                    },
-                    splice(s: number, dc: number, added: number[], deleted: number[]) {
-                        expect(r1.length).to.be.equal(13)
-                        expect(r1[3]).to.be.equal(1)
-                        expect(r1[12]).to.be.equal(10)
-                        expect(r1[0]).to.be.equal(1)
-                        expect(r1[1]).to.be.equal(2)
-                        expect(r1[2]).to.be.equal(3)
-                        expect(s).to.be.equal(0)
-                        expect(dc).to.be.equal(0)
-                        expect(added.length).to.be.equal(3)
-                        expect(deleted.length).to.be.equal(0)
-                        done()
-                    }
-                } as feather.arrays.ArrayListener<number>)
-                r1.unshift(1, 2, 3)
+            observeArray(r1, {
+                reverse() {
+                    throw Error('don\'t come here')
+                },
+                sort(indices: number[]) {
+                    throw Error('don\'t come here')
+                },
+                splice(s: number, dc: number, added: number[], deleted: number[]) {
+                    expect(r1.length).to.be.equal(13)
+                    expect(r1[3]).to.be.equal(1)
+                    expect(r1[12]).to.be.equal(10)
+                    expect(r1[0]).to.be.equal(1)
+                    expect(r1[1]).to.be.equal(2)
+                    expect(r1[2]).to.be.equal(3)
+                    expect(s).to.be.equal(0)
+                    expect(dc).to.be.equal(0)
+                    expect(added.length).to.be.equal(3)
+                    expect(deleted.length).to.be.equal(0)
+                    done()
+                }
+            } as ArrayListener<number>)
+            r1.unshift(1, 2, 3)
         })
 
         it('pop', (done) => {
@@ -171,7 +171,7 @@ describe('Arrays', () => {
                     expect(deleted.length).to.be.equal(1)
                     done()
                 }
-            } as feather.arrays.ArrayListener<number>)
+            } as ArrayListener<number>)
             r1.pop()
         })
 
@@ -195,32 +195,32 @@ describe('Arrays', () => {
                     expect(deleted.length).to.be.equal(1)
                     done()
                 }
-            } as feather.arrays.ArrayListener<number>)
+            } as ArrayListener<number>)
             r1.shift()
         })
 
         it('splice A', (done) => {
             let observeArray = feather.arrays.observeArray,
                 r1 = feather.arrays.range(1, 10);
-                observeArray(r1, {
-                    reverse() {
-                        throw Error('don\'t come here')
-                    },
-                    sort(indices: number[]) {
-                        throw Error('don\'t come here')
-                    },
-                    splice(s: number, dc: number, added: number[], deleted: number[]) {
-                        expect(r1.length).to.be.equal(10)
-                        expect(r1[0]).to.be.equal(5)
-                        expect(r1[4]).to.be.equal(1)
-                        expect(s).to.be.equal(0)
-                        expect(dc).to.be.equal(5)
-                        expect(added.length).to.be.equal(5)
-                        expect(deleted.length).to.be.equal(5)
-                        done()
-                    }
-                } as feather.arrays.ArrayListener<number>)
-                r1.splice(0, 5, 5, 4, 3, 2, 1)
+            observeArray(r1, {
+                reverse() {
+                    throw Error('don\'t come here')
+                },
+                sort(indices: number[]) {
+                    throw Error('don\'t come here')
+                },
+                splice(s: number, dc: number, added: number[], deleted: number[]) {
+                    expect(r1.length).to.be.equal(10)
+                    expect(r1[0]).to.be.equal(5)
+                    expect(r1[4]).to.be.equal(1)
+                    expect(s).to.be.equal(0)
+                    expect(dc).to.be.equal(5)
+                    expect(added.length).to.be.equal(5)
+                    expect(deleted.length).to.be.equal(5)
+                    done()
+                }
+            } as ArrayListener<number>)
+            r1.splice(0, 5, 5, 4, 3, 2, 1)
         })
 
         it('splice B', (done) => {
@@ -241,7 +241,7 @@ describe('Arrays', () => {
                     expect(deleted.length).to.be.equal(5)
                     done()
                 }
-            } as feather.arrays.ArrayListener<number>)
+            } as ArrayListener<number>)
             r1.splice(5, 5, 5, 4, 3, 2, 1)
         })
 
@@ -258,7 +258,7 @@ describe('Arrays', () => {
                 splice(s: number, dc: number, added: number[], deleted: number[]) {
                     throw Error('don\'t come here')
                 }
-            } as feather.arrays.ArrayListener<number>)
+            } as ArrayListener<number>)
             r1.reverse()
         })
 
@@ -277,7 +277,7 @@ describe('Arrays', () => {
                 splice(s: number, dc: number, added: number[], deleted: number[]) {
                     throw Error('don\'t come here')
                 }
-            } as feather.arrays.ArrayListener<number>)
+            } as ArrayListener<number>)
             r1.reverse().reverse()
         })
 
@@ -300,7 +300,7 @@ describe('Arrays', () => {
                 splice(s: number, dc: number, added: number[], deleted: number[]) {
                     throw Error('don\'t come here')
                 }
-            } as feather.arrays.ArrayListener<number>)
+            } as ArrayListener<number>)
             r1.sort((a, b) => a - b)
         })
 
@@ -316,7 +316,7 @@ describe('Arrays', () => {
                 splice(s: number, dc: number, added: number[], deleted: number[]) {
                     throw Error('don\'t come here')
                 }
-            } as feather.arrays.ArrayListener<number>)
+            } as ArrayListener<number>)
 
             observeArray(r1, {
                 sort(indices: number[]) {
@@ -325,7 +325,7 @@ describe('Arrays', () => {
                 splice(s: number, dc: number, added: number[], deleted: number[]) {
                     throw Error('don\'t come here')
                 }
-            } as feather.arrays.ArrayListener<number>)
+            } as ArrayListener<number>)
 
             r1.sort((a, b) => a - b)
             r1.reverse()

@@ -1,16 +1,14 @@
-import {expect, featherStart} from './test-head'
-import Strings = testApp.Strings;
+import {featherStart} from './test-head'
+import {expect} from 'chai'
 
 describe('String', () => {
-    let window, document;
 
-    before(done => {
-        featherStart((r) => {
-            window = r.window
-            document = r.window.document
-        })
-        done()
-    })
+    let window, feather, document
+    before(done => featherStart(w => (
+        window = w,
+        feather = w.feather,
+        document = w.document
+    ) && done()))
 
     describe('property', () => {
 
@@ -78,7 +76,7 @@ describe('String', () => {
 
     describe('Switch values', () => {
         it('should apply', () => {
-            let strWidget = window['app'].childWidgets.find(c => c.constructor['name'] === 'Strings') as any as Strings
+            let strWidget = window['app'].childWidgets.find(c => c.constructor['name'] === 'Strings') as demo.Strings
             expect(strWidget).to.not.be.undefined
             strWidget.stringA = 'changed'
             strWidget.stringB = 'switched'

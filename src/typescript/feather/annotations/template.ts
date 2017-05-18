@@ -3,15 +3,17 @@ module feather.annotations {
     import TypedMap      = feather.types.TypedMap
     import Widget        = feather.core.Widget
     import from          = feather.arrays.from
-    import allChildNodes = feather.dom.allChildNodes;
+    import allChildNodes = feather.dom.allChildNodes
 
     const supportsTemplate    = 'content' in document.createElement('template') && 'firstElementChild' in document.createDocumentFragment()
     const CURLIES             = /\{\{(.*?)}}/
     const ALL_CURLIES         = /\{\{(.*?)}}/g
-    const templates           = new WeakMap<Widget, TypedMap<TemplateMethod>>()
+    const templates           = new WeakMap<Widget, TypedMap<Function>>()
     const parsedTemplateCache = {} as Map<string, PreparsedTemplate>
+    export const selfClosingTags     = /<(\w+)((\s+\w+=('[^']*'|"[^"]*"|[^"']\S*))*)\s*\/>/gi
+    export const openTags            = '<$1$2></$1>'
 
-    let template            = supportsTemplate ? document.createElement('template') : document.createElement('div')
+    let template              = supportsTemplate ? document.createElement('template') : document.createElement('div')
 
     export const enum HookType {
         CLASS,
@@ -42,30 +44,30 @@ module feather.annotations {
         hooks: Hook[]
     }
 
-    class PreparsedTemplate {
+    export class PreparsedTemplate {
 
-        constructor(public node: Node,
+        constructor(public node: DocumentFragment,
                     public hookInfos: feather.annotations.HookInfo[]) {}
 
         asParsedTemplate(): ParsedTemplate {
-            let nodeList = allChildNodes(this.node.cloneNode(true)),
+            let doc = this.node.cloneNode(true),
+                nodeList = allChildNodes(doc),
                 hooks = this.hookInfos.map(i => new Hook(nodeList[i.nodePosition], i.type, i.curly, i.text))
             return {
-                doc: nodeList[0],
+                doc: doc,
                 first: nodeList[1],
                 hooks: hooks
             } as ParsedTemplate
         }
     }
 
-    function getPreparsedTemplate(templateStr: string): PreparsedTemplate {
+    export function getPreparsedTemplate(templateStr: string): PreparsedTemplate {
         let frag
+        template.innerHTML = templateStr.replace(selfClosingTags, openTags)
         if (supportsTemplate) {
-            template.innerHTML = templateStr
             frag = document.importNode((template as HTMLTemplateElement).content, true)
         } else {
             frag = document.createDocumentFragment()
-            template.innerHTML = templateStr
             while (template.firstChild) {
                 frag.appendChild(template.firstChild)
             }
@@ -113,14 +115,10 @@ module feather.annotations {
         return hooks
     }
 
-    class TemplateMethod {
-        constructor(public method: () => string) {}
-    }
-
     export class TemplateFactory {
 
         static getTemplate(widget: Widget, name: string): ParsedTemplate {
-            let method = templates.get(Object.getPrototypeOf(widget))[name].method,
+            let method = templates.get(Object.getPrototypeOf(widget))[name],
                 templateString: string = method.call(widget),
                 preparsedTemplate = parsedTemplateCache[templateString]
             if (!preparsedTemplate) {
@@ -137,13 +135,13 @@ module feather.annotations {
         if (!widgetTemplates) {
             templates.set(proto, widgetTemplates = {})
         }
-        widgetTemplates[name] = new TemplateMethod(proto[method])
+        widgetTemplates[name] = proto[method]
 
         try {
             let str = proto[method].call({})
             parsedTemplateCache[str] = getPreparsedTemplate(str)
         } catch (e) {
-            // ignore, probably failed because template function wasn't pure
+            console.warn(`Template method ${method} in ${proto.constructor} is not a pure function.`)
         }
     }
 }

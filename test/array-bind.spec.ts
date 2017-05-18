@@ -1,36 +1,34 @@
-import {expect, sinon, featherStart} from './test-head'
+import {featherStart} from './test-head'
+import {expect} from 'chai'
+import * as sinon from 'Sinon'
 
 describe('Array', () => {
-    let sandbox, window, app, ef, document;
 
-    before(done => {
-        featherStart(r => {
-            window = r.window
-            document = r.window.document
-            app = r.app
-            ef = r.ef
-        });
-        done();
-    })
+    let window, feather, sandbox, document;
+    before(done => featherStart(w => (
+        window = w,
+        feather = w.feather,
+        document = w.document
+    ) && done()))
 
     beforeEach(() => this.sinon = sandbox = sinon.sandbox.create())
     afterEach(() => sandbox.restore())
 
     describe('childWidget', () => {
         it('should propagate from arrays', () => {
-            let app = window.app,
+            let app = window.app as demo.Application,
                 childWidgets = app.childWidgets
-            expect(childWidgets.length).to.be.equal(7)
+            expect(childWidgets.length).to.be.equal(9)
             expect(childWidgets[0].parentWidget).to.be.equal(app)
         })
 
         it('should have subwidgets in arrays', () => {
             let app = window.app,
                 childWidgets = app.childWidgets
-            expect(childWidgets[3].childWidgets.length).to.be.equal(1)
-            expect(childWidgets[4].childWidgets.length).to.be.equal(1)
             expect(childWidgets[5].childWidgets.length).to.be.equal(1)
             expect(childWidgets[6].childWidgets.length).to.be.equal(1)
+            expect(childWidgets[7].childWidgets.length).to.be.equal(1)
+            expect(childWidgets[8].childWidgets.length).to.be.equal(1)
         })
     })
 
@@ -86,15 +84,16 @@ describe('Array', () => {
 
     describe('Switch values', () => {
         it('should apply', () => {
-            let arrWidget = window.app.childWidgets.find(c => c.constructor['name'] === 'Arrays') as any as testApp.Arrays
+            let ArrayElement = window.demo.ArrayElement;
+            let arrWidget = window.app.childWidgets.find(c => c.constructor['name'] === 'Arrays') as demo.Arrays
             expect(arrWidget).to.not.be.undefined
             arrWidget.listA.splice(1, 1,
-                new testApp.ArrayElement(true, 'third'),
-                new testApp.ArrayElement(true, 'forth')
+                new ArrayElement(true, 'third'),
+                new ArrayElement(true, 'forth')
             )
             arrWidget.listB.push(
-                new testApp.ArrayElement(false, 'fifth'),
-                new testApp.ArrayElement(false, 'sixth')
+                new ArrayElement(false, 'fifth'),
+                new ArrayElement(false, 'sixth')
             )
             arrWidget.listA[0].booleanA = false
             arrWidget.listA[0].stringA = 'switched'

@@ -1,4 +1,4 @@
-module testApp {
+module demo {
 
     import Widget    = feather.core.Widget
     import Construct = feather.annotations.Construct
@@ -44,16 +44,6 @@ module testApp {
         @Template('default')
         protected getBaseTemplate() {
             return 'Rendered<div class="widget" name="sub-widget"></div>'
-        }
-
-        @Route('/')
-        entry() {
-            //
-        }
-
-        @Route('/:path')
-        subsection(routes: SimpleMap) {
-            //
         }
 
         @On({event: 'click', selector: 'td'})

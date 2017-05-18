@@ -16,7 +16,7 @@ module demo {
             new ArrayElement(false, 'second')
         ]
 
-        @Bind()
+        @Bind({templateName: 'default'})
         listB = []
 
         init(element: HTMLElement) {
@@ -54,7 +54,7 @@ module demo {
                         <td class="delimiter" colspan="4">No formatters</td>
                     </tr>
                     <tr class="no-formatters">
-                        <td><ul {{listA}}></ul></td>
+                        <td><ul class="listA" {{listA}}></ul><ul class="listB" {{listB}}></ul></td>
                         <td>Not supported</td>
                         <td>Not supported</td>
                         <td>Not supported</td>
@@ -65,7 +65,7 @@ module demo {
                     <tr class="formatters">
                         <td>Not supported</td>
                         <td data-prop-a="{{listA:count}}" data-prop-b="{{listB:count}}"></td>
-                        <td>Text: {{listA:count}} {{listA:notZero:yesno}}</td>
+                        <td>Text: {{listA:count}} {{listA:notZero:yesno}} {{listB:count}} {{listB:notZero:yesno}}</td>
                         <td class="{{listA:notZero:yesno}} {{listB:notZero:onoff}}"></td>
                     </tr>
                 </table>

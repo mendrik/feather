@@ -1,18 +1,13 @@
-import {expect, featherStart} from './test-head'
+import {featherStart} from './test-head'
+import {expect} from 'chai'
 
 describe('Objects', () => {
 
-    let window, app, ef, document;
-
-    before(done => {
-        featherStart(r => {
-            window = r.window
-            document = r.window.document
-            app = r.app
-            ef = r.ef
-        });
-        done()
-    })
+    let window, feather;
+    before(done => featherStart(w => (
+        window = w,
+        feather = w.feather
+    ) && done()))
 
     describe('isObject', () => {
 

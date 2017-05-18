@@ -5,7 +5,7 @@ tds.forEach((td) => {
     }
 })
 
-let uls = [].slice.call(document.querySelectorAll('td > ul'))
+let uls = [].slice.call(document.querySelectorAll('td > ul:first-child'))
 
 uls.forEach((ul) => {
     ul.parentElement.setAttribute('li-count', ul.children.length)

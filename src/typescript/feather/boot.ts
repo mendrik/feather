@@ -9,7 +9,7 @@ module feather.boot {
     import from                  = feather.arrays.from
     import flatMap               = feather.arrays.flatMap
     import selectorMatches       = feather.dom.selectorMatches
-    import HTML = feather.types.HTML;
+    import HTML                  = feather.types.HTML;
 
     export interface Blueprint {
         selector: string
@@ -27,14 +27,31 @@ module feather.boot {
     export class WidgetFactory {
         private static widgetRegistry: ComponentInfo[] = []
 
+
+
+        static attributeParser = (node: HTMLElement, parentWidget?: Widget) => (key: string) => {
+            let value: any = node.getAttribute(key),
+                m = (value || "").match(/^\{(.+?)\}\/?$/i)
+            if (parentWidget && m) {
+                const js = m[1]
+                value = parentWidget[js] || (function(str) {
+                    return eval(str);
+                }).bind(parentWidget)(js)
+                if (typeof value !== 'undefined') {
+                    node.removeAttribute(key)
+                }
+            }
+            return value;
+        }
+
         static start(scope: ValidRoot = document, parentWidget?: Widget) {
-            let reg = WidgetFactory.widgetRegistry;
+            let reg = WidgetFactory.widgetRegistry
             for (let i = 0, n = reg.length; i < n; i++) {
                 let info = reg[i],
                     nodes = querySelectorWithRoot(scope, info.selector)
                 for (let j = 0, m = nodes.length; j < m; j++) {
                     let node = nodes[j],
-                        args = info.attributes.map(key => node.getAttribute(key)),
+                        args = info.attributes.map(WidgetFactory.attributeParser(node, parentWidget)),
                         widget: Widget = new (Function.prototype.bind.apply(info.component, [null, ...args]))
                     if (parentWidget) {
                         widget.parentWidget = parentWidget

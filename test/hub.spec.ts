@@ -1,17 +1,13 @@
-import {featherStart, sinon} from './test-head'
+import {featherStart} from './test-head'
+import * as sinon from "Sinon"
 
 describe('Hub', () => {
-    let sandbox, window, app, ef, document;
 
-    before(done => {
-        featherStart(r => {
-            window = r.window
-            document = r.window.document
-            app = r.app
-            ef = r.ef
-        });
-        done()
-    })
+    let window, feather, sandbox;
+    before(done => featherStart(w => (
+        window = w,
+        feather = w.feather
+    ) && done()))
 
     beforeEach(() => this.sinon = sandbox = sinon.sandbox.create())
     afterEach(() => sandbox.restore())

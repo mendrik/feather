@@ -1,17 +1,15 @@
-import {expect, featherStart, sinon} from './test-head'
+import {featherStart} from './test-head'
+import {expect} from 'chai'
+import * as sinon from "Sinon";
 
 describe('Events', () => {
-    let sandbox, window, app, ef, document;
 
-    before(done => {
-        featherStart(r => {
-            window = r.window
-            document = r.window.document
-            app = r.app
-            ef = r.ef
-        });
-        done()
-    })
+    let window, feather, sandbox, document
+    before(done => featherStart(w => (
+        window = w,
+        feather = w.feather,
+        document = w.document
+    ) && done()))
 
     beforeEach(() => this.sinon = sandbox = sinon.sandbox.create())
     afterEach(() => sandbox.restore())
@@ -19,7 +17,7 @@ describe('Events', () => {
     describe('click', () => {
 
         it('is received with selector', () => {
-            let app = window.ef,
+            let app = window.ef as demo.ExtraFeatures,
                 child = app.childWidgets[0] as feather.core.Widget,
                 i = child.element.querySelector('i'),
                 event = document.createEvent("HTMLEvents"),

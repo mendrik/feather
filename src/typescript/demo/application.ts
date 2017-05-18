@@ -14,7 +14,8 @@ module demo {
     export enum FilterState {
         ALL,
         TRUE,
-        FALSE
+        FALSE,
+        WIDGET
     }
 
     @Construct({selector: '.application'})
@@ -28,7 +29,7 @@ module demo {
         filteredList: ArrayElement[] = [
             new ArrayElement(true, 'ItemA'),
             new ArrayElement(false, 'ItemB'),
-            new ArrayElement(true, 'ItemC'),
+            new ArrayElement(true, 'ObjectC'),
             new ArrayElement(false, 'ItemD')
         ]
 
@@ -37,7 +38,6 @@ module demo {
         init(element: HTMLElement) {
             this.render('default')
             window['app'] = this;
-            // this.fetch()
         }
 
         @Rest({url: '/test-{{data.x}}.json'})
@@ -57,7 +57,17 @@ module demo {
                 return (todo: ArrayElement) => todo.booleanA
             } else if (this.filterState === FilterState.FALSE) {
                 return (todo: ArrayElement) => !todo.booleanA
+            } else if (this.filterState === FilterState.WIDGET) {
+                return (todo: ArrayElement) => todo.childWidgets[0]['name'].startsWith('Item')
             }
+        }
+
+        printStuff() {
+            return "parent-text"
+        }
+
+        countTruthy() {
+            return this.filteredList.reduce((p, c) => p + (c.booleanA ? 1 : 0), 0)
         }
 
         @Template('default')
@@ -66,7 +76,9 @@ module demo {
                 <div class="booleans"></div>                
                 <div class="strings"></div>                
                 <div class="arrays"></div>
-                <ul class="widget-array" {{filteredList:arrayFilter}}></ul>                                
+                <ul id="filtered-list" {{filteredList:arrayFilter}} truthy="{{filteredList:countTruthy}}"></ul>
+                <AttributeWidget id="aw1" text="{'a'+'b'}" bool="{true}" func="{this.printStuff}" number="{3+1}"/>
+                <AttributeWidget id="aw2" text={this.printStuff()} bool={false} func={this.printStuff} number={5}/>
             `)
         }
 

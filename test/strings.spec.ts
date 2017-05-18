@@ -1,16 +1,13 @@
-import {expect, loadPage} from './test-head'
+import {featherStart} from './test-head'
+import {expect} from 'chai'
 
-describe('Strings', () => {
+describe('String Utils', () => {
 
-    let window, document;
-
-    before(done => {
-        loadPage((r) => {
-            window = r.window
-            document = r.window.document
-        })
-        done()
-    })
+    let window, feather
+    before(done => featherStart(w => (
+        window = w,
+        feather = w.feather
+    ) && done()))
 
     describe('format', () => {
 

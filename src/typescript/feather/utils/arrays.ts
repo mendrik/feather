@@ -2,7 +2,7 @@ module feather.arrays {
 
     type MethodKey = 'sort' | 'splice'
 
-    const observers          = new WeakMap<any[], ArrayListener<any>[]>()
+    const observers = new WeakMap<any[], ArrayListener<any>[]>()
 
     export interface ArrayListener<T> {
         sort(indices: number[])
@@ -40,9 +40,9 @@ module feather.arrays {
 
         if (key === 'splice') {
             arr.splice = (index, dels, ...adds) => {
-                let res = old.call(arr, index, dels, ...adds);
+                let res = old.call(arr, index, dels, ...adds)
                 notifyListenersWithArgs(arr, key, [index, dels, adds, res])
-                return res;
+                return res
             }
         } else if (key == 'sort') {
             arr.sort = (cmp) => {
@@ -57,7 +57,7 @@ module feather.arrays {
     }
 
     export let notifyListeners = (source: any[]) => {
-        let listeners = observers.get(source);
+        let listeners = observers.get(source)
         if (listeners) {
             for (let l of listeners) {
                 l.splice(0, 0, [], [])
@@ -66,7 +66,7 @@ module feather.arrays {
     }
 
     export function diff<T>(arr1: T[], arr2: T[]): T[] {
-        return arr1.filter(x => !~arr2.indexOf(x));
+        return arr1.filter(x => !~arr2.indexOf(x))
     }
 
     export interface Patch<T> {

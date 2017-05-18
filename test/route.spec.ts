@@ -1,42 +1,45 @@
-import {expect, sinon, loadPage} from './test-head'
+import {loadPage} from './test-head'
+import {expect} from 'chai'
+import * as sinon from "Sinon"
+
+const mockLocation = (window) => {
+    let path = '/'
+    Object.defineProperty(window.location, 'pathname', {
+        value: path
+    })
+    sinon.stub(window.location ,'replace', (p) => path = p)
+    return true
+}
 
 describe('Routes', () => {
-    let sandbox, window, app, ef;
 
-    before(done => {
-        loadPage(r => {
-            window = r.window
-            app = r.app
-            ef = r.ef
-        });
-        done();
-    })
+    let window, feather, sandbox, demo
+    beforeEach(done => loadPage(w => (
+        window = w,
+        feather = w.feather,
+        demo = w.demo
+    ) && mockLocation(w) && done()))
 
-    beforeEach(() => this.sinon = sandbox = sinon.sandbox.create())
+    beforeEach(() => sandbox = sinon.sandbox.create())
     afterEach(() => sandbox.restore())
 
     it('initially', () => {
-        let proto = testApp.ExtraFeatures.prototype,
-            spy2 = this.sinon.spy(proto, 'initRoutes'),
-            spy = this.sinon.spy(proto, 'entry');
+        let proto = demo.Application.prototype,
+            spy = sandbox.spy(proto, 'entry');
         window.feather.start()
-        spy2.should.have.been.calledOnce
         spy.should.have.been.calledOnce
-        spy.should.have.been.calledOn(window.ef)
+        spy.should.have.been.calledOn(window.app)
         spy.should.have.been.calledWith({})
     })
 
     it('after navigation event', () => {
-        let proto = testApp.ExtraFeatures.prototype,
-            spy = this.sinon.spy(proto, 'subsection'),
-            app = window.ef
-
-        app.route('/mypath')
-        expect(window.document.location.pathname).to.be.equal('/mypath')
-
+        let proto = demo.Application.prototype,
+            spy = sandbox.spy(proto, 'entry');
+        window.feather.start()
+        window.app.route('/mypath')
         spy.should.have.been.calledOnce
-        spy.should.have.been.calledOn(app)
-        spy.should.have.been.calledWith({path: 'mypath'})
+        spy.should.have.been.calledOn(window.app)
+        spy.should.have.been.calledWith({})
     })
 
 })

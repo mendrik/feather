@@ -32,7 +32,7 @@ module feather.core {
             let parsed = this.getParsed(templateName),
                 el = this.element
             if (el.nodeType === 1) {
-                el.innerHTML = ''
+               // el.innerHTML = ''
             }
             el.appendChild(parsed.doc)
         }

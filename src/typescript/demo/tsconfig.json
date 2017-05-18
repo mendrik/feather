@@ -20,10 +20,12 @@
   "files": [
     "helpers/array-element.ts",
     "helpers/widget.ts",
+    "helpers/attribute-widget.ts",
     "app/boolean.ts",
     "app/string.ts",
     "app/array.ts",
     "application.ts",
+    "ef.ts",
     "../../../out/javascripts/feather.d.ts"
   ]
 }

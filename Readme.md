@@ -41,3 +41,9 @@ Check out the official [website](http://www.feather-ts.com)
 # TodoMVC
 
 An example implementation can be be found [here](http://todo.feather-ts.com/). Source maps are embedded.
+
+# Work to be done
+
+- Horizontal event broadcasting (not just hierarchical)
+- Pass parent values via attributes like React myparam={value}
+- How to handle multiple REST request callbacks

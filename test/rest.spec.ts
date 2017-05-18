@@ -1,17 +1,15 @@
-import {expect, featherStart, sinon} from './test-head'
+import {featherStart} from './test-head'
+import {expect} from 'chai'
+import * as sinon from "Sinon";
 
 describe('XHR', () => {
-    let sandbox, window, app, ef, document, clock = sinon.useFakeTimers();
 
-    before(done => {
-        featherStart(r => {
-            window = r.window
-            document = r.window.document
-            app = r.app
-            ef = r.ef
-        });
-        done()
-    })
+    let window, feather, clock = sinon.useFakeTimers(), sandbox, document
+    before(done => featherStart(w => (
+        window = w,
+        feather = w.feather,
+        document = w.document
+    ) && done()))
 
     beforeEach(() => this.sinon = sandbox = sinon.sandbox.create())
     afterEach(() => sandbox.restore())
@@ -28,7 +26,7 @@ describe('XHR', () => {
     describe('Rest', () => {
 
         it('GET fetches data', () => {
-            let app = window.ef,
+            let app = window.ef as demo.ExtraFeatures,
                 spy = this.sinon.spy(app.getData, 'original')
             app.getData()
             clock.tick(2)
@@ -40,7 +38,7 @@ describe('XHR', () => {
         })
 
         it('POST fetches data', () => {
-            let app = window.ef,
+            let app = window.ef as demo.ExtraFeatures,
                 spy = this.sinon.spy(app.postData, 'original')
 
             app.postData()

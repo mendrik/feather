@@ -1,11 +1,13 @@
-import {expect, loadPage} from './test-head'
+import {featherStart} from './test-head'
+import {expect} from 'chai'
 
 describe('Functions', () => {
 
-    before(done => {
-        loadPage(() => {})
-        done()
-    })
+    let window, feather;
+    before(done => featherStart(w => (
+        window = w,
+        feather = w.feather
+    ) && done()))
 
     describe('isFunction', () => {
 

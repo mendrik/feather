@@ -1,19 +1,14 @@
-import {expect, featherStart} from './test-head'
-import Booleans = testApp.Booleans
+import {featherStart} from './test-head'
+import {expect} from 'chai'
 
 describe('Booleans', () => {
 
-    let window, app, ef, document;
-
-    before(done => {
-        featherStart(r => {
-            window = r.window
-            document = r.window.document
-            app = r.app
-            ef = r.ef
-        });
-        done()
-    })
+    let window, feather, document
+    before(done => featherStart(w => (
+        window = w,
+        feather = w.feather,
+        document = w.document
+    ) && done()))
 
     describe('property', () => {
 
@@ -64,7 +59,7 @@ describe('Booleans', () => {
 
     describe('Switch values', () => {
         it('should apply', () => {
-            let boolWidget = window.app.childWidgets.find(c => c.constructor['name'] === 'Booleans') as any as Booleans
+            let boolWidget = window.app.childWidgets.find(c => c.constructor['name'] === 'Booleans') as demo.Booleans
             expect(boolWidget).to.not.be.undefined
             boolWidget.booleanA = false
             boolWidget.booleanB = true

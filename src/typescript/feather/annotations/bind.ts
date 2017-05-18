@@ -14,16 +14,16 @@ module feather.observe {
     import isFunction          = feather.functions.isFunction
     import FuncOne             = feather.functions.FuncOne
     import compose             = feather.functions.compose
-    import RouteAware          = feather.routing.RouteAware;
-    import notifyListeners     = feather.arrays.notifyListeners;
-    import changeArrayListener = feather.arrays.changeArrayListener;
-    import format              = feather.strings.format;
-    import lis                 = feather.arrays.lis;
-    import range               = feather.arrays.range;
-    import diff                = feather.arrays.diff;
-    import patch               = feather.arrays.patch;
-    import Patch               = feather.arrays.Patch;
-    import removeFromArray     = feather.arrays.removeFromArray;
+    import RouteAware          = feather.routing.RouteAware
+    import notifyListeners     = feather.arrays.notifyListeners
+    import changeArrayListener = feather.arrays.changeArrayListener
+    import format              = feather.strings.format
+    import lis                 = feather.arrays.lis
+    import range               = feather.arrays.range
+    import diff                = feather.arrays.diff
+    import patch               = feather.arrays.patch
+    import Patch               = feather.arrays.Patch
+    import removeFromArray     = feather.arrays.removeFromArray
 
     const boundProperties      = new WeakMap<Widget, TypedMap<Function[]>>()
     const binders              = new WeakMap<Observable, TypedMap<BindProperties>>()
@@ -165,7 +165,7 @@ module feather.observe {
             },
             splice(index: number, deleteCount: number, added: any[], deleted: any[]) {
                 if (index === 0 && deleteCount === 0 && added.length == 0) {
-                    return;
+                    return
                 }
                 from<HTMLElement>(el.children)
                     .slice(index, index + deleteCount)
@@ -233,9 +233,9 @@ module feather.observe {
                     })
                 }
 
-                addLength = p.add.length;
+                addLength = p.add.length
                 if (addLength) {
-                    let doc = addLength !== 1 ? document.createDocumentFragment() : parent;
+                    let doc = addLength !== 1 ? document.createDocumentFragment() : parent
                     p.add.forEach(w => {
                         w.appendTemplateRoot(doc, conf.templateName)
                         w.parentWidget = parentWidget
@@ -277,9 +277,10 @@ module feather.observe {
                     property = this.findProperty(filterFunctions.shift()),
                     value = this[property],
                     conf = binders.get(Object.getPrototypeOf(this))[property],
+                    fm: (s) => string = this.findMethod.bind(this),
                     filter = compose<any>(filterFunctions
-                                .map(this.findMethod.bind(this))
-                                .map((method: string) => this[method].bind(this)))
+                                .map(fm)
+                                .map(method => this[method].bind(this)))
 
                 if (typeof conf === 'undefined') {
                     console.log(`@Bind() ${property} annotation missing?`, hook, property, value, binders)
@@ -309,7 +310,7 @@ module feather.observe {
             if (!prop) {
                 prop = Object.getOwnPropertyNames(this)
                         .find(p => p.toLowerCase() === ci.toLowerCase()) || ci
-                attributeMapper[ci] = prop;
+                attributeMapper[ci] = prop
             }
             return prop
         }
@@ -320,6 +321,9 @@ module feather.observe {
                 prop = getInheritedMethods(this)
                         .find(p => p.toLowerCase() === ci.toLowerCase()) || ci
                 attributeMapper[ci] = prop
+            }
+            if (!this[prop]) {
+                throw Error(`Couldn't find method '${ci}'`);
             }
             return prop
         }
