@@ -7,7 +7,7 @@ const mockLocation = (window) => {
     Object.defineProperty(window.location, 'pathname', {
         value: path
     })
-    sinon.stub(window.location ,'replace', (p) => path = p)
+    sinon.stub(window.location ,'replace').callsFake((p) => path = p)
     return true
 }
 
