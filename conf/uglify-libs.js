@@ -4,6 +4,6 @@ let u = require('uglify-js'),
 
 let result = u.minify(libs)
 
-fs.writeFileSync(__dirname + '/out/javascripts/libs.min.js', result.code, 'utf8')
+fs.writeFileSync('out/javascripts/libs.min.js', result.code, 'utf8')
 
 
