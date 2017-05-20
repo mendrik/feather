@@ -82,6 +82,6 @@
     "sinon-chai",
     "jsdom",
     "es6-shim",
-    "sinone"
+    "sinon"
   ]
 }
