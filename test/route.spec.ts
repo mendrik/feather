@@ -1,5 +1,4 @@
 import {loadPage} from './test-head'
-import {expect} from 'chai'
 import * as sinon from "Sinon"
 
 const mockLocation = (window) => {
