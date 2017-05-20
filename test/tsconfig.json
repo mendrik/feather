@@ -8,7 +8,19 @@
     "moduleResolution": "node",
     "target": "es5",
     "experimentalDecorators": true,
-    "typeRoots": ["../out/javascripts", "../node_modules/@types"],
-    "types": ["demo", "feather", "node", "sinon", "mocha", "chai"]
+    "typeRoots": [
+      "../out/javascripts",
+      "../node_modules/@types"
+    ],
+    "types": [
+      "mocha",
+      "node",
+      "assert",
+      "chai",
+      "sinon-chai",
+      "jsdom",
+      "es6-shim",
+      "sinon"
+    ]
   }
 }
