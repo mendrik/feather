@@ -1,5 +1,5 @@
 import {loadPage} from './test-head'
-import * as sinon from "Sinon"
+import * as sinon from 'sinon'
 
 const mockLocation = (window) => {
     let path = '/'

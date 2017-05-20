@@ -1,5 +1,5 @@
 import {featherStart} from './test-head'
-import * as sinon from "Sinon"
+import * as sinon from 'sinon'
 
 describe('Hub', () => {
 

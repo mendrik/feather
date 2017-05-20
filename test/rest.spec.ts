@@ -1,6 +1,6 @@
 import {featherStart} from './test-head'
 import {expect} from 'chai'
-import * as sinon from "Sinon";
+import * as sinon from 'sinon';
 
 describe('XHR', () => {
 
