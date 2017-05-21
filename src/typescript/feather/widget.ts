@@ -28,11 +28,11 @@ module feather.core {
             this.initRoutes()
         }
 
-        protected render(templateName: string) {
+        protected render(templateName: string = 'default') {
             let parsed = this.getParsed(templateName),
                 el = this.element
             if (el.nodeType === 1) {
-               // el.innerHTML = ''
+                el.innerHTML = ''
             }
             el.appendChild(parsed.doc)
         }

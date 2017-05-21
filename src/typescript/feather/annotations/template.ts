@@ -130,7 +130,7 @@ module feather.annotations {
 
     }
 
-    export let Template = (name: string) => (proto: Widget, method: string) => {
+    export let Template = (name: string = 'default') => (proto: Widget, method: string) => {
         let widgetTemplates = templates.get(proto)
         if (!widgetTemplates) {
             templates.set(proto, widgetTemplates = {})
