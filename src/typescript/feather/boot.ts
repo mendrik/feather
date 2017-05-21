@@ -27,16 +27,14 @@ module feather.boot {
     export class WidgetFactory {
         private static widgetRegistry: ComponentInfo[] = []
 
-
-
-        static attributeParser = (node: HTMLElement, parentWidget?: Widget) => (key: string) => {
+        static attributeParser = (node: HTMLElement, context?: any) => (key: string) => {
             let value: any = node.getAttribute(key),
                 m = (value || "").match(/^\{(.+?)\}\/?$/i)
-            if (parentWidget && m) {
+            if (m) {
                 const js = m[1]
-                value = parentWidget[js] || (function(str) {
+                value = context[js] || (function(str) {
                     return eval(str);
-                }).bind(parentWidget)(js)
+                }).bind(context)(js)
                 if (typeof value !== 'undefined') {
                     node.removeAttribute(key)
                 }
@@ -51,7 +49,7 @@ module feather.boot {
                     nodes = querySelectorWithRoot(scope, info.selector)
                 for (let j = 0, m = nodes.length; j < m; j++) {
                     let node = nodes[j],
-                        args = info.attributes.map(WidgetFactory.attributeParser(node, parentWidget)),
+                        args = info.attributes.map(WidgetFactory.attributeParser(node, parentWidget || window)),
                         widget: Widget = new (Function.prototype.bind.apply(info.component, [null, ...args]))
                     if (parentWidget) {
                         widget.parentWidget = parentWidget
@@ -69,7 +67,6 @@ module feather.boot {
             this.widgetRegistry.push(new ComponentInfo(info.selector, info.attributes || [], component))
         }
     }
-
 }
 
 module feather {
