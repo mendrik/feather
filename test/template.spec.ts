@@ -17,6 +17,7 @@ describe('Templates', () => {
                 o = featherTs.annotations.openTags
             expect('<span/><span/>'.replace(r, o)).to.be.equal('<span></span><span></span>')
             expect('<bla><span/><span/></bla>'.replace(r, o)).to.be.equal('<bla><span></span><span></span></bla>')
+            expect('<span {{bla}}/><span {{bla}}/><span {{bla}}/>'.replace(r, o)).to.be.equal('<span {{bla}}></span><span {{bla}}></span><span {{bla}}></span>')
             expect(' <ul id="filtered-list" {{filteredList:arrayFilter}} truthy="{{filteredList:countTruthy}}"/> '.replace(r, o))
                 .to.be.equal(' <ul id="filtered-list" {{filteredList:arrayFilter}} truthy="{{filteredList:countTruthy}}"></ul> ')
             expect('<bla> <span/> <br><p/> <span/> </bla>'.replace(r, o)).to.be.equal('<bla> <span></span> <br><p></p> <span></span> </bla>')
@@ -24,7 +25,7 @@ describe('Templates', () => {
                 .to.be.equal(`<bla x="2"><span a='span>' checked b='<aa' y=1 z="2" w='</>' j="<>"></span><span y=1 z="2" w="</>" j="<>"></span></bla>`)
         })
 
-        it('Template parses correctly', () => {
+        it('Template parses correctly with attributes', () => {
             let str = `
                     <AttributeWidget id="aw1" text="{'a'+'b'}" bool="{true}" func="{this.printStuff}" number="{3}"/>
                     <AttributeWidget id="aw2" text={this.printStuff()} bool={false} func={this.printStuff} number={4}/>
@@ -58,6 +59,25 @@ describe('Templates', () => {
             expect(parsed.hookInfos[3].curly).to.be.equal('hook4')
             expect(parsed.hookInfos[3].text).to.be.equal('in {{hook4}} text')
             expect(parsed.hookInfos[3].type).to.be.equal(feather.annotations.HookType.TEXT)
+        })
+
+        it('Template clones', () => {
+            let str = `
+                    <span {{bla}} /><span {{bla}} /><span {{bla}} />
+                `,
+                pt = featherTs.annotations.getPreparsedTemplate,
+                parsed = pt(str),
+                cloned = parsed.asParsedTemplate()
+            expect(cloned.hooks.length).to.be.equal(3);
+            expect(cloned.doc.children.length).to.be.equal(3)
+
+            let div1 = document.createElement('div'),
+                div2 = document.createElement('div');
+
+            div1.appendChild(parsed.node)
+            div2.appendChild(cloned.doc)
+
+            expect(div1.innerHTML).to.be.equal(div2.innerHTML)
         })
     })
     

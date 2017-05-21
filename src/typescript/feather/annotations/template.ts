@@ -10,7 +10,7 @@ module feather.annotations {
     const ALL_CURLIES         = /\{\{(.*?)}}/g
     const templates           = new WeakMap<Widget, TypedMap<Function>>()
     const parsedTemplateCache = {} as Map<string, PreparsedTemplate>
-    export const selfClosingTags     = /<(\w+)((\s+([^=\s]+|\w+=('[^']*'|"[^"]*"|[^"']\S*)))*)\s*\/>/gi
+    export const selfClosingTags     = /<(\w+)((\s+([^=\s\/<>]+|\w+=('[^']*'|"[^"]*"|[^"']\S*)))*)\s*\/>/gi
     export const openTags            = '<$1$2></$1>'
 
     let template              = supportsTemplate ? document.createElement('template') : document.createElement('div')
