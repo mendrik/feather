@@ -1,6 +1,6 @@
 {
   "name": "Feather",
-  "version": "1.0.89",
+  "version": "1.0.90",
   "description": "My framework",
   "repository": "https://github.com/mendrik/feather",
   "main": "feather.min.js",
@@ -67,7 +67,7 @@
     "tslib": "1.7.1",
     "tslint": "5.2.0",
     "typescript": "2.3.2",
-    "uglify-js": "2.7.3"
+    "uglify-js": "3.0.10"
   },
   "typeRoots": [
     "./node_modules/@types"
