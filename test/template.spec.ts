@@ -24,7 +24,7 @@ describe('Templates', () => {
                 .to.be.equal(`<bla x="2"><span a='span>' checked b='<aa' y=1 z="2" w='</>' j="<>"></span><span y=1 z="2" w="</>" j="<>"></span></bla>`)
         })
 
-        it('Tenplate parses correctly', () => {
+        it('Template parses correctly', () => {
             let str = `
                     <AttributeWidget id="aw1" text="{'a'+'b'}" bool="{true}" func="{this.printStuff}" number="{3}"/>
                     <AttributeWidget id="aw2" text={this.printStuff()} bool={false} func={this.printStuff} number={4}/>
@@ -36,7 +36,7 @@ describe('Templates', () => {
             expect(parsed.node.children[1].getAttribute('number')).to.be.equal('{4}');
         })
 
-        it('Tenplate parses hooks', () => {
+        it('Template parses hooks', () => {
             let str = `
                     <AttributeWidget {{hook1}} bla="{{hook2}}" class="bub {{hook3}}">in {{hook4}} text</AttributeWidget>
                 `,
