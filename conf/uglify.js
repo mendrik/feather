@@ -8,6 +8,7 @@ let result = u.minify({feather: feather}, {
         preamble: fs.readFileSync("./out/javascripts/libs.min.js", "utf8")
     },
     sourceMap: {
+      root: '/feather',
       filename: './out/javascripts/feather.js.map',
       url: 'feather.min.map'
     },
