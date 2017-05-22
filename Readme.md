@@ -1,8 +1,6 @@
 # Feather TS
 
-<img src="http://cd.feather-ts.com/mendrik/feather/badge/?branch=master" height="20">
-<img src="http://dist.feather-ts.com/size.svg" height="20">
-<img src="http://www.feather-ts.com/images/licence.svg" height="20">
+<img src="http://cd.feather-ts.com/mendrik/feather/badge/?branch=master" height="20">&nbsp;<img src="http://dist.feather-ts.com/size.svg" height="20">&nbsp;<img src="http://www.feather-ts.com/images/licence.svg" height="20">
 
 ---
 **THIS PROJECT IS WORK IN PROGRESS, DO NOT USE YET**
