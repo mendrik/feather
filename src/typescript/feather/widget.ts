@@ -39,7 +39,9 @@ module feather.core {
 
         private getParsed(templateName: string): ParsedTemplate {
             let template = TemplateFactory.getTemplate(this, templateName)
-            from<HTMLElement>(template.doc.children).forEach(x => WidgetFactory.start(x, this))
+            from<HTMLElement>(template.doc.childNodes)
+                .filter(n => n.nodeType == Node.ELEMENT_NODE)
+                .forEach(x => WidgetFactory.start(x, this))
             this.attachHooks(template.hooks)
             return template
         }

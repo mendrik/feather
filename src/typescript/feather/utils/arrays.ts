@@ -9,7 +9,7 @@ module feather.arrays {
         splice(start: number, deleteCount: number, items: T[], deleted: T[])
     }
 
-    export function from<T>(object: any): Array<T> {
+    export function from<T>(object: any): T[] {
         return [].slice.call(object)
     }
 
