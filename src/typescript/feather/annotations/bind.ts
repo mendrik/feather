@@ -329,7 +329,7 @@ module feather.observe {
         }
     }
 
-    export let Bind = (props: BindProperties = {}) => (proto: Observable, property: string) => {
+    export let Bind = (props: BindProperties = {templateName: 'default'}) => (proto: Observable, property: string) => {
         let protoBinders = binders.get(proto)
         if (!protoBinders) {
             binders.set(proto, {
