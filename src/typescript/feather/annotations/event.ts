@@ -53,14 +53,23 @@ module feather.event {
 
         attachEvents(element: HTMLElement) {
             let handlers = eventHandlers.get(Object.getPrototypeOf(this))
-            for (let handler of handlers || []) {
-                let scope: EventTarget = typeof handler.scope === 'undefined' ? element : getScope(handler.scope),
-                    events = handler.event.split(' ');
-                for (let event of events) {
-                    attachEvent(this, handler, scope, event)
+            if (handlers) {
+                for (let handler of handlers) {
+                    let scope: EventTarget = typeof handler.scope === 'undefined' ? element : getScope(handler.scope),
+                        events = handler.event.split(' ')
+                    for (let event of events) {
+                        attachEvent(this, handler, scope, event)
+                        if (typeof handler.scope === 'undefined') {
+                            this.eventRegistered(this, event, handler)
+                        }
+                    }
                 }
+                return handlers
             }
-            return handlers
+        }
+
+        eventRegistered(context: any, event: string, handler: Handler) {
+
         }
 
     }
