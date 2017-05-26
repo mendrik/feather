@@ -31,7 +31,7 @@ module feather.event {
 
     let eventHandlers = new WeakMap<EventAware, Handler[]>()
 
-    export function attachEvent(context: EventAware, handler: Handler, scope: EventTarget, event: string) {
+    function attachEvent(context: EventAware, handler: Handler, scope: EventTarget, event: string) {
         scope.addEventListener(event, (ev: Event) => {
             if (typeof handler.scope === 'undefined') {
                 let el: HTMLElement = ev.target as HTMLElement
@@ -69,7 +69,7 @@ module feather.event {
         }
 
         eventRegistered(context: any, event: string, handler: Handler) {
-
+            // use for whatever
         }
 
     }
