@@ -31,9 +31,6 @@ module feather.core {
         protected render(templateName: string = 'default') {
             let parsed = this.getParsed(templateName),
                 el = this.element
-            if (el.nodeType === 1) {
-                el.innerHTML = ''
-            }
             el.appendChild(parsed.doc)
         }
 
