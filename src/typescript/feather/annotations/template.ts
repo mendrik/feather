@@ -87,10 +87,9 @@ module feather.annotations {
                     hooks.push(new HookInfo(pos, HookType.TEXT, match[1], text))
                 }
             } else if (node.nodeType === Node.ELEMENT_NODE) {
-                let attribs = from<Node>(node.attributes),
-                    attribName
+                let attribs = from<Attr>(node.attributes)
                 for (let attrib of attribs) {
-                    attribName = attrib.nodeName
+                    let attribName = attrib.nodeName
                     if (match = attribName.match(CURLIES)) {
                         // <div id="2" {{myProperty}}>
                         hooks.push(new HookInfo(pos, HookType.PROPERTY, match[1]))
@@ -104,7 +103,7 @@ module feather.annotations {
                         }
                     } else {
                         // <div id="2" myProperty="{{myProperty}}">
-                        let attribValue = attrib.nodeValue
+                        let attribValue = attrib.value
                         if (match = attribValue.match(CURLIES)) {
                             hooks.push(new HookInfo(pos, HookType.ATTRIBUTE, match[1], attribName))
                         }
