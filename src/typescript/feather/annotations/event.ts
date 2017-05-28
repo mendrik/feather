@@ -40,7 +40,11 @@ module feather.event {
                         if (handler.preventDefault) {
                             ev.preventDefault()
                         }
+                        ev.stopPropagation();
                         return context[handler.method].call(context, ev, el)
+                    }
+                    if (el === context.element) {
+                        break;
                     }
                 } while (el = el.parentElement)
             } else {
@@ -50,16 +54,18 @@ module feather.event {
     }
 
     export class EventAware {
+        element: HTMLElement
 
         attachEvents(element: HTMLElement) {
             let handlers = eventHandlers.get(Object.getPrototypeOf(this))
             if (handlers) {
                 for (let handler of handlers) {
-                    let scope: EventTarget = typeof handler.scope === 'undefined' ? element : getScope(handler.scope),
+                    let hasNoScope = typeof handler.scope === 'undefined',
+                        scope: EventTarget = hasNoScope ? element : getScope(handler.scope),
                         events = handler.event.split(' ')
                     for (let event of events) {
                         attachEvent(this, handler, scope, event)
-                        if (typeof handler.scope === 'undefined') {
+                        if (hasNoScope) {
                             this.eventRegistered(this, event, handler)
                         }
                     }
