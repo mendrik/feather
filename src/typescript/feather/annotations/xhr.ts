@@ -86,13 +86,14 @@ module feather.xhr {
 
         desc.value = function() {
             if (params.body) {
-                params = Object.assign({}, params, {
-                    body: deepValue(this, params.body) // resolve body
-                })
+                params = {
+                    ...params,
+                    body: deepValue(this, params.body),
+                    progress: (ev) => this.triggerDown('xhr-progress', ev)
+                }
             }
             params.url = format(params.url, this, this) // resolve url params
-            sendRequest(params, desc.value.original.bind(this),
-                (err: string|Event, xhr: XMLHttpRequest) => this.triggerDown('xhr-failure', err, xhr))
+            sendRequest(params, desc.value.original.bind(this), (err, xhr) => this.triggerDown('xhr-failure', err, xhr))
         }
 
         desc.value.original = original
