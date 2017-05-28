@@ -22,7 +22,8 @@ module feather.event {
         event: string // supports multiple event when separated with spaces
         scope?: Scope
         selector?: string
-        preventDefault?: boolean
+        preventDefault?: boolean,
+        forcePropagation: boolean
     }
 
     export interface Handler extends EventConfig {
@@ -93,7 +94,8 @@ module feather.event {
             method: method,
             preventDefault: ec.preventDefault,
             scope: ec.scope,
-            selector: ec.selector
+            selector: ec.selector,
+            forcePropagation: ec.forcePropagation
         } as Handler)
     }
 }
