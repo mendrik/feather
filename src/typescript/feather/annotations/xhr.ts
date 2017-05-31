@@ -79,6 +79,8 @@ module feather.xhr {
         }
 
         xhr.send(conf.requestFilter(conf.body))
+
+        return xhr;
     }
 
     export let Rest = (params: RestConfig) => (proto: Widget, method: string, desc: PropertyDescriptor) => {
@@ -93,7 +95,7 @@ module feather.xhr {
                 }
             }
             let newParams = {...params, url: format(params.url, this, this)} // resolve url params
-            sendRequest(newParams, desc.value.original.bind(this), (err, xhr) => this.triggerDown('xhr-failure', err, xhr))
+            return sendRequest(newParams, desc.value.original.bind(this), (err, xhr) => this.triggerDown('xhr-failure', err, xhr))
         }
 
         desc.value.original = original
