@@ -20,9 +20,10 @@ module feather.event {
         method: string
     }
 
-    type Handlers = {[s: number]: WeakMap<EventAware, Handler[]>}
+    export type HandlersRegistry = {[s: number]: WeakMap<EventAware, Handler[]>}
+    export type HandlersMap = {[s: number]: Handler[]}
 
-    let eventHandlers: Handlers = {
+    let eventHandlers: HandlersRegistry = {
         [Scope.Direct]: new WeakMap<EventAware, Handler[]>(),
         [Scope.Delegate]: new WeakMap<EventAware, Handler[]>(),
     }
@@ -51,11 +52,11 @@ module feather.event {
         element: Element
 
         attachEvents() {
-            this.attachDelegates();
-            this.attachDirect();
+            this.attachDelegates(this.handlers(Scope.Delegate));
+            this.attachDirect(this.handlers(Scope.Direct));
         }
 
-        private handlers(scope: Scope): {[event: string]: Handler[]} {
+        private handlers(scope: Scope): HandlersMap {
             let handlers = eventHandlers[scope].get(Object.getPrototypeOf(this)),
                 map = {}
             if (handlers) {
@@ -71,11 +72,10 @@ module feather.event {
             return map
         }
 
-        private attachDirect() {
-            let handlersMaps = this.handlers(Scope.Direct),
-                root = this.element;
-            Object.keys(handlersMaps).forEach(event => {
-                let handlers = handlersMaps[event]
+        attachDirect(handlerMap: HandlersMap) {
+            let root = this.element;
+            Object.keys(handlerMap).forEach(event => {
+                let handlers = handlerMap[event]
                 for(let handler of handlers) {
                     let el = root
                     if (handler.selector) {
@@ -92,10 +92,9 @@ module feather.event {
             })
         }
 
-        private attachDelegates() {
-            let handlersMaps = this.handlers(Scope.Delegate);
-            Object.keys(handlersMaps).forEach(event => {
-                let handlers = handlersMaps[event]
+        attachDelegates(handlerMap: HandlersMap) {
+            Object.keys(handlerMap).forEach(event => {
+                let handlers = handlerMap[event]
                 attachDelegatedEvent(this, event, handlers)
                 this.eventRegistered(this, event, handlers, Scope.Delegate)
             })

@@ -29,6 +29,7 @@ describe('Events', () => {
             expect(spy.args[0][1]).to.be.equal(i)
         })
 
+        // todo check this test for sanity
         it('is received on root', () => {
             let app = window.ef,
                 child = app.childWidgets[0] as feather.core.Widget,
@@ -44,5 +45,7 @@ describe('Events', () => {
 
             expect(spy.args[0][1]).to.be.equal(app.element)
         })
+
+        // todo add tests for direct scope
     })
 })
