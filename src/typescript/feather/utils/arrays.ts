@@ -81,9 +81,9 @@ module feather.arrays {
         }
     }
 
-    export function range(start: number, end: number) {
+    export function range(start: number, end: number): number[] {
         let len = end - start + 1,
-            arr = new Array(len)
+            arr = new Array<number>(len)
         for (let i = 0, l = arr.length; i < l; i++) {
             arr[i] =  i + start
         }

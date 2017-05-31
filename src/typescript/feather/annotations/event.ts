@@ -38,7 +38,7 @@ module feather.event {
                         if (handler.preventDefault) {
                             ev.preventDefault()
                         }
-                        return context[handler.method].call(context, ev, el)
+                        context[handler.method].call(context, ev, el)
                     }
                 }
                 if (el === root) {
