@@ -14,7 +14,7 @@ module feather.event {
         scope?: Scope
         selector?: string
         preventDefault?: boolean
-        stop?: boolean
+        bubble?: boolean
     }
 
     export interface Handler extends EventConfig {
@@ -86,7 +86,7 @@ module feather.event {
                         if (handler.preventDefault) {
                             ev.preventDefault()
                         }
-                        if (handler.stop) {
+                        if (!handler.bubble) {
                             ev.stopImmediatePropagation()
                         }
                         return context[handler.method].call(context, ev, el)
@@ -124,7 +124,7 @@ module feather.event {
                 event: e,
                 method: method,
                 preventDefault: ec.preventDefault,
-                stop: ec.stop,
+                bubble: ec.bubble,
                 scope: scope,
                 selector: ec.selector
             } as Handler)
