@@ -40,9 +40,9 @@ module feather.event {
                         }
                         return context[handler.method].call(context, ev, el)
                     }
-                    if (el === root) {
-                        break;
-                    }
+                }
+                if (el === root) {
+                    break;
                 }
             } while (el = el.parentElement)
         })

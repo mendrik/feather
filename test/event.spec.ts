@@ -43,7 +43,7 @@ describe('Events', () => {
             spy.should.have.been.calledOnce
             spy.should.have.been.calledOn(child)
 
-            expect(spy.args[0][1]).to.be.equal(app.element)
+            expect(spy.args[0][1]).to.be.equal(root)
         })
 
         // todo add tests for direct scope
