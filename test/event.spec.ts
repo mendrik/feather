@@ -39,11 +39,10 @@ describe('Events', () => {
             event.initEvent('click', true, true)
             root.dispatchEvent(event)
             i.dispatchEvent(event)
-            spy.should.have.been.calledTwice
+            spy.should.have.been.calledOnce
             spy.should.have.been.calledOn(child)
 
-            expect(spy.args[0][1]).to.be.equal(root)
-            expect(spy.args[1][1]).to.be.equal(i)
+            expect(spy.args[0][1]).to.be.equal(app.element)
         })
     })
 })

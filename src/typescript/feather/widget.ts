@@ -24,7 +24,7 @@ module feather.core {
         bindToElement(element: HTMLElement) {
             this.element = element
             this.init(element)
-            this.attachEvents(element)
+            this.attachEvents()
             this.initRoutes()
         }
 

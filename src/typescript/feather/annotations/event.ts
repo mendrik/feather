@@ -5,77 +5,103 @@ module feather.event {
     import ValidRoot = feather.types.ValidRoot;
 
     export enum Scope {
-        Window,
-        Document,
-        Body
-    }
-
-    let getScope = (scope: Scope): EventTarget => {
-        switch (scope) {
-            case Scope.Window: return window
-            case Scope.Document: return document
-            case Scope.Body: return document.body
-        }
+        Direct,
+        Delegate
     }
 
     export interface EventConfig {
         event: string // supports multiple event when separated with spaces
         scope?: Scope
         selector?: string
-        preventDefault?: boolean,
-        forcePropagation?: boolean
+        preventDefault?: boolean
     }
 
     export interface Handler extends EventConfig {
         method: string
     }
 
-    let eventHandlers = new WeakMap<EventAware, Handler[]>()
+    type Handlers = {[s: number]: WeakMap<EventAware, Handler[]>}
 
-    function attachEvent(context: EventAware, handler: Handler, scope: EventTarget, event: string) {
-        scope.addEventListener(event, (ev: Event) => {
-            if (typeof handler.scope === 'undefined') {
-                let el: HTMLElement = ev.target as HTMLElement
-                do {
+    let eventHandlers: Handlers = {
+        [Scope.Direct]: new WeakMap<EventAware, Handler[]>(),
+        [Scope.Delegate]: new WeakMap<EventAware, Handler[]>(),
+    }
+
+    function attachDelegatedEvent(context: EventAware, event: string, handlers: Handler[]) {
+        let root = context.element;
+        root.addEventListener(event, (ev: Event) => {
+            let el: HTMLElement = ev.target as HTMLElement
+            do {
+                for (let handler of handlers) {
                     if (el.nodeType === 1 && (!handler.selector || selectorMatches(el, handler.selector))) {
                         if (handler.preventDefault) {
                             ev.preventDefault()
                         }
-                        ev.stopPropagation();
                         return context[handler.method].call(context, ev, el)
                     }
-                    if (el === context.element) {
+                    if (el === root) {
                         break;
                     }
-                } while (el = el.parentElement)
-            } else {
-                return context[handler.method].call(context, ev)
-            }
+                }
+            } while (el = el.parentElement)
         })
     }
 
     export class EventAware {
-        element: HTMLElement
+        element: Element
 
-        attachEvents(element: HTMLElement) {
-            let handlers = eventHandlers.get(Object.getPrototypeOf(this))
-            if (handlers) {
-                for (let handler of handlers) {
-                    let hasNoScope = typeof handler.scope === 'undefined',
-                        scope: EventTarget = hasNoScope ? element : getScope(handler.scope),
-                        events = handler.event.split(' ')
-                    for (let event of events) {
-                        attachEvent(this, handler, scope, event)
-                        if (hasNoScope) {
-                            this.eventRegistered(this, event, handler)
-                        }
-                    }
-                }
-                return handlers
-            }
+        attachEvents() {
+            this.attachDelegates();
+            this.attachDirect();
         }
 
-        eventRegistered(context: any, event: string, handler: Handler) {
+        private handlers(scope: Scope): {[event: string]: Handler[]} {
+            let handlers = eventHandlers[scope].get(Object.getPrototypeOf(this)),
+                map = {}
+            if (handlers) {
+                handlers.reduce((p, c) => {
+                    let e = c.event;
+                    if (!p[e]) {
+                        p[e] = []
+                    }
+                    p[e].push(c)
+                    return p;
+                }, map)
+            }
+            return map
+        }
+
+        private attachDirect() {
+            let handlersMaps = this.handlers(Scope.Direct),
+                root = this.element;
+            Object.keys(handlersMaps).forEach(event => {
+                let handlers = handlersMaps[event]
+                for(let handler of handlers) {
+                    let el = root
+                    if (handler.selector) {
+                        el = el.querySelector(handler.selector)
+                    }
+                    el.addEventListener(event, (ev) => {
+                        if (handler.preventDefault) {
+                            ev.preventDefault()
+                        }
+                        return context[handler.method].call(context, ev, el)
+                    })
+                }
+                this.eventRegistered(this, event, handlers, Scope.Direct)
+            })
+        }
+
+        private attachDelegates() {
+            let handlersMaps = this.handlers(Scope.Delegate);
+            Object.keys(handlersMaps).forEach(event => {
+                let handlers = handlersMaps[event]
+                attachDelegatedEvent(this, event, handlers)
+                this.eventRegistered(this, event, handlers, Scope.Delegate)
+            })
+        }
+
+        eventRegistered(context: any, event: string, handler: Handler[], scope: Scope) {
             // use for whatever
         }
 
@@ -83,20 +109,22 @@ module feather.event {
 
     export let On = (ec: EventConfig) => (proto: EventAware, method: string) => {
 
-        let handlers = eventHandlers.get(proto)
+        let scope = ec.scope || Scope.Delegate,
+            handlers = eventHandlers[scope].get(proto)
 
         if (!handlers) {
-            eventHandlers.set(proto, handlers = [] as Handler[])
+            eventHandlers[scope].set(proto, handlers = [] as Handler[])
         }
 
-        handlers.push({
-            event: ec.event,
-            method: method,
-            preventDefault: ec.preventDefault,
-            scope: ec.scope,
-            selector: ec.selector,
-            forcePropagation: ec.forcePropagation
-        } as Handler)
+        ec.event.split(/\s+/).forEach(e =>
+            handlers.push({
+                event: e,
+                method: method,
+                preventDefault: ec.preventDefault,
+                scope: scope,
+                selector: ec.selector
+            } as Handler)
+        )
     }
 }
 
