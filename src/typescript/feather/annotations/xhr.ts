@@ -92,8 +92,8 @@ module feather.xhr {
                     progress: (ev) => this.triggerDown('xhr-progress', ev)
                 }
             }
-            params.url = format(params.url, this, this) // resolve url params
-            sendRequest(params, desc.value.original.bind(this), (err, xhr) => this.triggerDown('xhr-failure', err, xhr))
+            let newParams = {...params, url: format(params.url, this, this)} // resolve url params
+            sendRequest(newParams, desc.value.original.bind(this), (err, xhr) => this.triggerDown('xhr-failure', err, xhr))
         }
 
         desc.value.original = original
