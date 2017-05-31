@@ -124,6 +124,7 @@ module feather.event {
                 event: e,
                 method: method,
                 preventDefault: ec.preventDefault,
+                stop: ec.stop,
                 scope: scope,
                 selector: ec.selector
             } as Handler)
