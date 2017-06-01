@@ -18,9 +18,11 @@ module feather.core {
         new(): Initializable
     }
 
+    export type StringGenerator = () => string
+
     export abstract class Widget extends Observable implements Initializable {
         element: HTMLElement
-        id?: string
+        id?: string|StringGenerator
 
         bindToElement(element: HTMLElement) {
             this.element = element
