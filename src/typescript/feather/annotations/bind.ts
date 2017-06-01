@@ -296,11 +296,9 @@ module feather.observe {
                 if (conf.localStorage) {
                     let storedValue;
                     try {
-                        console.log(getPath(this as any, property))
                         let json = localStorage.getItem(getPath(this as any, property));
                         if (json) {
                             storedValue = JSON.parse(json).value
-                            console.log(storedValue)
                         }
                     } catch (e) {
                         console.warn(e)
