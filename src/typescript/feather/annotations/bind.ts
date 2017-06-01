@@ -30,8 +30,9 @@ module feather.observe {
     const attributeMapper      = {} as Map<string, string>
 
     export interface BindProperties {
-        templateName?: string // when pushing new widgets into an array, the template name to render the children with
-        changeOn?:     string[] // when pushing new widgets into an array, the template name to render the children with
+        templateName?: string   // when pushing new widgets into an array, the template name to render the children with
+        changeOn?:     string[] // list of property names
+        localStorage?:  boolean
     }
 
     function setOrRemoveAttribute(el: HTMLElement, attribute: string, condition: boolean, val: string) {
@@ -51,7 +52,21 @@ module feather.observe {
         }
     }
 
-    function createListener(obj: Widget, property: string, cb: (newVal?: Primitive, oldVal?: Primitive) => void) {
+    const getWidgetId = (w: any) => {
+        let name = w.id || w.name || w.title || w.constructor.name
+        return isFunction(name) ? name() : name
+    }
+
+    const getPath = (obj: Widget, property: string) => {
+        let segments = [property],
+            parent = obj
+        do {
+            segments.unshift(getWidgetId(parent))
+        } while (parent = parent.parentWidget as Widget)
+        return segments.join('.')
+    }
+
+    function createListener(obj: Widget, conf: BindProperties, property: string, cb: (newVal?: Primitive, oldVal?: Primitive) => void) {
         let value = obj[property]
 
         if (Array.isArray(value)) { // arrays are special case so we sort of fake getters and setters
@@ -74,6 +89,9 @@ module feather.observe {
                 },
                 set: (newval: any) => {
                     if (newval !== value) {
+                        if (conf.localStorage) {
+                            localStorage.setItem(getPath(obj, property), JSON.stringify({value: newval}))
+                        }
                         let old = value
                         value = newval
                         for (let cb of listeners[property]) {
@@ -88,7 +106,7 @@ module feather.observe {
         }
     }
 
-    function bindBoolean(property: string, hook: Hook, filter: FuncOne) {
+    function bindBoolean(property: string, hook: Hook, filter: FuncOne, conf: BindProperties) {
         if (hook.type === HookType.ATTRIBUTE || hook.type === HookType.PROPERTY) {
 
             let el = (hook.node as HTMLElement),
@@ -100,7 +118,7 @@ module feather.observe {
                 el.setAttribute(hook.text, '')
             }
 
-            createListener(this, property, function updateDom(val) {
+            createListener(this, conf, property, function updateDom(val) {
                 if (typeof el[attributeName] === 'boolean') {
                     el[attributeName] = !!filter(val)
                 } else {
@@ -115,17 +133,17 @@ module feather.observe {
         }
     }
 
-    function bindString(property: string, hook: Hook, filter: FuncOne) {
+    function bindString(property: string, hook: Hook, filter: FuncOne, conf: BindProperties) {
         let widget = this,
             el     = hook.node as HTMLElement
 
         if (hook.type === HookType.TEXT) { // <p>some text {{myVar}} goes here</p>
-            createListener(this, property, function updateDom() {
+            createListener(this, conf, property, function updateDom() {
                 el.textContent = format(hook.text, widget, widget)
                 return updateDom
             }())
         } else if (hook.type === HookType.CLASS) { // <p class="red {{myVar}}">text goes here</p>
-            createListener(this, property, function updateDom(val, old?) {
+            createListener(this, conf, property, function updateDom(val, old?) {
                 if (typeof old !== 'undefined') {
                     let fOld = filter(old)
                     if (fOld) {
@@ -144,7 +162,7 @@ module feather.observe {
         } else if (hook.type === HookType.ATTRIBUTE || hook.type === HookType.PROPERTY) { // <p style="{{myvar}}" {{hidden}}>text goes here</p>
             let attribName = hook.text || property
 
-            createListener(this, property, function updateDom(val) {
+            createListener(this, conf, property, function updateDom(val) {
                 let formatted = filter(val)
                 setOrRemoveAttribute(el, attribName, typeof formatted !== 'undefined', formatted)
                 return updateDom
@@ -178,8 +196,8 @@ module feather.observe {
                 if (added && added.length) {
                     let frag = document.createDocumentFragment()
                     for (let item of added) {
-                        item.appendTemplateRoot(frag, conf.templateName)
                         item.parentWidget = widget
+                        item.appendTemplateRoot(frag, conf.templateName)
                     }
                     childWidgets.push(...added)
                     insertBefore(el, frag, el.children[index])
@@ -204,9 +222,9 @@ module feather.observe {
             typeOfValue = (Array.isArray(value) ? 'array' : typeof value).toLowerCase()
         }
         if (/boolean/.test(typeOfValue)) {
-            bindBoolean.call(this, property, hook, filter)
+            bindBoolean.call(this, property, hook, filter, conf)
         } else if (/string|number/.test(typeOfValue)) {
-            bindString.call(this, property, hook, filter)
+            bindString.call(this, property, hook, filter, conf)
         } else if (/array/.test(typeOfValue)) {
             bindArray.call(this, this[property], hook, conf)
         } else {
@@ -237,8 +255,8 @@ module feather.observe {
                 if (addLength) {
                     let doc = addLength !== 1 ? document.createDocumentFragment() : parent
                     p.add.forEach(w => {
-                        w.appendTemplateRoot(doc, conf.templateName)
                         w.parentWidget = parentWidget
+                        w.appendTemplateRoot(doc, conf.templateName)
                     })
                     parentWidget.childWidgets.push(...p.add)
                     // let's add missing elements to UI and array in one go to the end of the list
@@ -260,10 +278,8 @@ module feather.observe {
             }
         syncProxy()
         observeArray(original, changeArrayListener(syncProxy))
-        if (conf.changeOn) {
-            for (let prop of conf.changeOn) {
-                createListener(this, prop, () => notifyListeners(original))
-            }
+        for (let prop of conf.changeOn) {
+            createListener(this, conf, prop, () => notifyListeners(original))
         }
         parent.removeAttribute(`{{${hook.curly}}}`)
     }
@@ -275,9 +291,25 @@ module feather.observe {
 
                 let filterFunctions = hook.curly.split(/:/),
                     property = this.findProperty(filterFunctions.shift()),
-                    value = this[property],
                     conf = binders.get(Object.getPrototypeOf(this))[property],
-                    fm: (s) => string = this.findMethod.bind(this),
+                    value = this[property]
+                if (conf.localStorage) {
+                    let storedValue;
+                    try {
+                        console.log(getPath(this as any, property))
+                        let json = localStorage.getItem(getPath(this as any, property));
+                        if (json) {
+                            storedValue = JSON.parse(json).value
+                            console.log(storedValue)
+                        }
+                    } catch (e) {
+                        console.warn(e)
+                    }
+                    if (typeof storedValue !== 'undefined') {
+                        this[property] = value = storedValue
+                    }
+                }
+                let fm: (s) => string = this.findMethod.bind(this),
                     filter = compose<any>(filterFunctions
                                 .map(fm)
                                 .map(method => this[method].bind(this)))
@@ -329,14 +361,17 @@ module feather.observe {
         }
     }
 
-    export let Bind = (props: BindProperties = {templateName: 'default'}) => (proto: Observable, property: string) => {
-        let protoBinders = binders.get(proto)
+    export let Bind = (props?: BindProperties) => (proto: Observable, property: string) => {
+        let defProps = {templateName: 'default', localStorage: false, changeOn: []},
+            finalProps = props ? {...defProps, ...props} : {...defProps},
+            protoBinders = binders.get(proto)
+
         if (!protoBinders) {
             binders.set(proto, {
-                [property]: props
+                [property]: finalProps
             })
         } else {
-            protoBinders[property] = props
+            protoBinders[property] = finalProps
         }
     }
 }

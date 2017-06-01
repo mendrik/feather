@@ -51,6 +51,9 @@ module feather.boot {
                     let node = nodes[j],
                         args = info.attributes.map(WidgetFactory.attributeParser(node, parentWidget || window)),
                         widget: Widget = new (Function.prototype.bind.apply(info.component, [null, ...args]))
+                    if (node.hasAttribute('id')) {
+                        widget.id = node.getAttribute('id')
+                    }
                     if (parentWidget) {
                         widget.parentWidget = parentWidget
                         parentWidget.childWidgets.push(widget)

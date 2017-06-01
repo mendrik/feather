@@ -1,8 +1,8 @@
 module feather.event {
 
-    import TypedMap = feather.types.TypedMap
+    import TypedMap        = feather.types.TypedMap
     import selectorMatches = feather.dom.selectorMatches;
-    import ValidRoot = feather.types.ValidRoot;
+    import ValidRoot       = feather.types.ValidRoot;
 
     export enum Scope {
         Direct,
