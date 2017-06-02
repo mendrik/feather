@@ -76,7 +76,7 @@ module feather.event {
         attachDirect(handlerMap: HandlersMap) {
             let root = this.element;
             Object.keys(handlerMap).forEach(event => {
-                let handlers = handlerMap[event]
+                let handlers: Handler[] = handlerMap[event]
                 for(let handler of handlers) {
                     let el = root
                     if (handler.selector) {
@@ -89,7 +89,7 @@ module feather.event {
                         if (!handler.bubble) {
                             ev.stopImmediatePropagation()
                         }
-                        return context[handler.method].call(context, ev, el)
+                        return this[handler.method].call(this, ev, el)
                     })
                 }
                 this.eventRegistered(this, event, handlers, Scope.Direct)
@@ -111,8 +111,7 @@ module feather.event {
     }
 
     export let On = (ec: EventConfig) => (proto: EventAware, method: string) => {
-
-        let scope = ec.scope || Scope.Delegate,
+        let scope = typeof ec.scope === 'undefined' ? Scope.Delegate : ec.scope,
             handlers = eventHandlers[scope].get(proto)
 
         if (!handlers) {
