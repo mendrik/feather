@@ -95,8 +95,7 @@ module feather.arrays {
         if (!observers.get(arr)) {
             observers.set(arr, [])
             arr.pop = function(): T {
-                arr.splice(arr.length - 1, 1)
-                return arr[arr.length - 1]
+                return arr.splice(arr.length - 1, 1)[0]
             }
             arr.push = function(...items: T[]): number {
                 arr.splice(arr.length, 0, ...items)
@@ -111,9 +110,7 @@ module feather.arrays {
                 return arr;
             }
             arr.shift = function(): T {
-                let deletee = arr[0]
-                arr.splice(0, 1)
-                return deletee
+                return arr.splice(0, 1)[0]
             }
             arr.unshift = function(...items: T[]): number {
                 arr.splice(0, 0, ...items)

@@ -172,7 +172,8 @@ describe('Arrays', () => {
                     done()
                 }
             } as ArrayListener<number>)
-            r1.pop()
+            const res = r1.pop()
+            expect(res).to.be.equal(10)
         })
 
         it('shift', (done) => {
