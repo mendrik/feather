@@ -89,7 +89,7 @@ module feather.observe {
                 },
                 set: (newval: any) => {
                     if (newval !== value) {
-                        if (conf.localStorage) {
+                        if (conf && conf.localStorage) {
                             localStorage.setItem(getPath(obj, property), JSON.stringify({value: newval}))
                         }
                         let old = value
@@ -293,7 +293,7 @@ module feather.observe {
                     property = this.findProperty(filterFunctions.shift()),
                     conf = binders.get(Object.getPrototypeOf(this))[property],
                     value = this[property]
-                if (conf.localStorage) {
+                if (conf && conf.localStorage) {
                     let storedValue;
                     try {
                         let json = localStorage.getItem(getPath(this as any, property));

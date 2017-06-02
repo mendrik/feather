@@ -62,7 +62,7 @@ module feather.xhr {
                     success(conf.responseFilter(xhr.responseText))
                 } else if (~[500, 404, 405].indexOf(xhr.status)) {
                     error(`Fetching failed ${xhr.status}`, xhr)
-                } else {
+                } else if (xhr.status !== 0) {
                     console.log(`Unhandled status ${xhr.status} for  ${conf.url}`)
                 }
             }
