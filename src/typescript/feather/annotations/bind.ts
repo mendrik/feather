@@ -66,6 +66,10 @@ module feather.observe {
         return segments.join('.')
     }
 
+    function destroyListeners(...obj: Widget[]) {
+        obj.forEach(w => boundProperties.delete(w))
+    }
+
     function createListener(obj: Widget, conf: BindProperties, property: string, cb: (newVal?: Primitive, oldVal?: Primitive) => void) {
         let value = obj[property]
 
@@ -181,7 +185,7 @@ module feather.observe {
                 let children = from<HTMLElement>(el.children)
                 indices.forEach(i => el.appendChild(children[i]))
             },
-            splice(index: number, deleteCount: number, added: any[], deleted: any[]) {
+            splice(index: number, deleteCount: number, added: any[], deleted: any[] = []) {
                 if (index === 0 && deleteCount === 0 && added.length == 0) {
                     return
                 }
@@ -191,7 +195,8 @@ module feather.observe {
 
                 let childWidgets = widget.childWidgets
 
-                feather.arrays.removeFromArray(childWidgets, deleted || [])
+                feather.arrays.removeFromArray(childWidgets, deleted)
+                destroyListeners(...deleted)
 
                 if (added && added.length) {
                     let frag = document.createDocumentFragment()
@@ -249,6 +254,7 @@ module feather.observe {
                     p.remove.forEach(w => {
                         parent.removeChild(w.element)
                     })
+                    destroyListeners(...p.remove)
                 }
 
                 addLength = p.add.length

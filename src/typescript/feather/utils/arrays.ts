@@ -116,10 +116,6 @@ module feather.arrays {
                 arr.splice(0, 0, ...items)
                 return arr.length
             }
-            arr['set'] = function(index: number, item: T): T {
-                arr.splice(index, 1, item)
-                return item;
-            }
             createProperty('splice', arr)
             createProperty('sort', arr)
         }
