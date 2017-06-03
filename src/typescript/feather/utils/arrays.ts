@@ -39,6 +39,7 @@ module feather.arrays {
             }
 
         if (key === 'splice') {
+            // add docs that removing and re-adding elements to the same array kills event listeners
             arr.splice = (index, dels, ...adds) => {
                 let res = old.call(arr, index, dels, ...adds)
                 notifyListenersWithArgs(arr, key, [index, dels, adds, res])

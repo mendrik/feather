@@ -100,15 +100,19 @@ module feather.event {
                     if (handler.selector) {
                         el = el.querySelector(handler.selector)
                     }
-                    addListener(el as HTMLElement, event, (ev) => {
-                        if (handler.preventDefault) {
-                            ev.preventDefault()
-                        }
-                        if (!handler.bubble) {
-                            ev.stopImmediatePropagation()
-                        }
-                        return this[handler.method].call(this, ev, el)
-                    })
+                    if (el) {
+                        addListener(el as HTMLElement, event, (ev) => {
+                            if (handler.preventDefault) {
+                                ev.preventDefault()
+                            }
+                            if (!handler.bubble) {
+                                ev.stopImmediatePropagation()
+                            }
+                            return this[handler.method].call(this, ev, el)
+                        })
+                    } else {
+                        console.warn(`${handler.selector} didn't match anything inside the template`)
+                    }
                 }
                 this.eventRegistered(this, event, handlers, Scope.Direct)
             })
