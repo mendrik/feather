@@ -3,6 +3,7 @@ module feather.event {
     import TypedMap        = feather.types.TypedMap
     import selectorMatches = feather.dom.selectorMatches;
     import ValidRoot       = feather.types.ValidRoot;
+    import HTML = feather.types.HTML;
 
     export enum Scope {
         Direct,
@@ -29,9 +30,26 @@ module feather.event {
         [Scope.Delegate]: new WeakMap<EventAware, Handler[]>(),
     }
 
+    interface Listener {
+        event: string,
+        fn: EventListenerOrEventListenerObject
+    }
+
+    let listenerDeregistry = new WeakMap<HTMLElement, Listener[]>()
+
+    let addListener = (el: HTMLElement, event: string, listener: EventListenerOrEventListenerObject) => {
+        el.addEventListener(event, listener)
+        let listeners = listenerDeregistry.get(el)
+        if (!listeners) {
+            listeners = []
+            listenerDeregistry.set(el, listeners)
+        }
+        listeners.push({event: event, fn: listener})
+    }
+
     function attachDelegatedEvent(context: EventAware, event: string, handlers: Handler[]) {
         let root = context.element;
-        root.addEventListener(event, (ev: Event) => {
+        addListener(root as HTMLElement, event, (ev: Event) => {
             let el: HTMLElement = ev.target as HTMLElement
             do {
                 for (let handler of handlers) {
@@ -82,7 +100,7 @@ module feather.event {
                     if (handler.selector) {
                         el = el.querySelector(handler.selector)
                     }
-                    el.addEventListener(event, (ev) => {
+                    addListener(el as HTMLElement, event, (ev) => {
                         if (handler.preventDefault) {
                             ev.preventDefault()
                         }
@@ -108,6 +126,10 @@ module feather.event {
             // use for whatever
         }
 
+        delete() {
+            listenerDeregistry.get(this.element as HTMLElement).forEach(l => this.element.removeEventListener(l.event, l.fn))
+            listenerDeregistry.delete(this.element as HTMLElement)
+        }
     }
 
     export let On = (ec: EventConfig) => (proto: EventAware, method: string) => {

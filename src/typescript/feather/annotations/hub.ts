@@ -37,6 +37,11 @@ module feather.hub {
                 }
             }
         }
+
+        delete() {
+            super()
+            subscribers.delete(this)
+        }
     }
 
     export let Subscribe = (event: string) => (proto: Subscribable, method: string) => {

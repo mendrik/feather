@@ -67,7 +67,10 @@ module feather.observe {
     }
 
     function destroyListeners(...obj: Widget[]) {
-        obj.forEach(w => boundProperties.delete(w))
+        obj.forEach(w => {
+            w.delete()
+            boundProperties.delete(w)
+        })
     }
 
     function createListener(obj: Widget, conf: BindProperties, property: string, cb: (newVal?: Primitive, oldVal?: Primitive) => void) {
