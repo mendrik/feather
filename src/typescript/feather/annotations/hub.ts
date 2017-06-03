@@ -38,8 +38,8 @@ module feather.hub {
             }
         }
 
-        delete() {
-            super()
+        cleanUp() {
+            super.cleanUp();
             subscribers.delete(this)
         }
     }

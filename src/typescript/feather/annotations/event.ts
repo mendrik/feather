@@ -126,7 +126,7 @@ module feather.event {
             // use for whatever
         }
 
-        delete() {
+        cleanUp() {
             listenerDeregistry.get(this.element as HTMLElement).forEach(l => this.element.removeEventListener(l.event, l.fn))
             listenerDeregistry.delete(this.element as HTMLElement)
         }
