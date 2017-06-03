@@ -131,8 +131,11 @@ module feather.event {
         }
 
         cleanUp() {
-            listenerDeregistry.get(this.element as HTMLElement).forEach(l => this.element.removeEventListener(l.event, l.fn))
-            listenerDeregistry.delete(this.element as HTMLElement)
+            let listeners = listenerDeregistry.get(this.element as HTMLElement);
+            if (listeners) {
+                listeners.forEach(l => this.element.removeEventListener(l.event, l.fn))
+                listenerDeregistry.delete(this.element as HTMLElement)
+            }
         }
     }
 
