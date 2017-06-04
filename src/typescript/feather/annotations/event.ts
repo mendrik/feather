@@ -37,7 +37,7 @@ module feather.event {
 
     let listenerDeregistry = new WeakMap<HTMLElement, Listener[]>()
 
-    let addListener = (el: HTMLElement, event: string, listener: EventListenerOrEventListenerObject) => {
+    export let addListener = (el: HTMLElement, event: string, listener: EventListenerOrEventListenerObject) => {
         el.addEventListener(event, listener)
         let listeners = listenerDeregistry.get(el)
         if (!listeners) {
@@ -130,17 +130,10 @@ module feather.event {
             // use for whatever
         }
 
-        eventDeregistered(listener: Listener) {
-            // use for whatever
-        }
-
         cleanUp() {
             let listeners = listenerDeregistry.get(this.element as HTMLElement);
             if (listeners) {
-                listeners.forEach(l => {
-                    this.element.removeEventListener(l.event, l.fn)
-                    this.eventDeregistered(l)
-                })
+                listeners.forEach(l => this.element.removeEventListener(l.event, l.fn))
                 listenerDeregistry.delete(this.element as HTMLElement)
             }
         }
