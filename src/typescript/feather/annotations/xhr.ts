@@ -61,12 +61,11 @@ module feather.xhr {
 
         xhr.addEventListener('readystatechange', () => {
             if (xhr.readyState === 4) {
-                if (xhr.status === 200) {
+                const status = ~~(xhr.status/100);
+                if (status === 2 || status === 3) {
                     success(conf.responseFilter(xhr.responseText))
-                } else if (~[500, 404, 405].indexOf(xhr.status)) {
+                } else {
                     error(`Fetching failed ${xhr.status}`, xhr)
-                } else if (xhr.status !== 0) {
-                    console.log(`Unhandled status ${xhr.status} for  ${conf.url}`)
                 }
             }
         })
