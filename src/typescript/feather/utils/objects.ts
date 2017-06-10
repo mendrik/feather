@@ -14,17 +14,22 @@ module feather.objects {
         }
     }
 
-    export function deepValue(obj: {}, path: string, value?: any): any {
+    export function deepValue(obj: {}, path: string): any {
         let i, len, pathArr
-        for (i = 0, pathArr = path.split('.'), len = value ? pathArr.length - 1 : pathArr.length; i < len; i++) {
+        for (i = 0, pathArr = path.split('.'), len = pathArr.length; i < len; i++) {
             obj = obj[pathArr[i]]
             if (typeof obj === 'undefined') {
                 return
             }
         }
-        if (value) {
-            obj[pathArr.pop()] = obj = value
-        }
         return obj
+    }
+
+    export function setDeepValue(obj: {}, path: string, value: any): any {
+        let i, len, pathArr
+        for (i = 0, pathArr = path.split('.'), len = pathArr.length - 1; i < len; i++) {
+            obj = obj[pathArr[i]] || (obj[pathArr[i]] = {})
+        }
+        return obj[pathArr.pop()] = value
     }
 }

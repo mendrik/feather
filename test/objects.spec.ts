@@ -47,6 +47,7 @@ describe('Objects', () => {
 
         it('Should resolve deep values', () => {
             let deepValue = feather.objects.deepValue,
+                setDeepValue = feather.objects.setDeepValue,
                 test = {
                     a: 1,
                     b: 2,
@@ -62,10 +63,16 @@ describe('Objects', () => {
             expect(deepValue(test, 'd.a')).to.be.equal(4)
             expect(deepValue(test, 'd.c')).to.be.undefined
 
-            deepValue(test, 'a', 9)
-            deepValue(test, 'd.b', 10)
+            setDeepValue(test, 'a', 9)
+            setDeepValue(test, 'd.b', 10)
             expect(deepValue(test, 'a')).to.be.equal(9)
             expect(deepValue(test, 'd.b')).to.be.equal(10)
+            let test2 = {}
+            setDeepValue(test2, 'a.b.c', 10)
+            expect(deepValue(test2, 'a')).to.not.be.undefined
+            expect(deepValue(test2, 'a.b')).to.not.be.undefined
+            expect(deepValue(test2, 'a.b.c')).to.be.equal(10)
+
         })
     })
 })
