@@ -4,6 +4,7 @@ module feather.xhr {
     import Widget    = feather.core.Widget
     import format    = feather.strings.format
     import deepValue = feather.objects.deepValue
+    import isFunction = feather.functions.isFunction;
 
     export type MethodValue = 'GET' | 'POST' | 'DELETE' | 'PUT'
 
@@ -13,6 +14,8 @@ module feather.xhr {
         DELETE: 'DELETE' as MethodValue,
         PUT:    'PUT'    as MethodValue
     }
+
+    export type StringFactory = () => string
 
     export interface RestConfig {
         url:              string
@@ -24,7 +27,7 @@ module feather.xhr {
         progress?:        (ev: ProgressEvent) => any
         withCredentials?: boolean
         body?:            string
-        headers?:         TypedMap<string>
+        headers?:         TypedMap<string|StringFactory>
     }
 
     const defaultRestConfig = {
@@ -52,7 +55,7 @@ module feather.xhr {
 
         if (xhr.setRequestHeader) {
             for (let key of Object.keys(conf.headers)) {
-                xhr.setRequestHeader(key, conf.headers[key])
+                xhr.setRequestHeader(key, conf.headers[key] as string)
             }
         }
 
@@ -93,6 +96,13 @@ module feather.xhr {
                     body: deepValue(this, params.body),
                     progress: (ev) => this.triggerDown('xhr-progress', ev)
                 }
+            }
+            if (params.headers) {
+                const headers = Object.keys(params.headers).reduce((p, c) => {
+                    const old = params.headers[c]
+                    p[c] = isFunction(old) ? (old as StringFactory)() : old as string
+                    return p
+                }, {})
             }
             let newParams = {...params, url: format(params.url, this, this)} // resolve url params
             return sendRequest(newParams, desc.value.original.bind(this), (err, xhr) => this.triggerDown('xhr-failure', err, xhr))
