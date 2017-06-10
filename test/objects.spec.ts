@@ -61,6 +61,11 @@ describe('Objects', () => {
             expect(deepValue(test, 'd')).to.be.deep.equal({a: 4,  b: 5})
             expect(deepValue(test, 'd.a')).to.be.equal(4)
             expect(deepValue(test, 'd.c')).to.be.undefined
+
+            deepValue(test, 'a', 9)
+            deepValue(test, 'd.b', 10)
+            expect(deepValue(test, 'a')).to.be.equal(9)
+            expect(deepValue(test, 'd.b')).to.be.equal(10)
         })
     })
 })
