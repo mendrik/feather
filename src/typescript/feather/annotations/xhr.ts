@@ -103,6 +103,10 @@ module feather.xhr {
                     p[c] = isFunction(old) ? (old as StringFactory)() : old as string
                     return p
                 }, {})
+                params = {
+                    ...params,
+                    headers
+                }
             }
             let newParams = {...params, url: format(params.url, this, this)} // resolve url params
             return sendRequest(newParams, desc.value.original.bind(this), (err, xhr) => this.triggerDown('xhr-failure', err, xhr))
