@@ -36,7 +36,7 @@ module feather.xhr {
         timeout:         5000,
         async:           true,
         withCredentials: true,
-        responseFilter:  (data) => JSON.parse(data),
+        responseFilter:  (data) => !!data ? JSON.parse(data) : null,
         requestFilter:   (data) => !!data ? JSON.stringify(data) : null,
         headers: {
             'Accept': 'application/json',
