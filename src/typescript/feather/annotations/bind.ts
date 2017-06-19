@@ -189,7 +189,7 @@ module feather.observe {
                 indices.forEach(i => el.appendChild(children[i]))
             },
             splice(index: number, deleteCount: number, added: any[], deleted: any[] = []) {
-                if (index === 0 && deleteCount === 0 && added.length == 0) {
+                if (index === 0 && deleteCount === 0 && added.length === 0) {
                     return
                 }
                 from<HTMLElement>(el.children)
