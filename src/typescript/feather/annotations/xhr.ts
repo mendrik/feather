@@ -89,12 +89,14 @@ module feather.xhr {
         let original = desc.value
 
         desc.value = function() {
-            let paramsCopy = {...params}
+            let paramsCopy = {
+                ...params,
+                progress: (ev) => this.triggerDown('xhr-progress', ev)
+            }
             if (paramsCopy.body) {
                 paramsCopy = {
                     ...paramsCopy,
                     body: deepValue(this, params.body),
-                    progress: (ev) => this.triggerDown('xhr-progress', ev)
                 }
             }
             if (params.headers) {
