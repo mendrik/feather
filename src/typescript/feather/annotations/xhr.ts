@@ -65,7 +65,7 @@ module feather.xhr {
                 if (status === 2 || status === 3) {
                     success(conf.responseFilter(xhr.responseText))
                 } else {
-                    error(`Fetching failed ${xhr.status}`, xhr)
+                    error(conf.responseFilter(xhr.responseText), xhr)
                 }
             }
         })
@@ -109,7 +109,7 @@ module feather.xhr {
                 }
             }
             let newParams = {...paramsCopy, url: format(params.url, this, this)} // resolve url params
-            return sendRequest(newParams, desc.value.original.bind(this), (err, xhr) => this.triggerDown('xhr-failure', err, xhr))
+            return sendRequest(newParams, desc.value.original.bind(this), (err, xhr) => this.triggerDown('xhr-failure-'+xhr.status, err, xhr))
         }
 
         desc.value.original = original
