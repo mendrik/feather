@@ -34,6 +34,7 @@ module feather.observe {
         templateName?: string   // when pushing new widgets into an array, the template name to render the children with
         changeOn?:     string[] // list of property names
         localStorage?:  boolean
+        html: boolean
     }
 
     function setOrRemoveAttribute(el: HTMLElement, attribute: string, condition: boolean, val: string) {
@@ -147,7 +148,11 @@ module feather.observe {
 
         if (hook.type === HookType.TEXT) { // <p>some text {{myVar}} goes here</p>
             createListener(this, conf, property, function updateDom() {
-                el.textContent = format(hook.text, widget, widget)
+                if (conf.html) {
+                    el.innerHTML = format(hook.text, widget, widget)
+                } else {
+                    el.textContent = format(hook.text, widget, widget)
+                }
                 return updateDom
             }())
         } else if (hook.type === HookType.CLASS) { // <p class="red {{myVar}}">text goes here</p>
@@ -370,7 +375,7 @@ module feather.observe {
     }
 
     export let Bind = (props?: BindProperties) => (proto: Observable, property: string) => {
-        let defProps = {templateName: 'default', localStorage: false, changeOn: []},
+        let defProps = {templateName: 'default', localStorage: false, changeOn: [], html: false},
             finalProps = props ? {...defProps, ...props} : {...defProps},
             protoBinders = binders.get(proto)
 
