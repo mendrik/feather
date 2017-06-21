@@ -4,6 +4,7 @@ module feather.routing {
     import Widget          = feather.core.Widget
     import Subscribable    = feather.hub.Subscribable
     import namedRegexMatch = feather.strings.namedRegexMatch
+    import collectAnnotationsFromArray = feather.objects.collectAnnotationsFromArray
 
     interface RouteConfig {
         route:   string,
@@ -48,13 +49,11 @@ module feather.routing {
 
     let notifyListeners = (route: string) => {
         for (let aware of routeAwares) {
-            let widgetRoutes: RouteConfig[] = routes.get(Object.getPrototypeOf(aware))
-            if (widgetRoutes) {
-                for (let rc of widgetRoutes) {
-                    let matchedParams = namedMatch(rc.route, route)
-                    if (matchedParams) {
-                        aware[rc.handler].call(aware, matchedParams)
-                    }
+            let widgetRoutes = collectAnnotationsFromArray(routes, aware)
+            for (let rc of widgetRoutes) {
+                let matchedParams = namedMatch(rc.route, route)
+                if (matchedParams) {
+                    aware[rc.handler].call(aware, matchedParams)
                 }
             }
         }

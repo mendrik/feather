@@ -24,6 +24,7 @@ module feather.observe {
     import patch               = feather.arrays.patch
     import Patch               = feather.arrays.Patch
     import removeFromArray     = feather.arrays.removeFromArray
+    import collectAnnotationsFromTypeMap = feather.objects.collectAnnotationsFromTypeMap;
 
     const boundProperties      = new WeakMap<Widget, TypedMap<Function[]>>()
     const binders              = new WeakMap<Observable, TypedMap<BindProperties>>()
@@ -300,7 +301,7 @@ module feather.observe {
 
                 let filterFunctions = hook.curly.split(/:/),
                     property = this.findProperty(filterFunctions.shift()),
-                    conf = binders.get(Object.getPrototypeOf(this))[property],
+                    conf = (collectAnnotationsFromTypeMap(binders, this) as TypedMap<BindProperties>)[property],
                     value = this[property]
                 if (conf && conf.localStorage) {
                     let storedValue;

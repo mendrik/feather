@@ -3,6 +3,7 @@ module feather.hub {
     import TypedMap   = feather.types.TypedMap
     import EventAware = feather.event.EventAware
     import flatten    = feather.arrays.flatten
+    import collectAnnotationsFromTypeMap = feather.objects.collectAnnotationsFromTypeMap
 
     const subscribers = new WeakMap<Subscribable, TypedMap<Subscriber[]>>()
 
@@ -30,8 +31,8 @@ module feather.hub {
         }
 
         private static trigger(event: string, context: Subscribable, ...data: any[]) {
-            let subs = subscribers.get(Object.getPrototypeOf(context))
-            if (subs && subs[event]) {
+            let subs = collectAnnotationsFromTypeMap(subscribers, context) as TypedMap<Subscriber[]>
+            if (subs[event]) {
                 for (let sub of subs[event]) {
                     context[sub.method].apply(context, flatten(data))
                 }

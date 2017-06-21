@@ -1,9 +1,10 @@
 module feather.event {
 
     import TypedMap        = feather.types.TypedMap
-    import selectorMatches = feather.dom.selectorMatches;
-    import ValidRoot       = feather.types.ValidRoot;
-    import HTML = feather.types.HTML;
+    import selectorMatches = feather.dom.selectorMatches
+    import ValidRoot       = feather.types.ValidRoot
+    import HTML            = feather.types.HTML
+    import collectAnnotationsFromArray = feather.objects.collectAnnotationsFromArray
 
     export enum Scope {
         Direct,
@@ -76,18 +77,16 @@ module feather.event {
         }
 
         private handlers(scope: Scope): HandlersMap {
-            let handlers = eventHandlers[scope].get(Object.getPrototypeOf(this)),
+            let handlers = collectAnnotationsFromArray(eventHandlers[scope], this),
                 map = {}
-            if (handlers) {
-                handlers.reduce((p, c) => {
-                    let e = c.event;
-                    if (!p[e]) {
-                        p[e] = []
-                    }
-                    p[e].push(c)
-                    return p;
-                }, map)
-            }
+            handlers.reduce((p, c) => {
+                let e = c.event;
+                if (!p[e]) {
+                    p[e] = []
+                }
+                p[e].push(c)
+                return p;
+            }, map)
             return map
         }
 
