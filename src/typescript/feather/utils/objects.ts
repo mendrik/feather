@@ -37,7 +37,7 @@ module feather.objects {
         return handlers;
     }
 
-    type TypeOrArray<T> = T[] | T
+    export type TypeOrArray<T> = T[] | T
 
     export const mergeArrayTypedMap = <T>(a: TypedMap<TypeOrArray<T>>, b: TypedMap<TypeOrArray<T>>) => {
         const target = {}
