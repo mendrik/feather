@@ -34,7 +34,7 @@ module feather.observe {
         templateName?: string   // when pushing new widgets into an array, the template name to render the children with
         changeOn?:     string[] // list of property names
         localStorage?:  boolean
-        html: boolean
+        html?: boolean
     }
 
     function setOrRemoveAttribute(el: HTMLElement, attribute: string, condition: boolean, val: string) {
