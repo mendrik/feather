@@ -148,10 +148,11 @@ module feather.observe {
 
         if (hook.type === HookType.TEXT) { // <p>some text {{myVar}} goes here</p>
             createListener(this, conf, property, function updateDom() {
+                let formatted = format(hook.text, widget, widget);
                 if (conf.html) {
-                    el.innerHTML = format(hook.text, widget, widget)
+                    el.parentElement.innerHTML = formatted
                 } else {
-                    el.textContent = format(hook.text, widget, widget)
+                    el.textContent = formatted
                 }
                 return updateDom
             }())

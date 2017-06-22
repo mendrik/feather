@@ -4,6 +4,7 @@ module feather.annotations {
     import Widget        = feather.core.Widget
     import from          = feather.arrays.from
     import allChildNodes = feather.dom.allChildNodes
+    import collectAnnotationsFromTypeMap = feather.objects.collectAnnotationsFromTypeMap;
 
     const supportsTemplate    = 'content' in document.createElement('template') && 'firstElementChild' in document.createDocumentFragment()
     const CURLIES             = /\{\{(.*?)}}/
@@ -117,7 +118,7 @@ module feather.annotations {
     export class TemplateFactory {
 
         static getTemplate(widget: Widget, name: string): ParsedTemplate {
-            let method = templates.get(Object.getPrototypeOf(widget))[name],
+            let method = (collectAnnotationsFromTypeMap(templates, widget) as TypedMap<Function>)[name],
                 templateString: string = method.call(widget),
                 preparsedTemplate = parsedTemplateCache[templateString]
             if (!preparsedTemplate) {
@@ -129,18 +130,20 @@ module feather.annotations {
 
     }
 
-    export let Template = (name: string = 'default') => (proto: Widget, method: string) => {
+    export let Template = (name: string = 'default', warmUp = true) => (proto: Widget, method: string) => {
         let widgetTemplates = templates.get(proto)
         if (!widgetTemplates) {
             templates.set(proto, widgetTemplates = {})
         }
         widgetTemplates[name] = proto[method]
 
-        try {
-            let str = proto[method].call({})
-            parsedTemplateCache[str] = getPreparsedTemplate(str)
-        } catch (e) {
-            console.warn(`Template method ${method} in ${proto.constructor} is not a pure function.`)
+        if (warmUp) {
+            try {
+                let str = proto[method].call({})
+                parsedTemplateCache[str] = getPreparsedTemplate(str)
+            } catch (e) {
+                console.warn(`Template method ${method} in ${proto.constructor} is not a pure function.`)
+            }
         }
     }
 }
