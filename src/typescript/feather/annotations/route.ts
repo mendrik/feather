@@ -78,6 +78,8 @@ module feather.routing {
             }
         }
 
+        currentRoute = getCurrentRoute
+
         route = (path: string) => navigateRoute(path)
     }
 
