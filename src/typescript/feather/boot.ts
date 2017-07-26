@@ -4,12 +4,6 @@ module feather.boot {
     import Constructable         = feather.core.Constructable
     import ValidRoot             = feather.types.ValidRoot
     import Widget                = feather.core.Widget
-    import deepValue             = feather.objects.deepValue
-    import values                = feather.objects.values
-    import from                  = feather.arrays.from
-    import flatMap               = feather.arrays.flatMap
-    import selectorMatches       = feather.dom.selectorMatches
-    import HTML                  = feather.types.HTML;
 
     export interface Blueprint {
         selector: string

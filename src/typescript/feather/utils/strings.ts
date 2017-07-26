@@ -1,6 +1,5 @@
 module feather.strings {
 
-    import SimpleMap  = feather.types.SimpleMap
     import deepValue  = feather.objects.deepValue
     import isFunction = feather.functions.isFunction
 

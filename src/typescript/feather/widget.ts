@@ -1,13 +1,9 @@
 module feather.core {
 
     import TemplateFactory = feather.annotations.TemplateFactory
-    import SimpleMap       = feather.types.SimpleMap
     import ValidRoot       = feather.types.ValidRoot
     import Observable      = feather.observe.Observable
     import ParsedTemplate  = feather.annotations.ParsedTemplate
-    import Primitive       = feather.types.Primitive
-    import insertBefore    = feather.dom.insertBefore
-    import TypedMap        = feather.types.TypedMap;
     import WidgetFactory   = feather.boot.WidgetFactory;
     import from            = feather.arrays.from;
 
@@ -29,6 +25,7 @@ module feather.core {
             this.init(element)
             this.attachEvents()
             this.initRoutes()
+            this.attachMediaListeners()
         }
 
         protected render(templateName: string = 'default') {

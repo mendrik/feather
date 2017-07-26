@@ -19,10 +19,8 @@ module feather.observe {
     import changeArrayListener = feather.arrays.changeArrayListener
     import format              = feather.strings.format
     import lis                 = feather.arrays.lis
-    import range               = feather.arrays.range
     import diff                = feather.arrays.diff
     import patch               = feather.arrays.patch
-    import Patch               = feather.arrays.Patch
     import removeFromArray     = feather.arrays.removeFromArray
     import collectAnnotationsFromTypeMap = feather.objects.collectAnnotationsFromTypeMap;
 

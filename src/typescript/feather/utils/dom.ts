@@ -1,6 +1,5 @@
 module feather.dom {
 
-    import from      = feather.arrays.from
     import ValidRoot = feather.types.ValidRoot
 
     const NODE_FILTER = (n: Node) => {

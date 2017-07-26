@@ -1,10 +1,8 @@
 module feather.event {
 
-    import TypedMap        = feather.types.TypedMap
     import selectorMatches = feather.dom.selectorMatches
-    import ValidRoot       = feather.types.ValidRoot
-    import HTML            = feather.types.HTML
     import collectAnnotationsFromArray = feather.objects.collectAnnotationsFromArray
+    import MediaAware = feather.media.MediaAware
 
     export enum Scope {
         Direct,
@@ -68,7 +66,7 @@ module feather.event {
         })
     }
 
-    export class EventAware {
+    export class EventAware extends MediaAware {
         element: Element
 
         attachEvents() {
@@ -130,7 +128,8 @@ module feather.event {
         }
 
         cleanUp() {
-            let listeners = listenerDeregistry.get(this.element as HTMLElement);
+            super.cleanUp()
+            let listeners = listenerDeregistry.get(this.element as HTMLElement)
             if (listeners) {
                 listeners.forEach(l => this.element.removeEventListener(l.event, l.fn))
                 listenerDeregistry.delete(this.element as HTMLElement)
