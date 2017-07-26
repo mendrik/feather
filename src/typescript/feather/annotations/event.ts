@@ -5,7 +5,7 @@ module feather.event {
     import MediaAware = feather.media.MediaAware
 
     export enum Scope {
-        Direct,npm
+        Direct,
         Delegate
     }
 
