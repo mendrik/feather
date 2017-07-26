@@ -16,6 +16,7 @@ A feather-light :D framework written in typescript with support for
 * Clean and simple code
 * Runs on modern browsers and IE9+
 * Less than 10kb gzipped
+* Integrated media query evaluation in javascript
 
 ---
 

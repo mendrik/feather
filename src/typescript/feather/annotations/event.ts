@@ -1,8 +1,8 @@
 module feather.event {
 
-    import selectorMatches = feather.dom.selectorMatches
+    import selectorMatches             = feather.dom.selectorMatches
     import collectAnnotationsFromArray = feather.objects.collectAnnotationsFromArray
-    import MediaAware = feather.media.MediaAware
+    import MediaQueryAware             = feather.media.MediaQueryAware
 
     export enum Scope {
         Direct,
@@ -66,7 +66,7 @@ module feather.event {
         })
     }
 
-    export class EventAware extends MediaAware {
+    export class EventAware extends MediaQueryAware {
         element: Element
 
         attachEvents() {
@@ -157,4 +157,3 @@ module feather.event {
         )
     }
 }
-

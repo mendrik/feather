@@ -7,16 +7,15 @@ module feather.media {
         method: string
     }
 
-    let mediaHandlers = new WeakMap<MediaAware, MediaConfig[]>()
-
-    interface Listener {
+    interface MediaListener {
         mediaQuery: MediaQueryList,
         listener: MediaQueryListListener
     }
 
-    let mediaQueryListeners = new WeakMap<MediaAware, Listener[]>()
+    let mediaHandlers = new WeakMap<MediaQueryAware, MediaConfig[]>()
+    let mediaQueryListeners = new WeakMap<MediaQueryAware, MediaListener[]>()
 
-    export class MediaAware {
+    export class MediaQueryAware {
 
         attachMediaListeners() {
             let handlers = collectAnnotationsFromArray(mediaHandlers, this)
@@ -28,7 +27,7 @@ module feather.media {
                             this[h.method].call(this, mq)
                         }
                       }
-                mq.addListener(listener);
+                mq.addListener(listener)
 
                 let dereg = mediaQueryListeners.get(this);
                 if (!dereg) {
@@ -38,6 +37,8 @@ module feather.media {
                     mediaQuery: mq,
                     listener
                 })
+
+                listener(mq)
             })
         }
 
@@ -49,11 +50,11 @@ module feather.media {
         }
     }
 
-    export let Media = (query: string) => (proto: MediaAware, method: string) => {
+    export const Media = (query: string) => (proto: MediaQueryAware, method: string) => {
         let handlers = mediaHandlers.get(proto)
 
         if (!handlers) {
-            mediaHandlers.set(proto, handlers = [] as MediaConfig[])
+            mediaHandlers.set(proto, handlers = [])
         }
 
         handlers.push({

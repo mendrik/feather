@@ -40,7 +40,7 @@ module feather.hub {
         }
 
         cleanUp() {
-            super.cleanUp();
+            super.cleanUp()
             subscribers.delete(this)
         }
     }
