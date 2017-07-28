@@ -13,10 +13,6 @@ module feather.arrays {
         return [].slice.call(object)
     }
 
-    export function flatMap<T, U>(array: T[], mapFunc: (x: T) => U[]): U[] {
-        return array.reduce((cumulus: U[], next: T) => [...mapFunc(next), ...cumulus], [] as U[])
-    }
-
     export function flatten(array: any[]): any[] {
         return array.reduce((a, b) => a.concat(b), [])
     }
@@ -30,10 +26,10 @@ module feather.arrays {
     }
 
     function createProperty<T>(key: MethodKey, arr: any) {
-        let old       = arr[key],
-            listeners = observers.get(arr),
-            notifyListenersWithArgs = (arr, method: MethodKey, args: any[]) => {
-                for (let listener of listeners) {
+        const old       = arr[key],
+              listeners = observers.get(arr),
+              notifyListenersWithArgs = (arr, method: MethodKey, args: any[]) => {
+                for (const listener of listeners) {
                     listener[method].apply(arr, args)
                 }
             }
@@ -41,16 +37,16 @@ module feather.arrays {
         if (key === 'splice') {
             // add docs that removing and re-adding elements to the same array kills event listeners
             arr.splice = (index, dels, ...adds) => {
-                let res = old.call(arr, index, dels, ...adds)
+                const res = old.call(arr, index, dels, ...adds)
                 notifyListenersWithArgs(arr, key, [index, dels, adds, res])
                 return res
             }
-        } else if (key == 'sort') {
+        } else if (key === 'sort') {
             arr.sort = (cmp) => {
                 // sort is a special case, we need to inform listeners how sorting has changed the array
-                let indices = range(0, arr.length - 1),
-                    args = cmp ? [arr.map((e, i) => i).sort((a, b) => cmp(arr[a], arr[b])).map(e => indices[e])] : indices,
-                    res = old.call(arr, cmp)
+                const indices = range(0, arr.length - 1),
+                      args = cmp ? [arr.map((e, i) => i).sort((a, b) => cmp(arr[a], arr[b])).map(e => indices[e])] : indices,
+                      res = old.call(arr, cmp)
                 notifyListenersWithArgs(arr, key, args)
                 return res
             }
@@ -58,9 +54,9 @@ module feather.arrays {
     }
 
     export let notifyListeners = (source: any[]) => {
-        let listeners = observers.get(source)
+        const listeners = observers.get(source)
         if (listeners) {
-            for (let l of listeners) {
+            for (const l of listeners) {
                 l.splice(0, 0, [], [])
             }
         }
@@ -83,8 +79,8 @@ module feather.arrays {
     }
 
     export function range(start: number, end: number): number[] {
-        let len = end - start + 1,
-            arr = new Array<number>(len)
+        const len = end - start + 1,
+              arr = new Array<number>(len)
         for (let i = 0, l = arr.length; i < l; i++) {
             arr[i] =  i + start
         }
@@ -106,7 +102,7 @@ module feather.arrays {
                 throw Error('observed arrays cannot be filled. items must be unique, use Array.splice instead!')
             }
             arr.reverse = function() {
-                let ref = arr.slice();
+                const ref = arr.slice();
                 arr.sort((a, b) => ref.indexOf(b) - ref.indexOf(a))
                 return arr;
             }
@@ -131,9 +127,9 @@ module feather.arrays {
     }
 
     export function lis(x: number[]) {
-        let n = x.length,
-            len = new Array(n),
-            pred = new Array(n)
+        const n = x.length,
+              len = new Array(n),
+              pred = new Array(n)
         for (let i = 0, nn = n + 1; i < nn; i++) {
             len[i] = 1
             pred[i] = -1
@@ -152,11 +148,11 @@ module feather.arrays {
                 bi = i
             }
         }
-        let cnt = len[bi],
-            res = new Array(cnt)
-        for (let i = bi; i != -1; i = pred[i]) {
+        let cnt = len[bi]
+        const res = new Array(cnt)
+        for (let i = bi; i !== -1; i = pred[i]) {
             res[--cnt] = x[i]
         }
         return res
-    }  
+    }
 }

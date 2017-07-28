@@ -1,12 +1,11 @@
 module demo {
 
-    import Widget    = feather.core.Widget
-    import Construct = feather.annotations.Construct
-    import Template  = feather.annotations.Template
-    import HTML      = feather.types.HTML
-    import Bind      = feather.observe.Bind
-    import On        = feather.event.On
-    import Subscribe = feather.hub.Subscribe
+    import Widget    = feather.core.Widget;
+    import Construct = feather.annotations.Construct;
+    import Template  = feather.annotations.Template;
+    import Bind      = feather.observe.Bind;
+    import On        = feather.event.On;
+    import Subscribe = feather.hub.Subscribe;
 
     @Construct({selector: '.widget', attributes: ['name']})
     export class SubWidget extends Widget {

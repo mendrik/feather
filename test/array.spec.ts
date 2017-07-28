@@ -34,14 +34,14 @@ describe('Arrays', () => {
     describe('Arrays.from', () => {
 
         it('should convert DomList', () => {
-            let spans = document.querySelectorAll('span'),
+            const spans = document.querySelectorAll('span'),
                 asArray = feather.arrays.from(spans)
             expect(asArray.length).to.be.equal(spans.length)
             expect(Array.isArray(asArray)).to.be.true
         })
 
         it('should copy array', () => {
-            let arr = feather.arrays.range(5, 10),
+            const arr = feather.arrays.range(5, 10),
                 copy = feather.arrays.from(arr)
             copy[0] = 1;
             expect(Array.isArray(copy)).to.be.true
@@ -52,7 +52,7 @@ describe('Arrays', () => {
 
     describe('Arrays.range', () => {
         it('should create range', () => {
-            let r1 = feather.arrays.range(5, 10)
+            const r1 = feather.arrays.range(5, 10)
             expect(r1.length).to.be.equal(6)
             expect(r1[0]).to.be.equal(5)
             expect(r1[r1.length - 1]).to.be.equal(10)
@@ -61,7 +61,7 @@ describe('Arrays', () => {
 
     describe('Arrays.diff', () => {
         it('should diff correctly', () => {
-            let r1 = feather.arrays.range(2, 10),
+            const r1 = feather.arrays.range(2, 10),
                 r2 = feather.arrays.range(4, 8),
                 diff = feather.arrays.diff(r1, r2)
             expect(diff).to.be.deep.equal([2, 3, 9, 10])
@@ -70,35 +70,43 @@ describe('Arrays', () => {
 
     describe('Arrays.lis', () => {
         it('should find longest increasing sequence', () => {
-            let r1 = [1, 4, 8, -7, 2, 5, 3, 7, 9, 6, 10, 0, 13, 8]
+            const r1 = [1, 4, 8, -7, 2, 5, 3, 7, 9, 6, 10, 0, 13, 8]
             expect(feather.arrays.lis(r1)).to.be.deep.equal([1, 4, 5, 7, 9, 10, 13])
-            let r2 = [0,3,1,2]
+            const r2 = [0,3,1,2]
             expect(feather.arrays.lis(r2)).to.be.deep.equal([0, 1, 2])
         })
     })
 
     describe('Arrays.patch', () => {
         it('should find a patch', () => {
-            let current = ["a", "b", "e", "f"],
-                target = ["a", "c", "d", "f"],
-
-                patch = feather.arrays.patch(target, current);
-            expect(patch.add).to.be.deep.equal(["c", "d"])
-            expect(patch.remove).to.be.deep.equal(["b", "e"])
+            const current = ['a', 'b', 'e', 'f'],
+                  target = ['a', 'c', 'd', 'f'],
+                  patch = feather.arrays.patch(target, current);
+            expect(patch.add).to.be.deep.equal(['c', 'd'])
+            expect(patch.remove).to.be.deep.equal(['b', 'e'])
         })
     })
 
     describe('Arrays.flatten', () => {
         it('should flatten arrays', () => {
-            let r1 = [[1,2],[3,4],[5, [6, 7]]]
+            const r1 = [[1,2],[3,4],[5, [6, 7]]]
             expect(feather.arrays.flatten(r1)).to.be.deep.equal([1,2,3,4,5,[6,7]])
+        })
+    })
+
+    describe('Arrays.removeFromArray', () => {
+        it('should remove elements from array', () => {
+            const r1 = feather.arrays.range(1, 10),
+                  r2 = feather.arrays.range(3, 7)
+            feather.arrays.removeFromArray(r1, r2)
+            expect(r1).to.be.deep.equal([1,2,8,9,10])
         })
     })
 
     describe('Arrays.observeArray', () => {
         it('push', (done) => {
-            let observeArray = feather.arrays.observeArray,
-                r1 = feather.arrays.range(1, 10)
+            const observeArray = feather.arrays.observeArray,
+                  r1 = feather.arrays.range(1, 10)
 
             observeArray(r1, {
 
@@ -125,8 +133,8 @@ describe('Arrays', () => {
         })
 
         it('unshift', (done) => {
-            let observeArray = feather.arrays.observeArray,
-                r1 = feather.arrays.range(1, 10);
+            const observeArray = feather.arrays.observeArray,
+                  r1 = feather.arrays.range(1, 10);
             observeArray(r1, {
                 reverse() {
                     throw Error('don\'t come here')
@@ -152,8 +160,8 @@ describe('Arrays', () => {
         })
 
         it('pop', (done) => {
-            let observeArray = feather.arrays.observeArray,
-                r1 = feather.arrays.range(1, 10)
+            const observeArray = feather.arrays.observeArray,
+                  r1 = feather.arrays.range(1, 10)
             observeArray(r1, {
                 reverse() {
                     throw Error('don\'t come here')
@@ -177,8 +185,8 @@ describe('Arrays', () => {
         })
 
         it('shift', (done) => {
-            let observeArray = feather.arrays.observeArray,
-                r1 = feather.arrays.range(1, 10)
+            const observeArray = feather.arrays.observeArray,
+                  r1 = feather.arrays.range(1, 10)
             observeArray(r1, {
                 reverse() {
                     throw Error('don\'t come here')
@@ -201,8 +209,8 @@ describe('Arrays', () => {
         })
 
         it('splice A', (done) => {
-            let observeArray = feather.arrays.observeArray,
-                r1 = feather.arrays.range(1, 10);
+            const observeArray = feather.arrays.observeArray,
+                  r1 = feather.arrays.range(1, 10);
             observeArray(r1, {
                 reverse() {
                     throw Error('don\'t come here')
@@ -225,8 +233,8 @@ describe('Arrays', () => {
         })
 
         it('splice B', (done) => {
-            let observeArray = feather.arrays.observeArray,
-                r1 = feather.arrays.range(1, 10)
+            const observeArray = feather.arrays.observeArray,
+                  r1 = feather.arrays.range(1, 10)
             observeArray(r1, {
                 sort(indices: number[]) {
                     throw Error('don\'t come here')
@@ -247,8 +255,8 @@ describe('Arrays', () => {
         })
 
         it('reverse', (done) => {
-            let observeArray = feather.arrays.observeArray,
-                r1 = feather.arrays.range(1, 10)
+            const observeArray = feather.arrays.observeArray,
+                  r1 = feather.arrays.range(1, 10)
             observeArray(r1, {
                 sort(indices: number[]) {
                     expect(r1.length).to.be.equal(10)
@@ -264,12 +272,12 @@ describe('Arrays', () => {
         })
 
         it('double reverse', (done) => {
-            let observeArray = feather.arrays.observeArray,
-                r1 = feather.arrays.range(1, 10),
-                plan = new Plan(2, done)
+            const observeArray = feather.arrays.observeArray,
+                  r1 = feather.arrays.range(1, 10),
+                  plan = new Plan(2, done)
             observeArray(r1, {
                 sort(indices: number[]) {
-                    if (plan.count == 1) {
+                    if (plan.count === 1) {
                         expect(r1[0]).to.be.equal(1)
                         expect(r1[9]).to.be.equal(10)
                     }
@@ -283,10 +291,10 @@ describe('Arrays', () => {
         })
 
         it('sort', (done) => {
-            let observeArray = feather.arrays.observeArray,
-                r1 = [2, 5, 4, 3, 6, 1],
-                originalR1 = [2, 5, 4, 3, 6, 1],
-                r3 = []
+            const observeArray = feather.arrays.observeArray,
+                  r1 = [2, 5, 4, 3, 6, 1],
+                  originalR1 = [2, 5, 4, 3, 6, 1],
+                  r3 = []
             observeArray(r1, {
                 sort(indices: number[]) {
                     expect(r1.length).to.be.equal(6)
@@ -306,9 +314,9 @@ describe('Arrays', () => {
         })
 
         it('multiple listeners', (done) => {
-            let observeArray = feather.arrays.observeArray,
-                plan = new Plan(4, done),
-                r1 = [2, 5, 4, 3, 6, 1];
+            const observeArray = feather.arrays.observeArray,
+                  plan = new Plan(4, done),
+                  r1 = [2, 5, 4, 3, 6, 1];
 
             observeArray(r1, {
                 sort(indices: number[]) {

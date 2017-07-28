@@ -13,7 +13,7 @@ describe('Templates', () => {
     describe('Self closing tags', () => {
 
         it('Regexp works', () => {
-            let r = featherTs.annotations.selfClosingTags,
+            const r = featherTs.annotations.selfClosingTags,
                 o = featherTs.annotations.openTags
             expect('<span/><span/>'.replace(r, o)).to.be.equal('<span></span><span></span>')
             expect('<bla><span/><span/></bla>'.replace(r, o)).to.be.equal('<bla><span></span><span></span></bla>')
@@ -26,7 +26,7 @@ describe('Templates', () => {
         })
 
         it('Template parses correctly with attributes', () => {
-            let str = `
+            const str = `
                     <AttributeWidget id="aw1" text="{'a'+'b'}" bool="{true}" func="{this.printStuff}" number="{3}"/>
                     <AttributeWidget id="aw2" text={this.printStuff()} bool={false} func={this.printStuff} number={4}/>
                 `,
@@ -38,9 +38,7 @@ describe('Templates', () => {
         })
 
         it('Template parses hooks', () => {
-            let str = `
-                    <AttributeWidget {{hook1}} bla="{{hook2}}" class="bub {{hook3}}">in {{hook4}} text</AttributeWidget>
-                `,
+            const str = `<AttributeWidget {{hook1}} bla="{{hook2}}" class="bub {{hook3}}">in {{hook4}} text</AttributeWidget>`,
                 pt = featherTs.annotations.getPreparsedTemplate,
                 parsed = pt(str)
             expect(parsed.hookInfos.length).to.be.equal(4);
@@ -62,17 +60,15 @@ describe('Templates', () => {
         })
 
         it('Template clones', () => {
-            let str = `
-                    <span {{bla}} /><span {{bla}} /><span {{bla}} />
-                `,
+            const str = `<span {{bla}} /><span {{bla}} /><span {{bla}} />`,
                 pt = featherTs.annotations.getPreparsedTemplate,
                 parsed = pt(str),
                 cloned = parsed.asParsedTemplate()
             expect(cloned.hooks.length).to.be.equal(3);
             expect(cloned.doc.children.length).to.be.equal(3)
 
-            let div1 = document.createElement('div'),
-                div2 = document.createElement('div');
+            const div1 = document.createElement('div'),
+                  div2 = document.createElement('div');
 
             div1.appendChild(parsed.node)
             div2.appendChild(cloned.doc)
@@ -80,5 +76,4 @@ describe('Templates', () => {
             expect(div1.innerHTML).to.be.equal(div2.innerHTML)
         })
     })
-    
 })

@@ -1,11 +1,8 @@
 module demo {
 
-    import Widget    = feather.core.Widget
-    import Construct = feather.annotations.Construct
-    import Template  = feather.annotations.Template
-    import HTML      = feather.types.HTML
-    import Bind      = feather.observe.Bind
-    import On        = feather.event.On
+    import Widget    = feather.core.Widget;
+    import Template  = feather.annotations.Template;
+    import Bind      = feather.observe.Bind;
 
     export class ArrayElement extends Widget {
 

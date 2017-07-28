@@ -1,14 +1,17 @@
 import {loadPage} from './test-head'
 import * as sinon from 'sinon'
+import {SinonSandbox} from 'sinon';
 
+/* doesn't work with latest jsdom
 const mockLocation = (window) => {
-    let path = '/'
+    const path = '/'
     Object.defineProperty(window.location, 'pathname', {
         value: path
     })
-    sinon.stub(window.location ,'replace').callsFake((p) => path = p)
+    // sinon.stub(window.location ,'replace').callsFake((p) => path = p)
     return true
 }
+*/
 
 describe('Routes', () => {
 
@@ -17,28 +20,29 @@ describe('Routes', () => {
         window = w,
         feather = w.feather,
         demo = w.demo
-    ) && mockLocation(w) && done()))
+    ) && done()))
 
     beforeEach(() => sandbox = sinon.sandbox.create())
     afterEach(() => sandbox.restore())
 
     it('initially', () => {
-        let proto = demo.Application.prototype,
+        const proto = demo.Application.prototype,
             spy = sandbox.spy(proto, 'entry');
-        window.feather.start()
+        feather.start()
         spy.should.have.been.calledOnce
         spy.should.have.been.calledOn(window.app)
         spy.should.have.been.calledWith({})
+        spy.restore()
     })
 
     it('after navigation event', () => {
-        let proto = demo.Application.prototype,
-            spy = sandbox.spy(proto, 'entry');
-        window.feather.start()
+        const proto = demo.Application.prototype,
+              spy = sandbox.spy(proto, 'entry');
+        feather.start()
         window.app.route('/mypath')
         spy.should.have.been.calledOnce
         spy.should.have.been.calledOn(window.app)
         spy.should.have.been.calledWith({})
+        spy.restore()
     })
-
 })

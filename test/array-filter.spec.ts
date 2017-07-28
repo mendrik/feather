@@ -14,15 +14,15 @@ describe('Filtered arrays', () => {
     describe('Arrays', () => {
 
         it('should be populated', () => {
-            let app = window.app as demo.Application,
-                ul = document.getElementById('filtered-list')
+            const app = window.app as demo.Application,
+                  ul = document.getElementById('filtered-list')
             expect(app.filteredList.length).to.be.equal(4)
             expect(ul.children.length).to.be.equal(4)
         })
 
         it('should filter elements from view', () => {
-            let app = window.app as demo.Application,
-                ul = document.getElementById('filtered-list')
+            const app = window.app as demo.Application,
+                  ul = document.getElementById('filtered-list')
 
             app.filterState = demo.FilterState.FALSE
             expect(ul.children.length).to.be.equal(2)
@@ -31,7 +31,7 @@ describe('Filtered arrays', () => {
         })
 
         it('should not add new child widgets', () => {
-            let app = window.app as demo.Application
+            const app = window.app as demo.Application
             app.filterState = demo.FilterState.ALL
 
             expect(app.filteredList[0].childWidgets.length).to.be.equal(1)
@@ -41,8 +41,8 @@ describe('Filtered arrays', () => {
         })
 
         it('should apply to delegated filters', () => {
-            let app = window.app as demo.Application,
-                ul = document.getElementById('filtered-list')
+            const app = window.app as demo.Application,
+                  ul = document.getElementById('filtered-list')
             app.filterState = demo.FilterState.TRUE
             expect(ul.getAttribute('truthy')).to.be.equal('2')
             app.filteredList[1].booleanA = true

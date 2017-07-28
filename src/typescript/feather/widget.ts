@@ -6,6 +6,7 @@ module feather.core {
     import ParsedTemplate  = feather.annotations.ParsedTemplate
     import WidgetFactory   = feather.boot.WidgetFactory;
     import from            = feather.arrays.from;
+    import removeFromArray = feather.arrays.removeFromArray;
 
     export interface Initializable {
     }
@@ -29,15 +30,14 @@ module feather.core {
         }
 
         protected render(templateName: string = 'default') {
-            let parsed = this.getParsed(templateName),
-                el = this.element
-            el.appendChild(parsed.doc)
+            const parsed = this.getParsed(templateName)
+            this.element.appendChild(parsed.doc)
         }
 
         private getParsed(templateName: string): ParsedTemplate {
-            let template = TemplateFactory.getTemplate(this, templateName)
+            const template = TemplateFactory.getTemplate(this, templateName)
             from<HTMLElement>(template.doc.childNodes)
-                .filter(n => n.nodeType == Node.ELEMENT_NODE)
+                .filter(n => n.nodeType === Node.ELEMENT_NODE)
                 .forEach(x => WidgetFactory.start(x, this))
             this.attachHooks(template.hooks)
             return template
@@ -52,12 +52,17 @@ module feather.core {
                 throw Error('Bound lists must specify template name in @Bind()')
             }
             if (!this.element) {
-                let parsed = this.getParsed(templateName)
+                const parsed = this.getParsed(templateName)
                 this.bindToElement(parsed.first)
                 parent.appendChild(parsed.first)
             } else { // already created, let's swap parents
                 parent.appendChild(this.element)
             }
+        }
+
+        cleanUp() {
+            super.cleanUp()
+            removeFromArray(WidgetFactory.singletonRegistry, [this]);
         }
     }
 }

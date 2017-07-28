@@ -12,7 +12,7 @@ describe('Objects', () => {
     describe('isObject', () => {
 
         it('{} should be an object', () => {
-            let isObject = feather.objects.isObject;
+            const isObject = feather.objects.isObject;
 
             expect(isObject({})).to.be.true
             expect(isObject(Object.create(null))).to.be.true
@@ -28,7 +28,7 @@ describe('Objects', () => {
     describe('values', () => {
 
         it('Should collect values', () => {
-            let values = feather.objects.values,
+            const values = feather.objects.values,
                 test = {
                     a: 1,
                     b: 2,
@@ -46,7 +46,7 @@ describe('Objects', () => {
     describe('deep value', () => {
 
         it('Should resolve deep values', () => {
-            let deepValue = feather.objects.deepValue,
+            const deepValue = feather.objects.deepValue,
                 setDeepValue = feather.objects.setDeepValue,
                 test = {
                     a: 1,
@@ -67,7 +67,7 @@ describe('Objects', () => {
             setDeepValue(test, 'd.b', 10)
             expect(deepValue(test, 'a')).to.be.equal(9)
             expect(deepValue(test, 'd.b')).to.be.equal(10)
-            let test2 = {}
+            const test2 = {}
             setDeepValue(test2, 'a.b.c', 10)
             expect(deepValue(test2, 'a')).to.not.be.undefined
             expect(deepValue(test2, 'a.b')).to.not.be.undefined

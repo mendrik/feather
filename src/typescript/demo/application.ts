@@ -1,15 +1,13 @@
 module demo {
 
-    import Widget    = feather.core.Widget
-    import Construct = feather.annotations.Construct
-    import Template  = feather.annotations.Template
-    import HTML      = feather.types.HTML
-    import Bind      = feather.observe.Bind
-    import On        = feather.event.On
-    import Rest      = feather.xhr.Rest
-    import Method    = feather.xhr.Method
-    import Subscribe = feather.hub.Subscribe
-    import Route     = feather.routing.Route
+    import Widget    = feather.core.Widget;
+    import Construct = feather.annotations.Construct;
+    import Template  = feather.annotations.Template;
+    import Bind      = feather.observe.Bind;
+    import On        = feather.event.On;
+    import Rest      = feather.xhr.Rest;
+    import Subscribe = feather.hub.Subscribe;
+    import Route     = feather.routing.Route;
 
     export enum FilterState {
         ALL,
@@ -18,7 +16,7 @@ module demo {
         WIDGET
     }
 
-    @Construct({selector: '.application'})
+    @Construct({selector: '.application', singleton: true})
     export class Application extends Widget {
 
         data = {
@@ -48,6 +46,15 @@ module demo {
         @Subscribe('xhr-failure')
         loadError(err: string|Event) {
             console.log(err)
+        }
+
+        @Subscribe('singleton-ping')
+        singletonEvent(data: any) {
+            this.triggerSingleton('singleton-pong', data)
+        }
+
+        @Subscribe('singleton-event-noop')
+        singletonEventNoop(data: any) {
         }
 
         arrayFilter() {

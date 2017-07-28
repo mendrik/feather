@@ -17,16 +17,18 @@ describe('Events', () => {
     describe('click', () => {
 
         it('is received with selector', () => {
-            let app = window.ef as demo.ExtraFeatures,
-                child = app.childWidgets[0] as feather.core.Widget,
-                i = child.element.querySelector('i'),
-                event = document.createEvent("HTMLEvents"),
-                spy = this.sinon.spy(child, 'click')
+            const app = window.ef as demo.ExtraFeatures,
+                  child = app.childWidgets[0] as feather.core.Widget,
+                  i = child.element.querySelector('i'),
+                  event = document.createEvent('HTMLEvents'),
+                  spy = this.sinon.spy(child, 'click')
             event.initEvent('click', true, true)
             i.dispatchEvent(event)
             spy.should.have.been.calledOnce
             spy.should.have.been.calledOn(child)
             expect(spy.args[0][1]).to.be.equal(i)
+
+            spy.restore()
         })
 
         // todo add tests for direct scope

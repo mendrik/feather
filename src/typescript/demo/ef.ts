@@ -1,18 +1,14 @@
 module demo {
 
-    import Widget    = feather.core.Widget
-    import Construct = feather.annotations.Construct
-    import Template  = feather.annotations.Template
-    import SimpleMap = feather.types.SimpleMap
-    import Bind      = feather.observe.Bind
-    import On        = feather.event.On
-    import Rest      = feather.xhr.Rest
-    import Maybe     = feather.types.Maybe
-    import Method    = feather.xhr.Method
-    import Subscribe = feather.hub.Subscribe
-    import Route     = feather.routing.Route
+    import Widget    = feather.core.Widget;
+    import Construct = feather.annotations.Construct;
+    import Template  = feather.annotations.Template;
+    import On        = feather.event.On;
+    import Rest      = feather.xhr.Rest;
+    import Method    = feather.xhr.Method;
+    import Subscribe = feather.hub.Subscribe;
 
-    @Construct({selector: '.extra-features'})
+    @Construct({selector: '.extra-features', singleton: true})
     export class ExtraFeatures extends Widget {
 
         post = {
@@ -58,6 +54,14 @@ module demo {
         @Subscribe('message-down')
         receiveMessage(val: string) {
             //
+        }
+
+        notifySingleton() {
+            this.triggerSingleton('singleton-ping', 'data')
+        }
+
+        @Subscribe('singleton-pong')
+        receivePong(data: any) {
         }
 
         @Subscribe('message-up')

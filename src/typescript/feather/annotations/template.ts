@@ -6,15 +6,14 @@ module feather.annotations {
     import allChildNodes = feather.dom.allChildNodes
     import collectAnnotationsFromTypeMap = feather.objects.collectAnnotationsFromTypeMap;
 
-    const supportsTemplate    = 'content' in document.createElement('template') && 'firstElementChild' in document.createDocumentFragment()
-    const CURLIES             = /\{\{(.*?)}}/
-    const ALL_CURLIES         = /\{\{(.*?)}}/g
-    const templates           = new WeakMap<Widget, TypedMap<Function>>()
-    const parsedTemplateCache = {} as Map<string, PreparsedTemplate>
+    const supportsTemplate           = 'content' in document.createElement('template') && 'firstElementChild' in document.createDocumentFragment()
+    const CURLIES                    = /{{(.*?)}}/
+    const ALL_CURLIES                = /{{(.*?)}}/g
+    const templates                  = new WeakMap<Widget, TypedMap<Function>>()
+    const parsedTemplateCache        = {} as Map<string, PreparsedTemplate>
+    const template                   = supportsTemplate ? document.createElement('template') : document.createElement('div')
     export const selfClosingTags     = /<(\w+)((\s+([^=\s\/<>]+|\w+=('[^']*'|"[^"]*"|[^"']\S*)))*)\s*\/>/gi
     export const openTags            = '<$1$2></$1>'
-
-    let template              = supportsTemplate ? document.createElement('template') : document.createElement('div')
 
     export const enum HookType {
         CLASS,
@@ -51,9 +50,9 @@ module feather.annotations {
                     public hookInfos: feather.annotations.HookInfo[]) {}
 
         asParsedTemplate(): ParsedTemplate {
-            let doc = this.node.cloneNode(true),
-                nodeList = allChildNodes(doc),
-                hooks = this.hookInfos.map(i => new Hook(nodeList[i.nodePosition], i.type, i.curly, i.text))
+            const doc = this.node.cloneNode(true),
+                  nodeList = allChildNodes(doc),
+                  hooks = this.hookInfos.map(i => new Hook(nodeList[i.nodePosition], i.type, i.curly, i.text))
             return {
                 doc: doc,
                 first: nodeList[1],
@@ -73,40 +72,39 @@ module feather.annotations {
                 frag.appendChild(template.firstChild)
             }
         }
-        let allNodes = allChildNodes(frag);
+        const allNodes = allChildNodes(frag);
         return new PreparsedTemplate(frag, parseHooks(allNodes))
     }
 
     function parseHooks(nodes: Node[]): HookInfo[] {
-        let hooks: HookInfo[] = [],
-            match
+        const hooks: HookInfo[] = []
+        let match
         nodes.forEach((node, pos) => {
             if (node.nodeType === Node.TEXT_NODE) {
-                let text = node.textContent
+                const text = node.textContent
                 // <div id="2">some text {{myProperty}}</div>
                 while ((match = ALL_CURLIES.exec(text)) !== null) {
                     hooks.push(new HookInfo(pos, HookType.TEXT, match[1], text))
                 }
             } else if (node.nodeType === Node.ELEMENT_NODE) {
-                let attribs = from<Attr>(node.attributes)
-                for (let attrib of attribs) {
-                    let attribName = attrib.nodeName
-                    if (match = attribName.match(CURLIES)) {
+                for (const attribute of from<Attr>(node.attributes)) {
+                    const name = attribute.nodeName
+                    if (match = name.match(CURLIES)) {
                         // <div id="2" {{myProperty}}>
                         hooks.push(new HookInfo(pos, HookType.PROPERTY, match[1]))
-                    } else if (attribName === 'class') {
+                    } else if (name === 'class') {
                         // <div id="2" class="red {{myClass}} blue">
-                        let classes = from<string>((node as HTMLElement).classList)
-                        for (let cls of classes) {
+                        const classes = from<string>((node as HTMLElement).classList)
+                        for (const cls of classes) {
                             if (match = cls.match(CURLIES)) {
                                 hooks.push(new HookInfo(pos, HookType.CLASS, match[1]))
                             }
                         }
                     } else {
                         // <div id="2" myProperty="{{myProperty}}">
-                        let attribValue = attrib.value
-                        if (match = attribValue.match(CURLIES)) {
-                            hooks.push(new HookInfo(pos, HookType.ATTRIBUTE, match[1], attribName))
+                        const value = attribute.value
+                        if (match = value.match(CURLIES)) {
+                            hooks.push(new HookInfo(pos, HookType.ATTRIBUTE, match[1], name))
                         }
                     }
                 }
@@ -118,9 +116,9 @@ module feather.annotations {
     export class TemplateFactory {
 
         static getTemplate(widget: Widget, name: string): ParsedTemplate {
-            let method = (collectAnnotationsFromTypeMap(templates, widget) as TypedMap<Function>)[name],
-                templateString: string = method.call(widget),
-                preparsedTemplate = parsedTemplateCache[templateString]
+            const method = (collectAnnotationsFromTypeMap(templates, widget) as TypedMap<Function>)[name],
+                  templateString: string = method.call(widget)
+            let preparsedTemplate = parsedTemplateCache[templateString]
             if (!preparsedTemplate) {
                 preparsedTemplate = getPreparsedTemplate(templateString)
                 parsedTemplateCache[templateString] = preparsedTemplate
@@ -139,7 +137,7 @@ module feather.annotations {
 
         if (warmUp) {
             try {
-                let str = proto[method].call({})
+                const str = proto[method].call({})
                 parsedTemplateCache[str] = getPreparsedTemplate(str)
             } catch (e) {
                 console.warn(`Template method ${method} in ${proto.constructor} is not a pure function.`)

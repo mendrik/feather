@@ -12,15 +12,13 @@ module feather.media {
         listener: MediaQueryListListener
     }
 
-    let mediaHandlers = new WeakMap<MediaQueryAware, MediaConfig[]>()
-    let mediaQueryListeners = new WeakMap<MediaQueryAware, MediaListener[]>()
+    const mediaHandlers = new WeakMap<MediaQueryAware, MediaConfig[]>()
+    const mediaQueryListeners = new WeakMap<MediaQueryAware, MediaListener[]>()
 
     export class MediaQueryAware {
 
         attachMediaListeners() {
-            let handlers = collectAnnotationsFromArray(mediaHandlers, this)
-
-            handlers.forEach(h => {
+            collectAnnotationsFromArray(mediaHandlers, this).forEach(h => {
                 const mq = window.matchMedia(h.query),
                       listener = (mq: MediaQueryList) => {
                         if (mq.matches) {
@@ -29,11 +27,11 @@ module feather.media {
                       }
                 mq.addListener(listener)
 
-                let dereg = mediaQueryListeners.get(this);
-                if (!dereg) {
-                    mediaQueryListeners.set(this, dereg = [])
+                let deregistry = mediaQueryListeners.get(this);
+                if (!deregistry) {
+                    mediaQueryListeners.set(this, deregistry = [])
                 }
-                dereg.push({
+                deregistry.push({
                     mediaQuery: mq,
                     listener
                 })
@@ -43,10 +41,8 @@ module feather.media {
         }
 
         cleanUp() {
-            let dereg = mediaQueryListeners.get(this);
-            if (dereg) {
-                dereg.forEach(l => l.mediaQuery.removeListener(l.listener))
-            }
+            (mediaQueryListeners.get(this) || [])
+                .forEach(l => l.mediaQuery.removeListener(l.listener))
         }
     }
 

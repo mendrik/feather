@@ -13,7 +13,7 @@ describe('Booleans', () => {
     describe('property', () => {
 
         it('should bind', () => {
-            let propertyTd = document.querySelector('.booleans .no-formatters td:first-child')
+            const propertyTd = document.querySelector('.booleans .no-formatters td:first-child')
             expect(propertyTd.getAttribute('booleana')).to.not.be.null
             expect(propertyTd.getAttribute('booleanb')).to.be.null
         })
@@ -21,7 +21,7 @@ describe('Booleans', () => {
 
     describe('attribute', () => {
         it('should bind', () => {
-            let propertyTd = document.querySelector('.booleans .no-formatters td:nth-child(2)')
+            const propertyTd = document.querySelector('.booleans .no-formatters td:nth-child(2)')
             expect(propertyTd.getAttribute('data-prop-a')).to.not.be.null
             expect(propertyTd.getAttribute('booleanb')).to.be.null
         })
@@ -29,7 +29,7 @@ describe('Booleans', () => {
 
     describe('property - filter', () => {
         it('should bind', () => {
-            let propertyTd = document.querySelector('.booleans .formatters td:first-child')
+            const propertyTd = document.querySelector('.booleans .formatters td:first-child')
             expect(propertyTd.getAttribute('booleana')).to.be.equal('selected')
             expect(propertyTd.getAttribute('booleanb')).to.be.null
         })
@@ -37,7 +37,7 @@ describe('Booleans', () => {
 
     describe('attribute - filter', () => {
         it('should bind', () => {
-            let propertyTd = document.querySelector('.booleans .formatters td:nth-child(2)')
+            const propertyTd = document.querySelector('.booleans .formatters td:nth-child(2)')
             expect(propertyTd.getAttribute('data-prop-a')).to.be.equal('yes')
             expect(propertyTd.getAttribute('data-prop-b')).to.be.equal('false')
         })
@@ -45,21 +45,21 @@ describe('Booleans', () => {
 
     describe('text - filter', () => {
         it('should bind', () => {
-            let propertyTd = document.querySelector('.booleans .formatters td:nth-child(3)')
+            const propertyTd = document.querySelector('.booleans .formatters td:nth-child(3)')
             expect(propertyTd.textContent).to.be.equal('Text: yes false')
         })
     })
 
     describe('class - filter', () => {
         it('should bind', () => {
-            let propertyTd = document.querySelector('.booleans .formatters td:nth-child(4)')
+            const propertyTd = document.querySelector('.booleans .formatters td:nth-child(4)')
             expect(propertyTd.classList.contains('selected')).to.be.true
         })
     })
 
     describe('Switch values', () => {
         it('should apply', () => {
-            let boolWidget = window.app.childWidgets.find(c => c.constructor['name'] === 'Booleans') as demo.Booleans
+            const boolWidget = window.app.childWidgets.find(c => c.constructor['name'] === 'Booleans') as demo.Booleans
             expect(boolWidget).to.not.be.undefined
             boolWidget.booleanA = false
             boolWidget.booleanB = true
@@ -71,7 +71,7 @@ describe('Booleans', () => {
     describe('property - changed', () => {
 
         it('should bind', () => {
-            let propertyTd = document.querySelector('.booleans .no-formatters td:first-child')
+            const propertyTd = document.querySelector('.booleans .no-formatters td:first-child')
             expect(propertyTd.getAttribute('booleana')).to.be.null
             expect(propertyTd.getAttribute('booleanb')).to.not.be.null
         })
@@ -79,7 +79,7 @@ describe('Booleans', () => {
 
     describe('attribute - changed', () => {
         it('should bind', () => {
-            let propertyTd = document.querySelector('.booleans .no-formatters td:nth-child(2)')
+            const propertyTd = document.querySelector('.booleans .no-formatters td:nth-child(2)')
             expect(propertyTd.getAttribute('data-prop-a')).to.be.null
             expect(propertyTd.getAttribute('data-prop-b')).to.not.be.null
         })
@@ -87,14 +87,14 @@ describe('Booleans', () => {
 
     describe('property - filter - changed', () => {
         it('should bind', () => {
-            let propertyTd = document.querySelector('.booleans .formatters td:first-child')
+            const propertyTd = document.querySelector('.booleans .formatters td:first-child')
             expect(propertyTd.getAttribute('selected')).to.be.null
         })
     })
 
     describe('attribute - filter - changed', () => {
         it('should bind', () => {
-            let propertyTd = document.querySelector('.booleans .formatters td:nth-child(2)')
+            const propertyTd = document.querySelector('.booleans .formatters td:nth-child(2)')
             expect(propertyTd.getAttribute('data-prop-a')).to.be.equal('no')
             expect(propertyTd.getAttribute('data-prop-b')).to.be.equal('true')
         })
@@ -102,16 +102,15 @@ describe('Booleans', () => {
 
     describe('text - filter - changed', () => {
         it('should bind', () => {
-            let propertyTd = document.querySelector('.booleans .formatters td:nth-child(3)')
+            const propertyTd = document.querySelector('.booleans .formatters td:nth-child(3)')
             expect(propertyTd.textContent).to.be.equal('Text: no true')
         })
     })
 
     describe('class - filter - changed', () => {
         it('should bind', () => {
-            let propertyTd = document.querySelector('.booleans .formatters td:nth-child(4)')
+            const propertyTd = document.querySelector('.booleans .formatters td:nth-child(4)')
             expect(propertyTd.classList.contains('selected')).to.be.false
         })
     })
-
 })

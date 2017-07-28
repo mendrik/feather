@@ -45,7 +45,7 @@ module feather.xhr {
     } as RestConfig
 
     export let sendRequest = (conf: RestConfig, success: (data) => void, error: (err: string|Event, xhr?: XMLHttpRequest) => void) => {
-        let xhr = new XMLHttpRequest()
+        const xhr = new XMLHttpRequest()
 
         conf = {...defaultRestConfig, ...conf}
 
@@ -54,7 +54,7 @@ module feather.xhr {
         xhr.timeout = conf.timeout
 
         if (xhr.setRequestHeader) {
-            for (let key of Object.keys(conf.headers)) {
+            for (const key of Object.keys(conf.headers)) {
                 xhr.setRequestHeader(key, conf.headers[key] as string)
             }
         }
@@ -70,7 +70,7 @@ module feather.xhr {
             }
         })
 
-        for (let ev of ['timeout', 'error', 'abort']) {
+        for (const ev of ['timeout', 'error', 'abort']) {
             xhr.addEventListener(ev, (ev: Event) => {
                 error(ev)
             })
@@ -86,7 +86,7 @@ module feather.xhr {
     }
 
     export let Rest = (params: RestConfig) => (proto: Widget, method: string, desc: PropertyDescriptor) => {
-        let original = desc.value
+        const original = desc.value
 
         desc.value = function() {
             let paramsCopy = {
@@ -110,12 +110,12 @@ module feather.xhr {
                     headers
                 }
             }
-            let newParams = {...paramsCopy, url: format(params.url, this, this)} // resolve url params
+            const newParams = {...paramsCopy, url: format(params.url, this, this)} // resolve url params
             return sendRequest(newParams, desc.value.original.bind(this), (err, xhr) => {
                 if (xhr && xhr.status) {
                     this.triggerDown('xhr-failure-'+xhr.status, err, xhr)
                 } else if (err) {
-                    let type = (err as Event).type
+                    const type = (err as Event).type
                     this.triggerDown('xhr-failure-' + type)
                 } else {
                     throw new Error(`${err}`)

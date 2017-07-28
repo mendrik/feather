@@ -4,7 +4,7 @@ module feather.functions {
 
     export function compose<U>(fns: FuncOne[]): (any) => U {
         return function(res: any): U {
-            for (let fn of fns) {
+            for (const fn of fns) {
                 res = fn(res)
             }
             return res as U
@@ -12,23 +12,23 @@ module feather.functions {
     }
 
     export function isFunction(functionToCheck) {
-        let getType = {}
+        const getType = {}
         return functionToCheck && getType.toString.call(functionToCheck) === '[object Function]'
     }
 
-    let inheritedMethodCache = new WeakMap<any, string[]>()
+    const inheritedMethodCache = new WeakMap<any, string[]>()
 
-    export function getInheritedMethods(obj: Object) {
+    export function getInheritedMethods(obj: Object): string[] {
         if (inheritedMethodCache.has(obj)) {
             return inheritedMethodCache.get(obj)
         }
-        let props = [],
-            orig = obj
+        let props: string[] = []
+        const orig = obj
         do {
             props = props.concat(Object.getOwnPropertyNames(obj))
         } while (obj = Object.getPrototypeOf(obj))
 
-        let res = props.filter(p => isFunction(orig[p])) as string[]
+        const res = props.filter(p => isFunction(orig[p]))
         inheritedMethodCache.set(orig, res)
         return res;
     }

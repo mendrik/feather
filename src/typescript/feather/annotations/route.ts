@@ -25,8 +25,8 @@ module feather.routing {
         let names = pattern.match(namedRx)
         if (names && names.length) {
             names = names.map(str => str.substr(1))
-            let repl = rules.reduce((p, c: [RegExp, string]) => p.replace(c[0], c[1]), pattern),
-                finalR = new RegExp('^' + repl + '$', 'gi')
+            const repl = rules.reduce((p, c: [RegExp, string]) => p.replace(c[0], c[1]), pattern),
+                  finalR = new RegExp('^' + repl + '$', 'gi')
             return namedRegexMatch(input, finalR, names)
         } else {
             if (new RegExp('^' + pattern + '$', 'gi').exec(input)) {
@@ -35,7 +35,7 @@ module feather.routing {
         }
     }
 
-    let getCurrentRoute = () => {
+    const getCurrentRoute = () => {
         let path = location.pathname
         if (!historyAPI) {
             if (path !== '/') {
@@ -47,11 +47,11 @@ module feather.routing {
         return path
     }
 
-    let notifyListeners = (route: string) => {
-        for (let aware of routeAwares) {
-            let widgetRoutes = collectAnnotationsFromArray(routes, aware)
-            for (let rc of widgetRoutes) {
-                let matchedParams = namedMatch(rc.route, route)
+    const notifyListeners = (route: string) => {
+        for (const aware of routeAwares) {
+            const widgetRoutes = collectAnnotationsFromArray(routes, aware)
+            for (const rc of widgetRoutes) {
+                const matchedParams = namedMatch(rc.route, route)
                 if (matchedParams) {
                     aware[rc.handler].call(aware, matchedParams)
                 }
@@ -61,7 +61,7 @@ module feather.routing {
 
     window.addEventListener(historyAPI ? 'popstate' : 'hashchange', () => notifyListeners(getCurrentRoute()), false)
 
-    let navigateRoute = (path: string) => {
+    const navigateRoute = (path: string) => {
         if (historyAPI) {
             history.pushState(null, '', path)
             notifyListeners(getCurrentRoute())
@@ -72,24 +72,24 @@ module feather.routing {
 
     export abstract class RouteAware extends Subscribable {
 
+        currentRoute = getCurrentRoute
+
         initRoutes() {
             if (!~routeAwares.indexOf(this) && routes.has(Object.getPrototypeOf(this))) {
                 routeAwares.push(this)
             }
         }
 
-        currentRoute = getCurrentRoute
-
         route = (path: string) => navigateRoute(path)
     }
 
-    export let runRoutes = () => {
+    export const runRoutes = () => {
         if (!window['blockRouting']) {
             notifyListeners(getCurrentRoute())
         }
     }
 
-    export let Route = (route: string) => (proto: Widget, method: string) => {
+    export const Route = (route: string) => (proto: Widget, method: string) => {
         let s = routes.get(proto)
         if (!s) {
             routes.set(proto, s = [])

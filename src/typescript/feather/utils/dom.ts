@@ -3,7 +3,7 @@ module feather.dom {
     import ValidRoot = feather.types.ValidRoot
 
     const NODE_FILTER = (n: Node) => {
-        let nodeType = n.nodeType
+        const nodeType = n.nodeType
         if (nodeType === Node.ELEMENT_NODE) {
             return true
         } else if (nodeType === Node.DOCUMENT_FRAGMENT_NODE) {
@@ -18,7 +18,7 @@ module feather.dom {
         .reduce((p, c) => Element.prototype[c] || p) as any as (s: string) => boolean
 
     export function querySelectorWithRoot(root: ValidRoot, selector: string): HTMLElement[] {
-        let result: any[] = root.nodeType === Node.ELEMENT_NODE && selectorMatches(root, selector) ? [root] : []
+        const result: any[] = root.nodeType === Node.ELEMENT_NODE && selectorMatches(root, selector) ? [root] : []
         result.push.apply(result, root.querySelectorAll(selector))
         return result
     }
@@ -29,8 +29,8 @@ module feather.dom {
 
     export function allChildNodes(doc: Node): Node[] {
         this.acceptNode = NODE_FILTER
-        let walker = document.createTreeWalker(doc, NodeFilter.SHOW_ALL, NODE_FILTER as any, false),
-            nodes = []
+        const walker = document.createTreeWalker(doc, NodeFilter.SHOW_ALL, NODE_FILTER as any, false),
+              nodes = []
         do {
             nodes.push(walker.currentNode)
         } while (walker.nextNode())

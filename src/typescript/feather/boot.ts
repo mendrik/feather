@@ -8,11 +8,13 @@ module feather.boot {
     export interface Blueprint {
         selector: string
         attributes?: string[]
+        singleton?: boolean;
     }
 
     export class ComponentInfo implements Blueprint {
         constructor(
             public selector: string,
+            public singleton: boolean,
             public attributes: string[],
             public component: Constructable
         ) {}
@@ -20,10 +22,11 @@ module feather.boot {
 
     export class WidgetFactory {
         private static widgetRegistry: ComponentInfo[] = []
+        public static singletonRegistry: Widget[] = []
 
         static attributeParser = (node: HTMLElement, context?: any) => (key: string) => {
-            let value: any = node.getAttribute(key),
-                m = (value || "").match(/^\{(.+?)\}\/?$/i)
+            let value: any = node.getAttribute(key)
+            const m = (value || '').match(/^{(.+?)}\/?$/i)
             if (m) {
                 const js = m[1]
                 value = context[js] || (function(str) {
@@ -37,14 +40,17 @@ module feather.boot {
         }
 
         static start(scope: ValidRoot = document, parentWidget?: Widget) {
-            let reg = WidgetFactory.widgetRegistry
+            const reg = WidgetFactory.widgetRegistry
             for (let i = 0, n = reg.length; i < n; i++) {
-                let info = reg[i],
-                    nodes = querySelectorWithRoot(scope, info.selector)
+                const info = reg[i],
+                      nodes = querySelectorWithRoot(scope, info.selector)
                 for (let j = 0, m = nodes.length; j < m; j++) {
-                    let node = nodes[j],
-                        args = info.attributes.map(WidgetFactory.attributeParser(node, parentWidget || window)),
-                        widget: Widget = new (Function.prototype.bind.apply(info.component, [null, ...args]))
+                    const node = nodes[j],
+                          args = info.attributes.map(WidgetFactory.attributeParser(node, parentWidget || window)),
+                          widget: Widget = new (Function.prototype.bind.apply(info.component, [null, ...args]))
+                    if (info.singleton) {
+                        WidgetFactory.singletonRegistry.push(widget)
+                    }
                     if (node.hasAttribute('id')) {
                         widget.id = node.getAttribute('id')
                     }
@@ -61,7 +67,7 @@ module feather.boot {
         }
 
         static register(info: Blueprint, component: any) {
-            this.widgetRegistry.push(new ComponentInfo(info.selector, info.attributes || [], component))
+            this.widgetRegistry.push(new ComponentInfo(info.selector, info.singleton, info.attributes || [], component))
         }
     }
 }

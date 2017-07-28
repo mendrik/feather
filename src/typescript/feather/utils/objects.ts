@@ -27,14 +27,14 @@ module feather.objects {
 
     export function collectAnnotationsFromArray<T, P extends Object>(map: WeakMap<P, T[]>, start: P): T[] {
         if (typeof start === 'undefined') {
-            return [];
+            return []
         }
         const proto = Object.getPrototypeOf(start)
         const handlers = map.get(proto) || []
         if (proto) {
             handlers.push(...collectAnnotationsFromArray(map, proto))
         }
-        return handlers;
+        return handlers
     }
 
     export type TypeOrArray<T> = T[] | T
@@ -49,18 +49,18 @@ module feather.objects {
                 target[k] = b[k]
             }
         })
-        return target;
+        return target
     }
 
     export function collectAnnotationsFromTypeMap<T, P extends Object>(map: WeakMap<P, TypedMap<TypeOrArray<T>>>, start: P): TypedMap<TypeOrArray<T>> {
         if (typeof start === 'undefined') {
-            return {};
+            return {}
         }
         const proto = Object.getPrototypeOf(start)
         let handlers: TypedMap<TypeOrArray<T>> = map.get(proto) || {}
         if (proto) {
             handlers = mergeArrayTypedMap(handlers, collectAnnotationsFromTypeMap(map, proto))
         }
-        return handlers;
+        return handlers
     }
 }
