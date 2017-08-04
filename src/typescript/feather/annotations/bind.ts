@@ -384,11 +384,11 @@ module feather.observe {
             return prop
         }
 
-        toStorage(property: String, element: any) {
+        toStorage(property: String, element: any): any {
             throw Error(`Implement fromStorage method for array ${property}`);
         }
 
-        fromStorage(property: String, element: any): {} {
+        fromStorage(property: String, element: any): any {
             throw Error(`Implement toStorage for array element for ${property}`);
         }
     }

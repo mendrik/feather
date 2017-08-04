@@ -12,11 +12,12 @@ A feather-light :D framework written in typescript with support for
 * Routing with HTML5 history API
 * Component messaging
 * DOM event handling
-* Templates are regular HTML
-* Clean and simple code
+* Templates are HTML without logic
 * Runs on modern browsers and IE9+
-* Less than 10kb gzipped
 * Integrated media query evaluation in javascript
+* Clean and simple code
+* No promise clutter
+* Less than 10kb gzipped
 
 ---
 
