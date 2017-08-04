@@ -270,7 +270,6 @@ module feather.observe {
                     p.remove.forEach(w => {
                         parent.removeChild(w.element)
                     })
-                    destroyListeners(...p.remove)
                 }
 
                 addLength = p.add.length
