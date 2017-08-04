@@ -26,6 +26,7 @@ module feather.observe {
 
     const boundProperties      = new WeakMap<Widget, TypedMap<Function[]>>()
     const binders              = new WeakMap<Observable, TypedMap<BindProperties>>()
+    const serializers          = new WeakMap<Observable, TypedMap<Serializer>>()
     const attributeMapper      = {} as Map<string, string>
 
     export interface BindProperties {
@@ -76,7 +77,8 @@ module feather.observe {
     function maybeStore(parent: Observable, property: string, conf: BindProperties, value: any) {
         if (conf && conf.localStorage) {
             if (Array.isArray(value)) {
-                value = value.map(v => parent.toStorage(property, v))
+                const serializer = collectAnnotationsFromTypeMap(serializers, parent)[property] as Serializer
+                value = value.map(parent[serializer.write])
             }
             localStorage.setItem(getPath(parent as any, property), JSON.stringify({value}))
         }
@@ -356,7 +358,8 @@ module feather.observe {
                     // special case: we need to create an array proxy
                     createFilteredArrayProxy.call(this, property, hook, conf, filter)
                     if (storedValue) {
-                        this[property].push(...storedValue.map(v => this.fromStorage(property, v)))
+                        const serializer = collectAnnotationsFromTypeMap(serializers, this)[property] as Serializer
+                        this[property].push(...storedValue.map(this[serializer.read]))
                     }
                 } else {
                     createObserver.call(this, property, value, hook, conf, filter)
@@ -387,17 +390,9 @@ module feather.observe {
             }
             return prop
         }
-
-        toStorage<T extends Widget, U>(arrayProperty: String, el: T): U {
-            throw Error(`Implement toStorage method for array ${arrayProperty}`)
-        }
-
-        fromStorage<T extends Widget, U>(arrayProperty: String, el: U): T {
-            throw Error(`Implement fromStorage for array element for ${arrayProperty}`)
-        }
     }
 
-    export let Bind = (props?: BindProperties) => (proto: Observable, property: string) => {
+    export const Bind = (props?: BindProperties) => (proto: Observable, property: string) => {
         const defProps: BindProperties = {templateName: 'default', localStorage: false, changeOn: [], html: false},
               finalProps = props ? {...defProps, ...props} : {...defProps},
               protoBinders = binders.get(proto)
@@ -410,4 +405,23 @@ module feather.observe {
             protoBinders[property] = finalProps
         }
     }
+
+    interface Serializer {
+        write?: string,
+        read?:  string
+    }
+
+    const ensure = (proto: Observable, property): Serializer => {
+        let map = serializers.get(proto)
+        if (!map) {
+            serializers.set(proto, map = {})
+        }
+        if (!map[property]) {
+            map[property] = {}
+        }
+        return map[property]
+    }
+
+    export const Write = (arrayName: string) => (proto, property: string) => { ensure(proto, arrayName).write = property }
+    export const Read  = (arrayName: string) => (proto, property: string) => { ensure(proto, arrayName).read  = property }
 }
