@@ -383,13 +383,8 @@ module feather.observe {
             return prop
         }
 
-        toStorage(property: String, element: any): any {
-            throw Error(`Implement fromStorage method for array ${property}`);
-        }
-
-        fromStorage(property: String, element: any): any {
-            throw Error(`Implement toStorage for array element for ${property}`);
-        }
+        toStorage = (property: String, el: any) => {throw Error(`Implement fromStorage method for array ${property}`)}
+        fromStorage = (property: String, el: any) => {throw Error(`Implement toStorage for array element for ${property}`)}
     }
 
     export let Bind = (props?: BindProperties) => (proto: Observable, property: string) => {
