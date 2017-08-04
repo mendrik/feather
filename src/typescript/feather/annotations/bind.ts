@@ -262,7 +262,7 @@ module feather.observe {
               syncProxy = () => {
 
                 const target = original.filter(filterFactory()),
-                    p = patch(target, proxy)
+                      p = patch(target, proxy)
                 let outOfPlace, place, proxyIndices, needSorting, addLength
                 // let's remove excess elements from UI and proxy array
                 if (p.remove.length) {
@@ -298,7 +298,13 @@ module feather.observe {
                 proxy.splice(0, proxy.length, ...target)
             }
         syncProxy()
-        observeArray(original, changeArrayListener(syncProxy))
+        observeArray(original, {
+            sort:    syncProxy,
+            splice:  (i, d, a, deleted: Widget[] = []) => {
+                destroyListeners(...deleted)
+                syncProxy()
+            }
+        })
         for (const prop of conf.changeOn) {
             createListener(this, conf, prop, () => notifyListeners(original))
         }
@@ -382,8 +388,13 @@ module feather.observe {
             return prop
         }
 
-        toStorage(property: String, el: any) {throw Error(`Implement fromStorage method for array ${property}`)}
-        fromStorage(property: String, el: any) {throw Error(`Implement toStorage for array element for ${property}`)}
+        toStorage<T extends Widget, U>(arrayProperty: String, el: T): U {
+            throw Error(`Implement toStorage method for array ${arrayProperty}`)
+        }
+
+        fromStorage<T extends Widget, U>(arrayProperty: String, el: U): T {
+            throw Error(`Implement fromStorage for array element for ${arrayProperty}`)
+        }
     }
 
     export let Bind = (props?: BindProperties) => (proto: Observable, property: string) => {

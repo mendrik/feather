@@ -123,7 +123,7 @@ module feather.arrays {
         return {
             sort:    cb,
             splice:  cb
-        } as ArrayListener<any>
+        }
     }
 
     export function lis(x: number[]) {
