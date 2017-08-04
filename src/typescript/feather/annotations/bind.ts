@@ -23,7 +23,6 @@ module feather.observe {
     import patch               = feather.arrays.patch
     import removeFromArray     = feather.arrays.removeFromArray
     import collectAnnotationsFromTypeMap = feather.objects.collectAnnotationsFromTypeMap;
-    import deepValue = feather.objects.deepValue;
 
     const boundProperties      = new WeakMap<Widget, TypedMap<Function[]>>()
     const binders              = new WeakMap<Observable, TypedMap<BindProperties>>()
@@ -33,7 +32,6 @@ module feather.observe {
         templateName?: string   // when pushing new widgets into an array, the template name to render the children with
         changeOn?:     string[] // list of property names
         localStorage?: boolean
-        serializable?: boolean
         html?:         boolean
     }
 
@@ -75,31 +73,12 @@ module feather.observe {
         })
     }
 
-    export interface Storable {
-        factoryMethod(): string
-    }
-
-    export interface Stored {
-        _factoryMethod: string
-    }
-
-    function maybeStore(parent: Widget, property: string, conf: BindProperties, value: any) {
+    function maybeStore(parent: Observable, property: string, conf: BindProperties, value: any) {
         if (conf && conf.localStorage) {
             if (Array.isArray(value)) {
-                value = value.map(widget => {
-                    const storeObj: Stored = {
-                        _factoryMethod: (widget as Storable).factoryMethod()
-                    }
-                    Object.getOwnPropertyNames(widget).map(propName => {
-                        const conf = (collectAnnotationsFromTypeMap(binders, widget) as TypedMap<BindProperties>)[propName]
-                        if (conf && conf.serializable) {
-                            storeObj[propName] = widget[propName]
-                        }
-                    })
-                    return storeObj
-                })
+                value = value.map(v => parent.toStorage(property, v))
             }
-            localStorage.setItem(getPath(parent, property), JSON.stringify({value}))
+            localStorage.setItem(getPath(parent as any, property), JSON.stringify({value}))
         }
     }
 
@@ -348,13 +327,7 @@ module feather.observe {
                     }
                     if (typeof storedValue !== 'undefined') {
                         if (Array.isArray(storedValue)) {
-                            this[property].push(...storedValue.map((v: Stored) => {
-                                const factory: (val: any) => Widget = deepValue(window, v._factoryMethod)
-                                if (!factory) {
-                                    throw Error(`${v._factoryMethod} was not found. Check your Storable implementastion.`)
-                                }
-                                return factory(v)
-                            }))
+                            this[property].push(...storedValue.map(v => this.fromStorage(property, v)))
                         } else  {
                             this[property] = value = storedValue
                         }
@@ -410,10 +383,18 @@ module feather.observe {
             }
             return prop
         }
+
+        toStorage(property: String, element: any) {
+            throw Error(`Implement fromStorage method for array ${property}`);
+        }
+
+        fromStorage(property: String, element: any): {} {
+            throw Error(`Implement toStorage for array element for ${property}`);
+        }
     }
 
     export let Bind = (props?: BindProperties) => (proto: Observable, property: string) => {
-        const defProps: BindProperties = {templateName: 'default', localStorage: false, changeOn: [], html: false, serializable: false},
+        const defProps: BindProperties = {templateName: 'default', localStorage: false, changeOn: [], html: false},
               finalProps = props ? {...defProps, ...props} : {...defProps},
               protoBinders = binders.get(proto)
 
