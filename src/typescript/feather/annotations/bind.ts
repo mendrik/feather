@@ -31,8 +31,9 @@ module feather.observe {
     export interface BindProperties {
         templateName?: string   // when pushing new widgets into an array, the template name to render the children with
         changeOn?:     string[] // list of property names
-        localStorage?:  boolean
-        html?: boolean
+        localStorage?: boolean
+        serializable?: boolean
+        html?:         boolean
     }
 
     function setOrRemoveAttribute(el: HTMLElement, attribute: string, condition: boolean, val: string) {
@@ -73,11 +74,34 @@ module feather.observe {
         })
     }
 
+    function maybeStore(parent: Widget, property: string, conf: BindProperties, value: any) {
+        if (conf && conf.localStorage) {
+            if (Array.isArray(value)) {
+                value = value.map((widget: Widget) => {
+                    const storeObj = {}
+                    Object.getOwnPropertyNames(widget).map(propName => {
+                        const conf = (collectAnnotationsFromTypeMap(binders, widget) as TypedMap<BindProperties>)[propName]
+                        if (conf && conf.serializable) {
+                            storeObj[propName] = widget[propName]
+                        }
+                    })
+                    return storeObj
+                })
+            }
+            localStorage.setItem(getPath(parent, property), JSON.stringify({value: value}))
+        }
+    }
+
+    export interface Storable<T> {
+        fromJson: (val: any) => T
+    }
+
     function createListener(obj: Widget, conf: BindProperties, property: string, cb: (newVal?: Primitive, oldVal?: Primitive) => void) {
         let value = obj[property]
 
         if (Array.isArray(value)) { // arrays are special case so we sort of fake getters and setters
             observeArray(value, changeArrayListener(() => {
+                maybeStore(obj, property, conf, value)
                 cb(value)
                 triggerParentArray(obj)
             }))
@@ -96,9 +120,7 @@ module feather.observe {
                 },
                 set: (newValue: any) => {
                     if (newValue !== value) {
-                        if (conf && conf.localStorage) {
-                            localStorage.setItem(getPath(obj, property), JSON.stringify({value: newValue}))
-                        }
+                        maybeStore(obj, property, conf, value)
                         const old = value
                         value = newValue
                         for (const cb of listeners[property]) {
@@ -318,7 +340,11 @@ module feather.observe {
                         console.warn(e)
                     }
                     if (typeof storedValue !== 'undefined') {
-                        this[property] = value = storedValue
+                        if (Array.isArray(value)) {
+                            // todo
+                        } else  {
+                            this[property] = value = storedValue
+                        }
                     }
                 }
                 const fm: (s) => string = this.findMethod.bind(this),
@@ -374,7 +400,7 @@ module feather.observe {
     }
 
     export let Bind = (props?: BindProperties) => (proto: Observable, property: string) => {
-        const defProps = {templateName: 'default', localStorage: false, changeOn: [], html: false},
+        const defProps: BindProperties = {templateName: 'default', localStorage: false, changeOn: [], html: false, serializable: false},
               finalProps = props ? {...defProps, ...props} : {...defProps},
               protoBinders = binders.get(proto)
 
