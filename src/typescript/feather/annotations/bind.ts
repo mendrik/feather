@@ -23,6 +23,7 @@ module feather.observe {
     import patch               = feather.arrays.patch
     import removeFromArray     = feather.arrays.removeFromArray
     import collectAnnotationsFromTypeMap = feather.objects.collectAnnotationsFromTypeMap;
+    import deepValue = feather.objects.deepValue;
 
     const boundProperties      = new WeakMap<Widget, TypedMap<Function[]>>()
     const binders              = new WeakMap<Observable, TypedMap<BindProperties>>()
@@ -74,11 +75,21 @@ module feather.observe {
         })
     }
 
+    export interface Storable {
+        factoryMethod(): string
+    }
+
+    export interface Stored {
+        _factoryMethod: string
+    }
+
     function maybeStore(parent: Widget, property: string, conf: BindProperties, value: any) {
         if (conf && conf.localStorage) {
             if (Array.isArray(value)) {
-                value = value.map((widget: Widget) => {
-                    const storeObj = {}
+                value = value.map(widget => {
+                    const storeObj: Stored = {
+                        _factoryMethod: (widget as Storable).factoryMethod()
+                    }
                     Object.getOwnPropertyNames(widget).map(propName => {
                         const conf = (collectAnnotationsFromTypeMap(binders, widget) as TypedMap<BindProperties>)[propName]
                         if (conf && conf.serializable) {
@@ -88,12 +99,8 @@ module feather.observe {
                     return storeObj
                 })
             }
-            localStorage.setItem(getPath(parent, property), JSON.stringify({value: value}))
+            localStorage.setItem(getPath(parent, property), JSON.stringify({value}))
         }
-    }
-
-    export interface Storable<T> {
-        fromJson: (val: any) => T
     }
 
     function createListener(obj: Widget, conf: BindProperties, property: string, cb: (newVal?: Primitive, oldVal?: Primitive) => void) {
@@ -340,8 +347,14 @@ module feather.observe {
                         console.warn(e)
                     }
                     if (typeof storedValue !== 'undefined') {
-                        if (Array.isArray(value)) {
-                            // todo
+                        if (Array.isArray(storedValue)) {
+                            this[property].push(...storedValue.map((v: Stored) => {
+                                const factory: (val: any) => Widget = deepValue(window, v._factoryMethod)
+                                if (!factory) {
+                                    throw Error(`${v._factoryMethod} was not found. Check your Storable implementastion.`)
+                                }
+                                return factory(v)
+                            }))
                         } else  {
                             this[property] = value = storedValue
                         }
