@@ -87,9 +87,9 @@ module feather.observe {
 
         if (Array.isArray(value)) { // arrays are special case so we sort of fake getters and setters
             observeArray(value, changeArrayListener(() => {
-                maybeStore(obj, property, conf, value)
                 cb(value)
                 triggerParentArray(obj)
+                maybeStore(obj, property, conf, value)
             }))
         } else {
             let listeners = boundProperties.get(obj)
@@ -315,8 +315,8 @@ module feather.observe {
                       property = this.findProperty(filterFunctions.shift()),
                       conf = (collectAnnotationsFromTypeMap(binders, this) as TypedMap<BindProperties>)[property]
                 let value = this[property]
+                let storedValue;
                 if (conf && conf.localStorage) {
-                    let storedValue;
                     try {
                         const json = localStorage.getItem(getPath(this as any, property));
                         if (json) {
@@ -325,12 +325,8 @@ module feather.observe {
                     } catch (e) {
                         console.warn(e)
                     }
-                    if (typeof storedValue !== 'undefined') {
-                        if (Array.isArray(storedValue)) {
-                            this[property].push(...storedValue.map(v => this.fromStorage(property, v)))
-                        } else  {
-                            this[property] = value = storedValue
-                        }
+                    if (typeof storedValue !== 'undefined' && !Array.isArray(storedValue)) {
+                        this[property] = value = storedValue
                     }
                 }
                 const fm: (s) => string = this.findMethod.bind(this),
@@ -354,6 +350,9 @@ module feather.observe {
                 if (Array.isArray(this[property]) && isFunction(value)) {
                     // special case: we need to create an array proxy
                     createFilteredArrayProxy.call(this, property, hook, conf, filter)
+                    if (storedValue) {
+                        this[property].push(...storedValue.map(v => this.fromStorage(property, v)))
+                    }
                 } else {
                     createObserver.call(this, property, value, hook, conf, filter)
                 }
