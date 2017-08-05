@@ -35,7 +35,7 @@ describe('String Utils', () => {
             expect(s.format(str, {test: 'world'}, {filter: (str) => str.toUpperCase()})).to.be.equal('hello WORLD')
         })
 
-        it('should use filters on deepn value tokens', () => {
+        it('should use filters on deep value tokens', () => {
             const s = feather.strings,
                 str = '{{hello}} {{test.me:filter}}';
             expect(s.format(str,
