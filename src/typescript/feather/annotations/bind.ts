@@ -292,9 +292,9 @@ module feather.observe {
                 // now let's check if some of the elements need repositioning
                 proxyIndices = proxy.map(x => target.indexOf(x))
                 needSorting = diff(proxyIndices, lis(proxyIndices))
-                for (let i = 0, n = needSorting.length; i < n; i++) {
-                    outOfPlace = target[needSorting[i]]
-                    place = target[needSorting[i] + 1]
+                for (let n = needSorting.length; n --> 0;) {
+                    outOfPlace = target[needSorting[n]]
+                    place = target[needSorting[n] + 1]
                     parent.insertBefore(outOfPlace.element, place ? place.element : null)
                 }
                 proxy.splice(0, proxy.length, ...target)
