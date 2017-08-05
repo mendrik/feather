@@ -23,5 +23,10 @@ module demo {
         protected getBaseTemplate() {
             return (`<li class="ae"><span class="{{booleanA:onoff}}">{{stringA}} listCount:{{listX:count}}</span><div class="widget" name="${this.stringA}"></div></li>`)
         }
+
+        @Template('simple')
+        protected getSimpleTemplate() {
+            return (`<li>{{stringA}}</li>`)
+        }
     }
 }

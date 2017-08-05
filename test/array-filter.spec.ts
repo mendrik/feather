@@ -42,7 +42,7 @@ describe('Filtered arrays', () => {
 
         it('should apply to delegated filters', () => {
             const app = window.app as demo.Application,
-                  ul = document.getElementById('filtered-list')
+                  ul  = document.getElementById('filtered-list')
             app.filterState = demo.FilterState.TRUE
             expect(ul.getAttribute('truthy')).to.be.equal('2')
             app.filteredList[1].booleanA = true
@@ -53,6 +53,28 @@ describe('Filtered arrays', () => {
             expect(ul.children.length).to.be.equal(3)
             app.filteredList[2].childWidgets[0]['name'] = 'ItemC'
             expect(ul.children.length).to.be.equal(4)
+        })
+
+        it('should reverse correctly', () => {
+            const app = window.app as demo.Application,
+                  ul  = document.getElementById('sorted-list')
+            app.sortState = demo.SortState.BOTH
+            expect(ul.textContent).to.be.equal('abcd')
+            app.sortTestArray.reverse()
+            expect(ul.textContent).to.be.equal('dcba')
+        })
+
+        it('should re-add correctly', () => {
+            const app = window.app as demo.Application,
+                  ul  = document.getElementById('sorted-list')
+            app.sortState = demo.SortState.BOTH
+            expect(ul.textContent).to.be.equal('abcd')
+            app.sortState = demo.SortState.OFF
+            expect(ul.textContent).to.be.equal('cd')
+            app.sortState = demo.SortState.ON
+            expect(ul.textContent).to.be.equal('ab')
+            app.sortState = demo.SortState.BOTH
+            expect(ul.textContent).to.be.equal('abcd')
         })
     })
 })

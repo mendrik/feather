@@ -24,16 +24,16 @@ module feather.observe {
     import removeFromArray     = feather.arrays.removeFromArray
     import collectAnnotationsFromTypeMap = feather.objects.collectAnnotationsFromTypeMap;
 
-    const boundProperties      = new WeakMap<Widget, TypedMap<Function[]>>()
-    const binders              = new WeakMap<Observable, TypedMap<BindProperties>>()
-    const serializers          = new WeakMap<Observable, TypedMap<Serializer>>()
-    const attributeMapper      = {} as Map<string, string>
+    const boundProperties = new WeakMap<Widget, TypedMap<Function[]>>()
+    const binders = new WeakMap<Observable, TypedMap<BindProperties>>()
+    const serializers = new WeakMap<Observable, TypedMap<Serializer>>()
+    const attributeMapper = {} as Map<string, string>
 
     export interface BindProperties {
         templateName?: string   // when pushing new widgets into an array, the template name to render the children with
-        changeOn?:     string[] // list of property names
+        changeOn?: string[] // list of property names
         localStorage?: boolean
-        html?:         boolean
+        html?: boolean
     }
 
     function setOrRemoveAttribute(el: HTMLElement, attribute: string, condition: boolean, val: string) {
@@ -103,7 +103,7 @@ module feather.observe {
                 listeners[property] = []
             }
             Object.defineProperty(obj, property, {
-                get: function() {
+                get: function () {
                     return value
                 },
                 set: (newValue: any) => {
@@ -127,7 +127,7 @@ module feather.observe {
         if (hook.type === HookType.ATTRIBUTE || hook.type === HookType.PROPERTY) {
 
             const el = (hook.node as HTMLElement),
-                  attributeName = hook.text || property
+                attributeName = hook.text || property
 
             if (!hook.text) {
                 el.removeAttribute(`{{${hook.curly}}}`)
@@ -152,7 +152,7 @@ module feather.observe {
 
     function bindString(property: string, hook: Hook, filter: FuncOne, conf: BindProperties) {
         const widget = this,
-              el = hook.node as HTMLElement
+            el = hook.node as HTMLElement
 
         if (hook.type === HookType.TEXT) { // <p>some text {{myVar}} goes here</p>
             createListener(this, conf, property, function updateDom() {
@@ -231,7 +231,7 @@ module feather.observe {
 
     function bindArray(arr: Widget[], hook: Hook, conf: BindProperties) {
         const removed = arr.splice(0, arr.length),
-              el      = hook.node as HTMLElement
+            el = hook.node as HTMLElement
         observeArray(arr, defaultArrayListener(hook, conf, this))
         el.removeAttribute(`{{${hook.curly}}}`)
         arr.push(...removed)
@@ -258,13 +258,13 @@ module feather.observe {
     function createFilteredArrayProxy(property: string, hook: Hook, conf: BindProperties,
                                       filterFactory: () => (widget: Widget) => boolean) {
         const parentWidget = this as Widget,
-              proxy:    Widget[] = [],
-              original: Widget[] = this[property],
-              parent             = hook.node as HTMLElement,
-              syncProxy = () => {
+            proxy: Widget[] = [],
+            original: Widget[] = this[property],
+            parent = hook.node as HTMLElement,
+            syncProxy = () => {
 
                 const target = original.filter(filterFactory()),
-                      p = patch(target, proxy)
+                    p = patch(target, proxy)
                 let outOfPlace, place, proxyIndices, needSorting, addLength
                 // let's remove excess elements from UI and proxy array
                 if (p.remove.length) {
@@ -292,17 +292,17 @@ module feather.observe {
                 // now let's check if some of the elements need repositioning
                 proxyIndices = proxy.map(x => target.indexOf(x))
                 needSorting = diff(proxyIndices, lis(proxyIndices))
-                for (let n = needSorting.length; n --> 0;) {
-                    outOfPlace = target[needSorting[n]]
-                    place = target[needSorting[n] + 1]
+                for (let i = 0, n = needSorting.length; i < n; i++) {
+                    outOfPlace = target[needSorting[i]]
+                    place = target[needSorting[i] + 1]
                     parent.insertBefore(outOfPlace.element, place ? place.element : null)
                 }
                 proxy.splice(0, proxy.length, ...target)
             }
         syncProxy()
         observeArray(original, {
-            sort:    syncProxy,
-            splice:  (i, d, a, deleted: Widget[] = []) => {
+            sort: syncProxy,
+            splice: (i, d, a, deleted: Widget[] = []) => {
                 destroyListeners(...deleted)
                 syncProxy()
             }
@@ -319,8 +319,8 @@ module feather.observe {
             for (const hook of hooks) {
 
                 const filterFunctions = hook.curly.split(/:/),
-                      property = this.findProperty(filterFunctions.shift()),
-                      conf = (collectAnnotationsFromTypeMap(binders, this) as TypedMap<BindProperties>)[property]
+                    property = this.findProperty(filterFunctions.shift()),
+                    conf = (collectAnnotationsFromTypeMap(binders, this) as TypedMap<BindProperties>)[property]
                 let value = this[property]
                 let storedValue;
                 if (conf && conf.localStorage) {
@@ -337,9 +337,9 @@ module feather.observe {
                     }
                 }
                 const fm: (s) => string = this.findMethod.bind(this),
-                      filter = compose<any>(filterFunctions
-                                .map(fm)
-                                .map(method => this[method].bind(this)))
+                    filter = compose<any>(filterFunctions
+                        .map(fm)
+                        .map(method => this[method].bind(this)))
 
                 if (typeof conf === 'undefined') {
                     console.log(`@Bind() ${property} annotation missing?`, hook, property, value, binders)
@@ -372,7 +372,7 @@ module feather.observe {
             let prop = attributeMapper[ci]
             if (!prop) {
                 prop = Object.getOwnPropertyNames(this)
-                        .find(p => p.toLowerCase() === ci.toLowerCase()) || ci
+                    .find(p => p.toLowerCase() === ci.toLowerCase()) || ci
                 attributeMapper[ci] = prop
             }
             return prop
@@ -382,7 +382,7 @@ module feather.observe {
             let prop = attributeMapper[ci]
             if (!prop) {
                 prop = getInheritedMethods(this)
-                        .find(p => p.toLowerCase() === ci.toLowerCase()) || ci
+                    .find(p => p.toLowerCase() === ci.toLowerCase()) || ci
                 attributeMapper[ci] = prop
             }
             if (!this[prop]) {
@@ -394,8 +394,8 @@ module feather.observe {
 
     export const Bind = (props?: BindProperties) => (proto: Observable, property: string) => {
         const defProps: BindProperties = {templateName: 'default', localStorage: false, changeOn: [], html: false},
-              finalProps = props ? {...defProps, ...props} : {...defProps},
-              protoBinders = binders.get(proto)
+            finalProps = props ? {...defProps, ...props} : {...defProps},
+            protoBinders = binders.get(proto)
 
         if (!protoBinders) {
             binders.set(proto, {
@@ -408,7 +408,7 @@ module feather.observe {
 
     interface Serializer {
         write?: string,
-        read?:  string
+        read?: string
     }
 
     const ensure = (proto: Observable, property): Serializer => {
@@ -422,6 +422,10 @@ module feather.observe {
         return map[property]
     }
 
-    export const Write = (arrayName: string) => (proto, property: string) => { ensure(proto, arrayName).write = property }
-    export const Read  = (arrayName: string) => (proto, property: string) => { ensure(proto, arrayName).read  = property }
+    export const Write = (arrayName: string) => (proto, property: string) => {
+        ensure(proto, arrayName).write = property
+    }
+    export const Read = (arrayName: string) => (proto, property: string) => {
+        ensure(proto, arrayName).read = property
+    }
 }

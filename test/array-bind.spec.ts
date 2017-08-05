@@ -18,7 +18,7 @@ describe('Array', () => {
         it('should propagate from arrays', () => {
             const app = window.app as demo.Application,
                   childWidgets = app.childWidgets
-            expect(childWidgets.length).to.be.equal(9)
+            expect(childWidgets.length).to.be.equal(13)
             expect(childWidgets[0].parentWidget).to.be.equal(app)
         })
 
