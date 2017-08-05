@@ -4,7 +4,7 @@ module feather.hub {
     import EventAware = feather.event.EventAware
     import flatten    = feather.arrays.flatten
     import collectAnnotationsFromTypeMap = feather.objects.collectAnnotationsFromTypeMap
-    import WidgetFactory = feather.boot.WidgetFactory;
+    import WidgetFactory = feather.boot.WidgetFactory
 
     const subscribers = new WeakMap<Subscribable, TypedMap<Subscriber[]>>()
 

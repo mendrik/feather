@@ -24,7 +24,7 @@ module demo {
         init() {
             this.render('default')
         }
-        
+
         yesOrNo = (bool: boolean) => bool ? 'yes' : 'no'
 
         @Template('default')

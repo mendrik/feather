@@ -22,7 +22,7 @@ module feather.observe {
     import diff                = feather.arrays.diff
     import patch               = feather.arrays.patch
     import removeFromArray     = feather.arrays.removeFromArray
-    import collectAnnotationsFromTypeMap = feather.objects.collectAnnotationsFromTypeMap;
+    import collectAnnotationsFromTypeMap = feather.objects.collectAnnotationsFromTypeMap
 
     const boundProperties = new WeakMap<Widget, TypedMap<Function[]>>()
     const binders = new WeakMap<Observable, TypedMap<BindProperties>>()
@@ -156,7 +156,7 @@ module feather.observe {
 
         if (hook.type === HookType.TEXT) { // <p>some text {{myVar}} goes here</p>
             createListener(this, conf, property, function updateDom() {
-                const formatted = format(hook.text, widget, widget);
+                const formatted = format(hook.text, widget, widget)
                 if (conf.html) {
                     el.parentElement.innerHTML = formatted
                 } else {
@@ -320,10 +320,10 @@ module feather.observe {
                     property = this.findProperty(filterFunctions.shift()),
                     conf = (collectAnnotationsFromTypeMap(binders, this) as TypedMap<BindProperties>)[property]
                 let value = this[property]
-                let storedValue;
+                let storedValue
                 if (conf && conf.localStorage) {
                     try {
-                        const json = localStorage.getItem(getPath(this as any, property));
+                        const json = localStorage.getItem(getPath(this as any, property))
                         if (json) {
                             storedValue = JSON.parse(json).value
                         }
@@ -384,7 +384,7 @@ module feather.observe {
                 attributeMapper[ci] = prop
             }
             if (!this[prop]) {
-                throw Error(`Couldn't find method '${ci}'`);
+                throw Error(`Couldn't find method '${ci}'`)
             }
             return prop
         }

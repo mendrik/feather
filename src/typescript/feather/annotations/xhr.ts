@@ -4,7 +4,7 @@ module feather.xhr {
     import Widget    = feather.core.Widget
     import format    = feather.strings.format
     import deepValue = feather.objects.deepValue
-    import isFunction = feather.functions.isFunction;
+    import isFunction = feather.functions.isFunction
 
     export type MethodValue = 'GET' | 'POST' | 'DELETE' | 'PUT'
 
@@ -61,7 +61,7 @@ module feather.xhr {
 
         xhr.addEventListener('readystatechange', () => {
             if (xhr.readyState === 4) {
-                const status = ~~(xhr.status/100);
+                const status = ~~(xhr.status/100)
                 if (status === 2 || status === 3) {
                     success(conf.responseFilter(xhr.responseText))
                 } else {
@@ -82,7 +82,7 @@ module feather.xhr {
 
         xhr.send(conf.requestFilter(conf.body))
 
-        return xhr;
+        return xhr
     }
 
     export let Rest = (params: RestConfig) => (proto: Widget, method: string, desc: PropertyDescriptor) => {

@@ -47,7 +47,7 @@ module feather.event {
     }
 
     function attachDelegatedEvent(context: EventAware, event: string, handlers: Handler[]) {
-        const root = context.element;
+        const root = context.element
         addListener(root as HTMLElement, event, (ev: Event) => {
             let el: HTMLElement = ev.target as HTMLElement
             do {
@@ -60,7 +60,7 @@ module feather.event {
                     }
                 }
                 if (el === root) {
-                    break;
+                    break
                 }
             } while (el = el.parentElement)
         })
@@ -70,26 +70,26 @@ module feather.event {
         element: Element
 
         attachEvents() {
-            this.attachDelegates(this.handlers(Scope.Delegate));
-            this.attachDirect(this.handlers(Scope.Direct));
+            this.attachDelegates(this.handlers(Scope.Delegate))
+            this.attachDirect(this.handlers(Scope.Direct))
         }
 
         private handlers(scope: Scope): HandlersMap {
             const handlers = collectAnnotationsFromArray(eventHandlers[scope], this),
                   map = {}
             handlers.reduce((p, c) => {
-                const e = c.event;
+                const e = c.event
                 if (!p[e]) {
                     p[e] = []
                 }
                 p[e].push(c)
-                return p;
+                return p
             }, map)
             return map
         }
 
         attachDirect(handlerMap: HandlersMap) {
-            const root = this.element;
+            const root = this.element
             Object.keys(handlerMap).forEach(event => {
                 const handlers: Handler[] = handlerMap[event]
                 for(const handler of handlers) {

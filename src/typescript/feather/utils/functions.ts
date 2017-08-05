@@ -30,7 +30,7 @@ module feather.functions {
 
         const res = props.filter(p => isFunction(orig[p]))
         inheritedMethodCache.set(orig, res)
-        return res;
+        return res
     }
 
 }

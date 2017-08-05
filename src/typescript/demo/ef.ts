@@ -1,12 +1,12 @@
 module demo {
 
-    import Widget    = feather.core.Widget;
-    import Construct = feather.annotations.Construct;
-    import Template  = feather.annotations.Template;
-    import On        = feather.event.On;
-    import Rest      = feather.xhr.Rest;
-    import Method    = feather.xhr.Method;
-    import Subscribe = feather.hub.Subscribe;
+    import Widget    = feather.core.Widget
+    import Construct = feather.annotations.Construct
+    import Template  = feather.annotations.Template
+    import On        = feather.event.On
+    import Rest      = feather.xhr.Rest
+    import Method    = feather.xhr.Method
+    import Subscribe = feather.hub.Subscribe
 
     @Construct({selector: '.extra-features', singleton: true})
     export class ExtraFeatures extends Widget {

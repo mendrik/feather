@@ -102,9 +102,9 @@ module feather.arrays {
                 throw Error('observed arrays cannot be filled. items must be unique, use Array.splice instead!')
             }
             arr.reverse = function() {
-                const ref = arr.slice();
+                const ref = arr.slice()
                 arr.sort((a, b) => ref.indexOf(b) - ref.indexOf(a))
-                return arr;
+                return arr
             }
             arr.shift = function(): T {
                 return arr.splice(0, 1)[0]

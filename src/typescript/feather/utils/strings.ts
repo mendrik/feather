@@ -35,9 +35,9 @@ module feather.strings {
         }
         return matches.reduce((result, match, index) => {
             if (index > 0) {
-                result[matchNames[index - 1]] = match;
+                result[matchNames[index - 1]] = match
             }
             return result
-        }, {});
+        }, {})
     }
 }

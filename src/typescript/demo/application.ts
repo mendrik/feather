@@ -1,13 +1,13 @@
 module demo {
 
-    import Widget    = feather.core.Widget;
-    import Construct = feather.annotations.Construct;
-    import Template  = feather.annotations.Template;
-    import Bind      = feather.observe.Bind;
-    import On        = feather.event.On;
-    import Rest      = feather.xhr.Rest;
-    import Subscribe = feather.hub.Subscribe;
-    import Route     = feather.routing.Route;
+    import Widget    = feather.core.Widget
+    import Construct = feather.annotations.Construct
+    import Template  = feather.annotations.Template
+    import Bind      = feather.observe.Bind
+    import On        = feather.event.On
+    import Rest      = feather.xhr.Rest
+    import Subscribe = feather.hub.Subscribe
+    import Route     = feather.routing.Route
 
     export enum FilterState {
         ALL,

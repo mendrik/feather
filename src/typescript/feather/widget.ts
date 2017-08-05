@@ -4,9 +4,9 @@ module feather.core {
     import ValidRoot       = feather.types.ValidRoot
     import Observable      = feather.observe.Observable
     import ParsedTemplate  = feather.annotations.ParsedTemplate
-    import WidgetFactory   = feather.boot.WidgetFactory;
-    import from            = feather.arrays.from;
-    import removeFromArray = feather.arrays.removeFromArray;
+    import WidgetFactory   = feather.boot.WidgetFactory
+    import from            = feather.arrays.from
+    import removeFromArray = feather.arrays.removeFromArray
 
     export interface Initializable {
     }
@@ -62,7 +62,7 @@ module feather.core {
 
         cleanUp() {
             super.cleanUp()
-            removeFromArray(WidgetFactory.singletonRegistry, [this]);
+            removeFromArray(WidgetFactory.singletonRegistry, [this])
         }
     }
 }

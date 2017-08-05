@@ -33,10 +33,10 @@ module demo {
                 <h1>Strings</h1>
                 <table>
                     <tr>
-                        <th>Property</th>    
-                        <th>Attribute</th>    
-                        <th>Text</th>    
-                        <th>Class</th>    
+                        <th>Property</th>
+                        <th>Attribute</th>
+                        <th>Text</th>
+                        <th>Class</th>
                     </tr>
                     <tr>
                         <td class="delimiter" colspan="4">No formatters</td>

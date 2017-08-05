@@ -4,7 +4,7 @@ module feather.annotations {
     import Widget        = feather.core.Widget
     import from          = feather.arrays.from
     import allChildNodes = feather.dom.allChildNodes
-    import collectAnnotationsFromTypeMap = feather.objects.collectAnnotationsFromTypeMap;
+    import collectAnnotationsFromTypeMap = feather.objects.collectAnnotationsFromTypeMap
 
     const supportsTemplate           = 'content' in document.createElement('template') && 'firstElementChild' in document.createDocumentFragment()
     const CURLIES                    = /{{(.*?)}}/
@@ -72,7 +72,7 @@ module feather.annotations {
                 frag.appendChild(template.firstChild)
             }
         }
-        const allNodes = allChildNodes(frag);
+        const allNodes = allChildNodes(frag)
         return new PreparsedTemplate(frag, parseHooks(allNodes))
     }
 
@@ -123,7 +123,7 @@ module feather.annotations {
                 preparsedTemplate = getPreparsedTemplate(templateString)
                 parsedTemplateCache[templateString] = preparsedTemplate
             }
-            return preparsedTemplate.asParsedTemplate();
+            return preparsedTemplate.asParsedTemplate()
         }
 
     }

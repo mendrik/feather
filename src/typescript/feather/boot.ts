@@ -8,7 +8,7 @@ module feather.boot {
     export interface Blueprint {
         selector: string
         attributes?: string[]
-        singleton?: boolean;
+        singleton?: boolean
     }
 
     export class ComponentInfo implements Blueprint {
@@ -30,13 +30,13 @@ module feather.boot {
             if (m) {
                 const js = m[1]
                 value = context[js] || (function(str) {
-                    return eval(str);
+                    return eval(str)
                 }).bind(context)(js)
                 if (typeof value !== 'undefined') {
                     node.removeAttribute(key)
                 }
             }
-            return value;
+            return value
         }
 
         static start(scope: ValidRoot = document, parentWidget?: Widget) {
