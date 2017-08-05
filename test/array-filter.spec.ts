@@ -58,21 +58,25 @@ describe('Filtered arrays', () => {
         it('should reverse correctly', () => {
             const app = window.app as demo.Application,
                   ul  = document.getElementById('sorted-list')
-            app.sortState = demo.SortState.BOTH
             expect(ul.textContent).to.be.equal('abcd')
             app.sortTestArray.reverse()
             expect(ul.textContent).to.be.equal('dcba')
+            app.sortTestArray.reverse()
+            expect(ul.textContent).to.be.equal('abcd')
         })
 
         it('should re-add correctly', () => {
             const app = window.app as demo.Application,
                   ul  = document.getElementById('sorted-list')
+            app.sortTestArray.sort((a: demo.ArrayElement, b: demo.ArrayElement) => a.stringA.localeCompare(b.stringA))
             app.sortState = demo.SortState.BOTH
             expect(ul.textContent).to.be.equal('abcd')
-            app.sortState = demo.SortState.OFF
-            expect(ul.textContent).to.be.equal('cd')
             app.sortState = demo.SortState.ON
             expect(ul.textContent).to.be.equal('ab')
+            app.sortTestArray.reverse()
+            app.sortState = demo.SortState.OFF
+            expect(ul.textContent).to.be.equal('dc')
+            app.sortTestArray.reverse()
             app.sortState = demo.SortState.BOTH
             expect(ul.textContent).to.be.equal('abcd')
         })

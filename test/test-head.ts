@@ -8,13 +8,13 @@ const fs = require('fs'),
       path = require('path')
 
 const {JSDOM} = jsdom
-const virtualConsole = new jsdom.VirtualConsole();
-// virtualConsole.sendTo(console, {omitJSDOMErrors: true});
+const virtualConsole = new jsdom.VirtualConsole()
+virtualConsole.sendTo(console, {omitJSDOMErrors: true})
 
-import * as chai from 'chai';
+import * as chai from 'chai'
 
-chai.should();
-chai.use(require('sinon-chai'));
+chai.should()
+chai.use(require('sinon-chai'))
 
 const mockResponse = (server, url, file) => {
     const ok = [200,  { 'Content-type': 'application/json' }, fs.readFileSync(file, 'utf8')]
@@ -55,19 +55,19 @@ const loadPage = (callback: Function) => {
 
     window.document.addEventListener('DOMContentLoaded', () => {
         if (window.document.readyState === 'complete') {
-            dom.reconfigure({ url: "https://example.com/" });
-            callback(window.window);
+            dom.reconfigure({ url: 'https://example.com/' })
+            callback(window.window)
         }
-    });
+    })
 }
 
 const featherStart = (callback: Function) => {
     loadPage(window => {
         try {
-            window.blockRouting = true;
+            window.blockRouting = true
             window.feather.start()
         } catch (e) {
-            console.log(e);
+            console.log(e)
         }
         callback(window)
     })
