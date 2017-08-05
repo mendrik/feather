@@ -273,7 +273,6 @@ module feather.observe {
                         parent.removeChild(w.element)
                     })
                 }
-
                 addLength = p.add.length
                 if (addLength) {
                     const doc = addLength !== 1 ? document.createDocumentFragment() : parent
@@ -288,11 +287,9 @@ module feather.observe {
                     }
                     proxy.push(...p.add)
                 }
-
                 // now let's check if some of the elements need repositioning
                 proxyIndices = proxy.map(x => target.indexOf(x))
-                needSorting = diff(proxyIndices, lis(proxyIndices))
-                console.log(needSorting)
+                needSorting = diff(proxyIndices, lis(proxyIndices)).sort((a, b) => b - a)
                 for (let i = 0, n = needSorting.length; i < n; i++) {
                     outOfPlace = target[needSorting[i]]
                     place = target[needSorting[i] + 1]

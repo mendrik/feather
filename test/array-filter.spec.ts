@@ -71,13 +71,16 @@ describe('Filtered arrays', () => {
             app.sortTestArray.sort((a: demo.ArrayElement, b: demo.ArrayElement) => a.stringA.localeCompare(b.stringA))
             app.sortState = demo.SortState.BOTH
             expect(ul.textContent).to.be.equal('abcd')
+            expect(app.sortTestArray.map((x: demo.ArrayElement) => x.stringA).join('')).to.be.equal('abcd')
             app.sortState = demo.SortState.ON
             expect(ul.textContent).to.be.equal('ab')
             app.sortTestArray.reverse()
+            expect(app.sortTestArray.map((x: demo.ArrayElement) => x.stringA).join('')).to.be.equal('dcba')
             app.sortState = demo.SortState.OFF
             expect(ul.textContent).to.be.equal('dc')
             app.sortTestArray.reverse()
             app.sortState = demo.SortState.BOTH
+            expect(app.sortTestArray.map((x: demo.ArrayElement) => x.stringA).join('')).to.be.equal('abcd')
             expect(ul.textContent).to.be.equal('abcd')
         })
     })
