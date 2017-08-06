@@ -8,7 +8,30 @@ Feather provides a bunch of decorators to add functionality to your components. 
 them decorate instances instead the classes. This is done internally with a few tricks, but you
 should remember this difference when writing components.
 
-## @Bind(...)
+## @Construct
+
+```
+  @Construct({
+    selector: string
+    attributes?: string[]
+    singleton?: boolean
+  })
+```
+
+### selector
+
+The selector to create a new component. Can be used either on document level or inside templates.
+
+### attributes
+
+A list of attributes that should be collected and passed on the widget's constructor. Make sure the
+order matches the constructor arguments. 
+
+### singleton
+
+
+
+## @Bind
 
 Allows to bind component data to DOM hooks, which will update your UI whenever the underlying data
 changes.
@@ -104,7 +127,11 @@ a function named like this. If no are present the widgets class name is taken.
 With string bindings you might sometimes want to inject unescaped html fragments into the dom tree. The only
 restriction is that you cannot inject it at a template's root node. This is experimental, so use it with care.
 
-## @On()
+## @On
+
+With this decorator you can add event listeners to the widget's element. The evaluation is done via delegation.
+And event bubbling stops the widget's element. If you need to bubble events further up, you must set *bubble* 
+to true.
 
 ```
   @On({
@@ -117,10 +144,25 @@ restriction is that you cannot inject it at a template's root node. This is expe
 ```
 
 ### event
+
+The DOM event to listen to.
+
 ### scope
+
+Scope can be Scope.Direct or Scope.Delegate from feather.event package. If set to Scope.Direct, the event 
+listener is attached directly to the first element that matches the selector property. 
+
 ### selector
+
+The selector that must be matched for the delegate event to trigger. Usually a node present in the template.
+
 ### preventDefault
+
+Small helper if you want to avoid calling ```ev.preventDefault()``` yourself.
+
 ### bubble
+
+Will bubble the dom event beyond the widget's root element.
 
 ## @Media
 
@@ -128,13 +170,23 @@ restriction is that you cannot inject it at a template's root node. This is expe
   @Media('(min-width: 600px)')
 ```
 
+Triggers the method if the specified media query matches. This can be used to run different logic for different
+viewport sizes. You could for example set a viewport state and filter an array binding with different components.
+See @Bind/changeOn for more info. The method is called initially if matched, but also when viewport size changes.
+This way you don't need to utilize resize or orientationchange events at all.
+
 ## @Route
+
+Triggers when the route matches the current location. Feather supports hash based urls, but also HTML5's 
+histort API.
 
 ```
   @Route('/:path')
 ```
 
 ## @Subscribe
+
+Subscribe to component events. Events can be broadcasted either up or down
 
 ```
   @Subscribe('my-event')
