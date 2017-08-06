@@ -19,26 +19,29 @@ them if you wish.
 
 ```
 {
-  "compilerOptions": {
     ...
-	"target": "es5", 
-	"experimentalDecorators": true, 
-	...
-  },
-  "files": [
-	<your-source-files>
-  ],
-  "exclude": [
-    ...
-	"node_modules",
-	"typings"
-	...
-  ]
+    "compilerOptions": {
+         ...
+        "experimentalDecorators": true,
+        "target": "es5",
+        ...  
+        "types": [
+            "es6-shim",
+            "feather-ts",
+            ...
+        ],
+        "typeRoots": [
+            "node_modules/@types"
+        ]
+    },
+    "files": [
+        ... 
+    ]
 }
 ```
 
-Then write your widgets and include the output together with feather.js (from node_modules) in your page.
-After the DOM and the scripts have been loaded make the following call; it will bootstrap the widgets and route listeners. 
+Then write your widgets and include the output together with feather.min.js (from node_modules) in your page.
+After the DOM and the scripts have been loaded make the following call, it will bootstrap the widgets and route listeners. 
 
 ```
 feather.start();

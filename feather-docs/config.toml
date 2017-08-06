@@ -1,4 +1,4 @@
-baseurl = "//www.feather-ts.com/"
+baseurl = "//localhost:9080/"
 languageCode = "en-us"
 title = "Featherₜₛ"
 theme = "hugo-material-docs"
@@ -61,9 +61,14 @@ googleAnalytics = "UA-84969611-1"
 	weight = 20
 
 [[menu.main]]
+	name   = "Decorators"
+	url    = "decorators/"
+	weight = 30
+
+[[menu.main]]
 	name   = "Example"
 	url    = "example/"
-	weight = 30
+	weight = 40
 
 
 [blackfriday]
