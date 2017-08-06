@@ -93,11 +93,67 @@ Now if you change *state* the ```<ul>``` tag will show or hide its child widgets
 ### localStorage
 
 This boolean will initialize a binding from *localstorage*. With array bindings, however, you must define 
-@Read and @Write serializers for its children. 
-This is best explained in the following [https://github.com/mendrik/feather-todo/blob/master/ts/todo-list.ts](source file)
+```@Read(arrayProperty: string)``` and ```@Write(arrayProperty: string)``` serializers for its children. 
+This is best explained in the following [source file](https://github.com/mendrik/feather-todo/blob/master/ts/todo-list.ts)
+Primitives are stored without any serializers. The local storage name is calculated from the widgets
+path (resolved through parentWidgets). Each path segment is taken from a property called id, name, title or
+a function named like this. If no are present the widgets class name is taken.
 
 ### html
 
 With string bindings you might sometimes want to inject unescaped html fragments into the dom tree. The only
 restriction is that you cannot inject it a template's root node. This is experimental, so use carefully.
+
+## @On()
+
+```
+  @On({
+    event: string 
+    scope?: Scope
+    selector?: string
+    preventDefault?: boolean
+    bubble?: boolean
+  })
+```
+
+### event
+### scope
+### selector
+### preventDefault
+### bubble
+
+## @Media
+
+```
+  @Media('(min-width: 600px)')
+```
+
+## @Route
+
+```
+  @Route('/:path')
+```
+
+## @Template
+
+```
+  @Template(name: string, warmUp: boolean)
+```
+
+## @Rest
+
+```
+  @Rest({
+    url:              string
+    method?:          MethodValue
+    timeout?:         number
+    async?:           boolean
+    responseFilter?:  (data: string) => any
+    requestFilter?:   (data: string) => any
+    progress?:        (ev: ProgressEvent) => any
+    withCredentials?: boolean
+    body?:            string
+    headers?:         TypedMap<string|StringFactory>
+  })
+```
 

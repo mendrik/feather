@@ -4,4 +4,13 @@ title: Image layout algorithm
 weight: 40
 ---
 
-Here we are going to use feather to write a small widget that layouts a set of images in an rectangle with fixed dimensions.
+Here are a few use-cases that might be useful to know
+
+## Rendering different versions for mobile and desktop
+
+Write me
+
+## Handling different routing based pages 
+
+Write me
+
