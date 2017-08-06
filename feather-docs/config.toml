@@ -57,7 +57,7 @@ googleAnalytics = "UA-84969611-1"
 
 [[menu.main]]
 	name   = "API"
-	url    = "api/"
+	url    = "basics/"
 	weight = 20
 
 [[menu.main]]
