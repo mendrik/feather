@@ -102,7 +102,7 @@ a function named like this. If no are present the widgets class name is taken.
 ### html
 
 With string bindings you might sometimes want to inject unescaped html fragments into the dom tree. The only
-restriction is that you cannot inject it a template's root node. This is experimental, so use carefully.
+restriction is that you cannot inject it at a template's root node. This is experimental, so use it with care.
 
 ## @On()
 
