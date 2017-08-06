@@ -263,7 +263,7 @@ parameters above are preset already, but let's have a look at a simple example:
     projectId : number
     
     init() {
-      this.project = 10
+      this.projectId = 10
       this.fetchProject()
     }
     
