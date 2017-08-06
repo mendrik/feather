@@ -134,6 +134,12 @@ restriction is that you cannot inject it a template's root node. This is experim
   @Route('/:path')
 ```
 
+## @Subscribe
+
+```
+  @Subscribe('my-event')
+```
+
 ## @Template
 
 ```
