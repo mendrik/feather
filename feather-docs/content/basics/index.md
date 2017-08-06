@@ -117,4 +117,21 @@ Array hooks can be placed in only one manner:
 There are no object bindings in feather. If you need subcomponents you should consider creating a new ```Widget``` and add it via template 
 strings to you parent component.
 
+## Imports
 
+Feather doesn't use any module loaders, so the imports are written like this:
+
+```
+module mypackage {
+
+    import Widget       = feather.core.Widget
+    import Construct    = feather.annotations.Construct
+
+    @Construct({selector: 'body.my-app'})
+    export class MyApplication extends Widget {
+       ...
+    }
+```
+
+Make sure the files are listed in correct order in your *tsconfig.json*. Since the goal is to keep everything minimal it is advised to
+compress all your app code into one file. 

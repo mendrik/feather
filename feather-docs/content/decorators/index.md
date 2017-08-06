@@ -29,7 +29,7 @@ order matches the constructor arguments.
 
 ### singleton
 
-
+A boolean marker that can be used with ```this.triggerSingleton()```. See more in @Subscribe()
 
 ## @Bind
 
@@ -50,8 +50,10 @@ changes.
   be used in the child widget class to render its children. If no name is used it defaults to
   the method that is decorated with no-arg @Template()
   
-  **Note that child widget should not
-  call this.render() in the init method, since the framework will take care of this.**  
+  {{< note title="Note" >}}
+  Note that child widget should not
+  call this.render() in the init method, since the framework will take care of this. 
+  {{< /note >}}
   
   Here an example:
 
@@ -115,9 +117,9 @@ Now if you change *state* the ```<ul>``` tag will show or hide its child widgets
 
 ### localStorage
 
-This boolean will initialize a binding from *localstorage*. With array bindings, however, you must define 
+This boolean will initialize a binding value from *localstorage*. With array bindings, however, you must define 
 ```@Read(arrayProperty: string)``` and ```@Write(arrayProperty: string)``` serializers for its children. 
-This is best explained in the following [source file](https://github.com/mendrik/feather-todo/blob/master/ts/todo-list.ts)
+This is best explained in the following [source file](https://github.com/mendrik/feather-todo/blob/master/ts/todo-list.ts). 
 Primitives are stored without any serializers. The local storage name is calculated from the widgets
 path (resolved through parentWidgets). Each path segment is taken from a property called id, name, title or
 a function named like this. If no are present the widgets class name is taken.
@@ -145,11 +147,11 @@ to true.
 
 ### event
 
-The DOM event to listen to.
+The DOM event to listen to: 'click', 'mouseover', ...
 
 ### scope
 
-Scope can be Scope.Direct or Scope.Delegate from feather.event package. If set to Scope.Direct, the event 
+Scope can be ```Scope.Direct``` or ```Scope.Delegate``` from feather.event package. If set to Scope.Direct, the event 
 listener is attached directly to the first element that matches the selector property. 
 
 ### selector
@@ -158,11 +160,19 @@ The selector that must be matched for the delegate event to trigger. Usually a n
 
 ### preventDefault
 
-Small helper if you want to avoid calling ```ev.preventDefault()``` yourself.
+Small helper if you want to avoid calling ```ev.preventDefault()``` yourself. Same as: 
+```
+  @On({event: 'click'})
+  click(ev: MouseEvent) {
+    ev.preventDefault()
+    ...
+  }
+```
 
 ### bubble
 
-Will bubble the dom event beyond the widget's root element.
+If set to true, it Will bubble the dom event beyond the widget's root element. Feather cancels event propagation
+by default so it is possible to have nested Widgets of the same class and scope their events accordingly.
 
 ## @Media
 
@@ -178,15 +188,40 @@ This way you don't need to utilize resize or orientationchange events at all.
 ## @Route
 
 Triggers when the route matches the current location. Feather supports hash based urls, but also HTML5's 
-histort API.
+histort API. IF you want to enable hash based routing add an attribute ```routing="hash"``` anywhere in your
+document. For example <html routing="hash">
 
 ```
   @Route('/:path')
 ```
 
+Route parsing is very basic and supports only :path and *path tokens. The called method is passed an object
+where the properties correspond to the named tokens:
+
+```
+  interface MyRoute {
+    path: string
+    id: string
+  }  
+
+  @Route('/:path/:id')
+  locationPath(route: MyRoute) {
+    ...
+  }
+```
+
+When using historyAPI make sure all your document urls load the original document on the server-side.
+
 ## @Subscribe
 
-Subscribe to component events. Events can be broadcasted either up or down
+Subscribe to component events. Events can be broadcasted either up or down the widget hiearchy. A widget
+object has always an array of childWidget and an optional parentWidget. With ```this.triggerUp('my-event', data)``` 
+you can notify decorated methods in parent widgets and with ```this.triggeDown('my-event', data)``` accordingly
+all child widgets. This also works with array bound child widgets.
+
+A special case are singletons that can be notified via ```this.triggerSingleton('my-event', data)```. For this
+to work you must set singleton property to true in @Construct(). Make sure you create only one instance of 
+this widget, otherwise you might encounter unpredicted side effects. 
 
 ```
   @Subscribe('my-event')
@@ -195,8 +230,12 @@ Subscribe to component events. Events can be broadcasted either up or down
 ## @Template
 
 ```
-  @Template(name: string, warmUp: boolean)
+  @Template(name?: string, warmUp?: boolean)
 ```
+
+With this decorator you can define multiple methods that provide a way to render a widget. If the name 
+parameter is missing it is set to 'default'. Then you can use this.render() without any name, but simetimes 
+you might want to render the same data with different HTML.
 
 ## @Rest
 
@@ -215,3 +254,112 @@ Subscribe to component events. Events can be broadcasted either up or down
   })
 ```
 
+If your application consumes REST apis this will help you to receive data to your components. Most of the 
+parameters above are preset already, but let's have a look at a simple example:
+
+```
+  class Parent extends Widget {
+    
+    projectId : number
+    
+    init() {
+      this.project = 10
+      this.fetchProject()
+    }
+    
+    @Rest({url: '/projects/{{projectId}}', headers: quill.headers})
+    fetchProject(project?: Project) {
+    }
+  } 
+```
+
+The default *Method* is *GET* and the accept-headers are set to json/application. To avoid errors in the
+typesript compiler the project argument is optional, because it works so, that ```this.fetchProject()```
+will make the http request and call the method with the received data. To catch request failures subscribe
+to xhr fail events:
+
+```
+  @Subscribe('xhr-failure-401')
+  unauthorized() {
+    this.route('/login')
+  }
+```
+
+Change the status code accordingly. 
+
+### url
+
+The url to make the request to. As you can see the url can contain properties from the widget to allow 
+dynamic requests.
+
+### method
+
+From feather.xhr.Method
+```
+  export const Method = {
+      GET:    'GET'    as MethodValue,
+      POST:   'POST'   as MethodValue,
+      DELETE: 'DELETE' as MethodValue,
+      PUT:    'PUT'    as MethodValue
+  }
+```
+
+### timeout
+
+Override the default xhr request timeouts.
+
+### progress
+
+The default progress listener can be listened to via 
+```
+@Subscribe('xhr-progress')
+onProgress(ev: ProgressEvent) {
+  ...
+}
+```
+
+### body
+
+When using Method.POST you might want to post a request load to the server. For that declare a widget
+property which will be automatically serialized to JSON and posted.
+
+```
+  class Parent extends Widget {
+    
+    projectId : 5
+    data: {
+      name: 'data'
+    }
+    
+    init() {
+      this.postProject()
+    }
+    
+    @Rest({url: '/projects/{{projectId}}', method: Method.POST, body: 'data'})
+    postProject(project?: Project) {
+    }
+  } 
+```
+
+### headers
+
+If you need to add custom headers to your requests you can use this.
+
+```
+  export const headers: TypedMap<string|StringFactory> = {
+      'X-Api-Key': 'AbCdEfGhIjK1',
+      'Content-Type': 'application/json',
+      'Accept-Language': 'en_IE.UTF-8',
+      [AUTH_HEADER]: localStorage.getItem(AUTH_HEADER)
+  }
+
+  ...
+  @Rest({url: '/translations', headers: mypackage.headers})
+  fetchTranslations(translations?: Messages) {
+      ...
+  }
+```
+
+{{< note title="Note" >}}
+More information can be found directly from the source code of feather-ts. Check it out on github. 
+{{< /note >}}
