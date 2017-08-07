@@ -4,9 +4,12 @@ title: Decorators
 weight: 30
 ---
 
-Feather provides a bunch of decorators to add functionality to your components. However most of 
-them decorate instances instead the classes. This is done internally with a few tricks, but you
-should remember this difference when writing components.
+Feather provides a bunch of decorators to add functionality to your components. However, most of 
+them decorate the class instances and not the classes, which is typescript's default behaviour. 
+This is achieved internally with a few tricks, but you should remember this difference when writing 
+components. For exmaple you cannot use decorators arguments with reference to *this*. Most of the 
+decorators that need access to instance variables provide a similar pattern that is used in template
+methods.
 
 ## @Construct
 
@@ -20,7 +23,8 @@ should remember this difference when writing components.
 
 ### selector
 
-The selector to create a new component. Can be used either on document level or inside templates.
+The selector that creates a new component. Can be used either on document level or inside templates.
+Only widgets that are pushed into an array of another widget don't need this decorator.
 
 ### attributes
 
@@ -233,9 +237,11 @@ this widget, otherwise you might encounter unpredicted side effects.
   @Template(name?: string, warmUp?: boolean)
 ```
 
-With this decorator you can define multiple methods that provide a way to render a widget. If the name 
-parameter is missing it is set to 'default'. Then you can use this.render() without any name, but simetimes 
-you might want to render the same data with different HTML.
+Decorate methods that return a simple html string to render the widget. You can have multiple templates 
+per single widget if you need to display them in different ways. If the name parameter is missing it 
+is set to 'default'. Then you can use this.render() without any arguments, otherwise call this.render(name)
+with name being set to the match the @Template(name) decorator.
+
 
 ## @Rest
 

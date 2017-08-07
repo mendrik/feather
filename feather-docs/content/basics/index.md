@@ -61,17 +61,28 @@ Putting it all together, a very simple widget might look like this:
  
 Call then ```feather.start()``` and your application should render itself into ```<body>```. 
 
+## Passing arguments to widgets
+
+If you need to pass data from a widget to its children (usually referenced in its template), there are several possibilities. The simplest
+one is using string attributes: ```<my-widget attr1="str1" attr2="str2">```. In your *MyWidget* class the @Construct decorator should have then an attribute 
+array defined like so ```@Construct({selector: 'my-widget', attributes: ['attr1', 'attr2']})```. Additionally provide a constructor with 
+the following signature: ```constructor(attr1: string, attr2: string) {```. The order of the attribute array must match the constructor arguments.
+
+If you need to pass other types than *strings* to the constructor you can use single curly brackets to do this: ```<my-widget attr1={true} attr2={2+2}>``` 
+and so on. If the text between the curly brackets matches a property name in the parent widget its value will be used instead.    
+
 ## Observable
 
-Feather provides one-way data-binding, which means you can create *hooks* between the components data holders and the DOM. Whenever the data changes,
-your DOM will update accordingly. There are several hook types, which are explained below. Feather doesn't use a virtual dom, but it binds directly to 
-native DOM modifiers which makes it even faster than any of the virtual dom based frameworks out there.
+Feather provides one-way data-binding, which means you can create *hooks* between the component's data and the DOM. Whenever the data changes,
+your DOM will update accordingly. There are several hook types, which are explained below. Feather does not use a virtual dom, but it binds directly to 
+native DOM modifiers which makes it even faster than any of the virtual dom based frameworks out there. Hooks are basically widget properties with 
+a @Bind() decorator and depending on the property type a reference in the widget's template method, declared by double curly brackets.
 
 ### Primitives
 
 The above example is quite rudimentary and if you wanted to change the variable ```who``` you would need to call ```render(...)``` again to see it.
-This is a little bit cumbersome and expensive, since the widget would then re-render the entire template with any sub widgets referenced within. To 
-avoid this you can decorate primitive members (currently only booleans, strings and numbers) with ```@Bind()``` like this (note the use of double-curlies):
+This is a little bit cumbersome and expensive, since the widget would then re-render the entire template with any children referenced within. To 
+avoid this you can decorate primitive members (currently only booleans, strings, numbers but also arrays) with ```@Bind()``` like this:
 
 <script async src="//jsfiddle.net/phbw6sdj/1/embed/js,result/"></script>
 
@@ -101,7 +112,7 @@ Booleans are bound almost the same way as primitives, but there are a few shortc
 ### Arrays
 
 Array bindings are the maybe the most important ones, since they allow you map list structures to dom nodes. They can be also
-used to render different application pages or with filters mobile/desktop representations of components (if css is not sufficient).
+used to render different application pages or with transformer functions different mobile/desktop representations of components.
 
 Array hooks can be placed in only one manner:
 
@@ -135,3 +146,4 @@ module mypackage {
 
 Make sure the files are listed in correct order in your *tsconfig.json*. Since the goal is to keep everything minimal it is advised to
 compress all your app code into one file. 
+
