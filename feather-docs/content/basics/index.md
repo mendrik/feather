@@ -96,7 +96,7 @@ a dom tree and in combation with the variable type, only some of them make sense
 
 {{< note title="Note" >}}
 Note that any binding can convert booleans, numbers or arrays into strings. This is done but declaring a *transformer* function in the widget 
-class. You can then bind it like this: ```<div class="{{variable:formatAsString}}">...</div>```
+class. You can then bind it like this: <div class="{{variable:formatAsString}}">...</div>
 {{< /note >}}
 
 ### Booleans
@@ -132,9 +132,10 @@ it twice as expected.
 
 #### Filtered Arrays
 
-When binding arrays with a transformer ```{{myarray:transformer}}``` the results different depending on the transformer return 
-type. If the it returns a primitive type, the binding behaves the same way as it would when binding a primitive. However, if
+When binding arrays with a transformer ```{{myarray:transformer}}``` the result differs depending on the transformer return 
+type. If it returns a primitive type the binding behaves the same way it would when binding a primitive value. However, if
 the transformer returns a function, this will be used to filter the array and remove invisible elements from the DOM.
+The returned function signature must be: return ```(el: MyChildWidget) => boolean```.
 
 Check the [listFilter](https://github.com/mendrik/feather-todo/blob/master/ts/todo-list.ts#L79) in our sample application and
 its [definition](https://github.com/mendrik/feather-todo/blob/master/ts/todo-list.ts#L40)
