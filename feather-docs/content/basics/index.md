@@ -93,9 +93,11 @@ a dom tree and in combation with the variable type, only some of them make sense
  * ```<div class="red" style="{{variable}}">...</div>``` Within an arbitrary attribute (only strings and booleans)
  * ```<div class="red" {{variable}}>...</div>``` As a property hook (booleans and arrays)
  * ```<div class="red">Some {{variable}} text!</div>``` Within a text node (only strings)
- 
+
+{{< note title="Note" >}}
 Note that any binding can convert booleans, numbers or arrays into strings. This is done but declaring a *transformer* function in the widget 
 class. you can then bind it like this: ```<div class="{{variable:formatAsString}}">...</div>```
+{{< /note >}}
 
 ### Booleans
 
@@ -120,7 +122,13 @@ Array hooks can be placed in only one manner:
   any of the native array functions to modify the array, but you must not replace the array itself as the bindings and hooks 
   will be lost. Read more about bindings in the decorator section. 
 
-  * ```<div class="red" {{variable}}>...</div>```  
+  * ```<div class="red" {{variable}}>...</div>``` 
+  
+{{< note title="Note" >}}
+Please don't use the same children in two different array bindings. Since children are also Widgets they must have one unique DOM
+element they attach to. Having the same child in different arrays, would simply move the element's DOM position instead of rendering
+it twice as expected.
+{{< /note >}}
 
 
 ### Objects
