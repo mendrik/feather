@@ -45,5 +45,4 @@ An example implementation can be be found [here](http://todo.feather-ts.com/). S
 
 # Work to be done
 
-- How to handle multiple REST request callbacks: @Rest({urls: [url1, url2, url3], method, headers})
-
+- None at the moment
