@@ -61,7 +61,7 @@ Putting it all together, a very simple widget might look like this:
  
 Call then ```feather.start()``` and your application should render itself into ```<body>```. 
 
-## Passing arguments to widgets
+#### Passing arguments to widgets
 
 If you need to pass data from a widget to its children (usually referenced in its template), there are several possibilities. The simplest
 one is using string attributes: ```<my-widget attr1="str1" attr2="str2">```. In your *MyWidget* class the @Construct decorator should have then an attribute 
@@ -96,7 +96,7 @@ a dom tree and in combation with the variable type, only some of them make sense
 
 {{< note title="Note" >}}
 Note that any binding can convert booleans, numbers or arrays into strings. This is done but declaring a *transformer* function in the widget 
-class. you can then bind it like this: ```<div class="{{variable:formatAsString}}">...</div>```
+class. You can then bind it like this: ```<div class="{{variable:formatAsString}}">...</div>```
 {{< /note >}}
 
 ### Booleans
@@ -124,12 +124,20 @@ Array hooks can be placed in only one manner:
 
   * ```<div class="red" {{variable}}>...</div>``` 
   
-{{< note title="Note" >}}
+{{< note title="Attention" >}}
 Please don't use the same children in two different array bindings. Since children are also Widgets they must have one unique DOM
 element they attach to. Having the same child in different arrays, would simply move the element's DOM position instead of rendering
 it twice as expected.
 {{< /note >}}
 
+#### Filtered Arrays
+
+When binding arrays with a transformer ```{{myarray:transformer}}``` the results different depending on the transformer return 
+type. If the it returns a primitive type, the binding behaves the same way as it would when binding a primitive. However, if
+the transformer returns a function, this will be used to filter the array and remove invisible elements from the DOM.
+
+Check the [listFilter](https://github.com/mendrik/feather-todo/blob/master/ts/todo-list.ts#L79) in our sample application and
+its [definition](https://github.com/mendrik/feather-todo/blob/master/ts/todo-list.ts#L40)
 
 ### Objects
 
