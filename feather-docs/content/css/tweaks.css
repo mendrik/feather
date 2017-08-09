@@ -9,3 +9,8 @@
     transform: scale(1.5);
     transform-origin: 50% 50%;
 }
+
+.article .note code {
+    background-color: #8bd9fd;
+    color: black;
+}
