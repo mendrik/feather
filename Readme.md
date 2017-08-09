@@ -3,7 +3,8 @@
 <img src="http://cd.feather-ts.com/mendrik/feather/badge/?branch=master" height="20">&nbsp;<img src="http://dist.feather-ts.com/size.svg" height="20">&nbsp;<img src="http://www.feather-ts.com/images/licence.svg" height="20">
 
 With friendly support of:
-<a href="http://www.browserstack.com"><img src="http://dist.feather-ts.com/browserstack.svg" height="20"></a>
+
+<a href="http://www.browserstack.com"><img src="http://www.feather-ts.com/images/browserstack.svg" width="92" height="20"></a>
 
 ---
 **THIS PROJECT IS WORK IN PROGRESS, DO NOT USE YET**
