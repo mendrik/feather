@@ -37,7 +37,7 @@ HTML elements the component will be attached to. Once the Widget has been create
 ```init(element: HTMLElement)``` method in your class and call this.render(templateName) there. 
 
 {{< note title="Note" >}}
-Widgets don't require a constructor and custom initialization should be done in the overwritten ```init``` 
+Widgets don't require a constructor and custom initialization should be done in the overwritten *init* 
 method. An exception to this are array-widgets. Array widget are widgets that are pushed into an array
 property of another widget. They differ in so far that they don't require a this.render() call nor must
 they have a @Construct decorator.
@@ -123,7 +123,7 @@ sense. Let's have a look:
 
 {{< note title="Note" >}}
 Note that any binding can convert booleans, numbers or arrays into strings. This is done but declaring a *transformer* function in the widget 
-class. You can then bind it like this: <div class="{{variable:formatAsString}}">...</div>
+class. You can then bind it like this: ```<div class="{{variable:formatAsString}}">...</div>```
 {{< /note >}}
 
 ### Booleans
