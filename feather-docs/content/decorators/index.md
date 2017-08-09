@@ -5,11 +5,11 @@ weight: 30
 ---
 
 Feather provides a bunch of decorators to add functionality to your components. However, most of 
-them decorate the class instances and not the classes, which is typescript's default behaviour. 
+them decorate the instances and not the classes, which would be typescript's default behaviour. 
 This is achieved internally with a few tricks, but you should remember this difference when writing 
-components. For exmaple you cannot use decorators arguments with reference to *this*. Most of the 
+components. For example you cannot use decorator arguments with references to *this*. Most of the 
 decorators that need access to instance variables provide a similar pattern that is used in template
-methods.
+methods: tokens in double curly brackets within a string.
 
 ## @Construct
 
@@ -21,6 +21,8 @@ methods.
   })
 ```
 
+The only *class* decorator, which defines which DOM element the widget should be instantiated with.
+
 ### selector
 
 The selector that creates a new component. Can be used either on document level or inside templates.
@@ -28,8 +30,8 @@ Only widgets that are pushed into an array of another widget don't need this dec
 
 ### attributes
 
-A list of attributes that should be collected and passed on the widget's constructor. Make sure the
-order matches the constructor arguments. 
+A list of attributes that should be collected and passed on to the widget's constructor. Make sure the
+order matches the constructor's arguments. 
 
 ### singleton
 

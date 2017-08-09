@@ -31,6 +31,7 @@ The framework offers the following features:
 * With aynchronous decorators no need for _promises_
 * Integrated media query based component views
 * Support for modern browsers including IE9
+* The initial component hierarchy is created with a document fragment for maximum bootstrap speed.
   
 You can checkout a todomvc demo [here](http://todo.feather-ts.com).
   

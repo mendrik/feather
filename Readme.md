@@ -1,4 +1,4 @@
-# Feather TS
+# Featherₜₛ
 
 <img src="http://cd.feather-ts.com/mendrik/feather/badge/?branch=master" height="20">&nbsp;<img src="http://dist.feather-ts.com/size.svg" height="20">&nbsp;<img src="http://www.feather-ts.com/images/licence.svg" height="20">
 
@@ -9,21 +9,22 @@ With friendly support of:
 ---
 **THIS PROJECT IS WORK IN PROGRESS, DO NOT USE YET**
 
-A feather-light :D framework written in typescript with support for
+A feather-light framework written in typescript with the following features:
 
 * One-directional binding
 * REST consumption
-* Routing with HTML5 history API
-* Component messaging
+* Routing with HTML5 history API or URL hashes.
+* Component and singleton messaging
 * DOM event handling
-* Templates are HTML without logic
+* Templates are simple HTML
 * Runs on modern browsers and IE9+
 * Integrated media query evaluation in javascript
 * Clean and simple code
 * Local storage integration
 * No promise clutter
+* Internal properties are stored in hidden WeakMaps
 * Less than 10kb gzipped
-
+* No virtual dom overhead.
 ---
 
 # Installation
@@ -36,8 +37,8 @@ npm install feather-ts --save
 
 - nodejs
 - typescript
-- set experimentalDecorators=true in your tsconfig.json
-- older browsers might need polyfills for Classlist, WeakMap (IE9+ with polyfills should work)
+- set experimentalDecorators=true in your *tsconfig.json*
+- older browsers (IE11-) might require polyfills for *classlist*, *treewalker*, *weakmap* and others
 
 # Usage
 
@@ -45,8 +46,10 @@ Check out the official [website](http://www.feather-ts.com)
 
 # TodoMVC
 
-An example implementation can be be found [here](http://todo.feather-ts.com/). Source maps are embedded.
+An example implementation of the famous todo application can be be found [here](http://todo.feather-ts.com/). 
+Source maps are embedded.
 
 # Work to be done
 
-- None at the moment
+- Complete documentation and usage examples
+- Evaluate jsx style templates for better IDE support.
