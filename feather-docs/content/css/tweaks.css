@@ -11,7 +11,20 @@
 }
 
 .article .note code {
-    background-color: transparent;
-    color: black;
+    background-color: rgb(9, 140, 200);
+    color: white;
 }
 
+code {
+    display: inline-block;
+    padding: 0px 5px;
+}
+
+pre {
+    padding: 10px;
+}
+
+pre code {
+    display: block;
+    padding: 10px;
+}

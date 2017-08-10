@@ -143,10 +143,10 @@ to true.
 
 ```typescript
   @On({
-    event: string 
-    scope?: Scope
-    selector?: string
-    preventDefault?: boolean
+    event: string, 
+    scope?: Scope,
+    selector?: string,
+    preventDefault?: boolean,
     bubble?: boolean
   })
 ```
@@ -195,7 +195,7 @@ This way you don't need to utilize resize or orientationchange events at all.
 
 Triggers when the route matches the current location. Feather supports hash based urls, but also HTML5's 
 histort API. IF you want to enable hash based routing add an attribute ```routing="hash"``` anywhere in your
-document. For example <html routing="hash">
+document. For example ```<html routing="hash">```
 
 ```typescript
   @Route('/:path')
@@ -263,15 +263,15 @@ with name being set to the match the @Template(name) decorator.
 
 ```typescript
   @Rest({
-    url:              string
-    method?:          MethodValue
-    timeout?:         number
-    async?:           boolean
-    responseFilter?:  (data: string) => any
-    requestFilter?:   (data: string) => any
-    progress?:        (ev: ProgressEvent) => any
-    withCredentials?: boolean
-    body?:            string
+    url:              string,
+    method?:          MethodValue,
+    timeout?:         number,
+    async?:           boolean,
+    responseFilter?:  (data: string) => any,
+    requestFilter?:   (data: string) => any,
+    progress?:        (ev: ProgressEvent) => any,
+    withCredentials?: boolean,
+    body?:            string,
     headers?:         TypedMap<string|StringFactory>
   })
 ```

@@ -85,7 +85,8 @@
       </script>
     {{ end }}
 
-    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.8.0/highlight.min.js"></script>
-    <script>hljs.initHighlightingOnLoad();</script>
-  </body>
+    <link rel="stylesheet" href="{{ "stylesheets/highlight/solarized-light.css" | absURL }}">
+    <script src="{{ "javascripts/highlight.pack.js" | absURL }}"></script>
+    <script>hljs.initHighlighting();</script>
+</body>
 </html>
