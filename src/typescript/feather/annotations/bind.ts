@@ -108,7 +108,7 @@ module feather.observe {
                 },
                 set: (newValue: any) => {
                     if (newValue !== value) {
-                        maybeStore(obj, property, conf, value)
+                        maybeStore(obj, property, conf, newValue)
                         const old = value
                         value = newValue
                         for (const cb of listeners[property]) {
@@ -203,7 +203,7 @@ module feather.observe {
                 const children = from<HTMLElement>(el.children)
                 indices.forEach(i => el.appendChild(children[i]))
             },
-            splice(index: number, deleteCount: number, added: any[], deleted: any[] = []) {
+            splice(index: number, deleteCount: number, added: Widget[], deleted: Widget[] = []) {
                 if (index === 0 && deleteCount === 0 && added.length === 0) {
                     return
                 }
