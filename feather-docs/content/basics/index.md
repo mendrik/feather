@@ -48,7 +48,7 @@ when calling this.render().
 
 Putting it all together, a very simple widget might look like this:
  
-```
+```typescript
  module demo {
  
      import Widget    = feather.core.Widget
@@ -166,7 +166,7 @@ on the transformer return type. If it returns a primitive type the binding behav
 when binding a primitive type. However, if the transformer returns a function, this will be used to filter 
 the array and remove invisible elements from the DOM. The returned function signature must be: 
 
-```
+```typescript
    transformer() {
       return (el: MyChildWidget) => boolean
    }
@@ -184,7 +184,7 @@ new ```Widget``` and add it via template strings or array properties to you pare
 
 Feather doesn't use any module loaders, so the imports are written like this:
 
-```
+```typescript
 module mypackage {
 
     import Widget       = feather.core.Widget

@@ -13,7 +13,7 @@ methods: tokens in double curly brackets within a string.
 
 ## @Construct
 
-```
+```typescript
   @Construct({
     selector: string
     attributes?: string[]
@@ -42,7 +42,7 @@ A boolean marker that can be used with ```this.triggerSingleton()```. See more i
 Allows to bind component data to DOM hooks, which will update your UI whenever the underlying data
 changes.
 
-```
+```typescript
   @Bind({
       templateName?: string   
       changeOn?: string[] 
@@ -63,7 +63,7 @@ changes.
   
   Here an example:
 
-```
+```typescript
   class Parent extends Widget {
     @Bind({}) myArray: Child[] = []
     @Bind({templateName: 'alternative'}) myOtherArray: Child[] = []
@@ -74,8 +74,8 @@ changes.
     
     @Template()
     markup() {
-      <uL {{myArray}}></ul>
-      <uL {{myOtherArray}}></ul>
+      return `<uL {{myArray}}></ul>
+              <uL {{myOtherArray}}></ul>`
     }
   }
   
@@ -83,12 +83,12 @@ changes.
   
     @Template()
     markupOne() {
-      return <li>A</li>
+      return `<li>A</li>`
     }    
   
     @Template('alternative')
     markupTwo() {
-      return <li>B</li>
+      return `<li>B</li>`
     }    
   
   }
@@ -99,7 +99,7 @@ changes.
 This is also used exclusively with array bindings and will trigger all template hooks to be re-evaluated. 
 Especially useful when you have transformers that reduce the array to a string or filter the array. 
 
-```
+```typescript
   class Parent extends Widget {
     @Bind({changeOn: ['state']}) myArray: Child[] = []
     @Bind() state = true
@@ -110,7 +110,7 @@ Especially useful when you have transformers that reduce the array to a string o
     
     @Template()
     markup() {
-      <ul {{myArray:filter}}></ul>
+      return `<ul {{myArray:filter}}></ul>`
     }
     
     filter() {
@@ -141,7 +141,7 @@ With this decorator you can add event listeners to the widget's element. The eva
 And event bubbling stops the widget's element. If you need to bubble events further up, you must set *bubble* 
 to true.
 
-```
+```typescript
   @On({
     event: string 
     scope?: Scope
@@ -167,7 +167,7 @@ The selector that must be matched for the delegate event to trigger. Usually a n
 ### preventDefault
 
 Small helper if you want to avoid calling ```ev.preventDefault()``` yourself. Same as: 
-```
+```typescript
   @On({event: 'click'})
   click(ev: MouseEvent) {
     ev.preventDefault()
@@ -182,7 +182,7 @@ by default so it is possible to have nested Widgets of the same class and scope 
 
 ## @Media
 
-```
+```typescript
   @Media('(min-width: 600px)')
 ```
 
@@ -197,14 +197,14 @@ Triggers when the route matches the current location. Feather supports hash base
 histort API. IF you want to enable hash based routing add an attribute ```routing="hash"``` anywhere in your
 document. For example <html routing="hash">
 
-```
+```typescript
   @Route('/:path')
 ```
 
 Route parsing is very basic and supports only :path and *path tokens. The called method is passed an object
 where the properties correspond to the named tokens:
 
-```
+```typescript
   interface MyRoute {
     path: string
     id: string
@@ -216,7 +216,21 @@ where the properties correspond to the named tokens:
   }
 ```
 
-When using historyAPI make sure all your document urls load the original document on the server-side.
+When using historyAPI make sure all your document urls load the original document on the server-side. Unlike
+with hash routing links must be intercepted and manually routed. One can do this easily with a small widget:
+
+```typescript
+@Contruct({selector: 'a:not([href^="http://"])'}) // modify the selector to be more strict if needed
+class RoutingLink extends Widget {
+
+  @On({event: 'click', preventDefault: true})
+  click(ev: MouseEvent, a: HTMLAnchorElement) {
+     this.route(a.getAttribute('href'))        
+  }
+  
+}
+
+```
 
 ## @Subscribe
 
@@ -229,13 +243,13 @@ A special case are singletons that can be notified via ```this.triggerSingleton(
 to work you must set singleton property to true in @Construct(). Make sure you create only one instance of 
 this widget, otherwise you might encounter unpredicted side effects. 
 
-```
+```typescript
   @Subscribe('my-event')
 ```
 
 ## @Template
 
-```
+```typescript
   @Template(name?: string, warmUp?: boolean)
 ```
 
@@ -247,7 +261,7 @@ with name being set to the match the @Template(name) decorator.
 
 ## @Rest
 
-```
+```typescript
   @Rest({
     url:              string
     method?:          MethodValue
@@ -265,7 +279,7 @@ with name being set to the match the @Template(name) decorator.
 If your application consumes REST apis this will help you to receive data to your components. Most of the 
 parameters above are preset already, but let's have a look at a simple example:
 
-```
+```typescript
   class Parent extends Widget {
     
     projectId : number
@@ -286,7 +300,7 @@ typesript compiler the project argument is optional, because it works so, that `
 will make the http request and call the method with the received data. To catch request failures subscribe
 to xhr fail events:
 
-```
+```typescript
   @Subscribe('xhr-failure-401')
   unauthorized() {
     this.route('/login')
@@ -303,7 +317,7 @@ dynamic requests.
 ### method
 
 From feather.xhr.Method
-```
+```typescript
   export const Method = {
       GET:    'GET'    as MethodValue,
       POST:   'POST'   as MethodValue,
@@ -319,7 +333,7 @@ Override the default xhr request timeouts.
 ### progress
 
 The default progress listener can be listened to via 
-```
+```typescript
 @Subscribe('xhr-progress')
 onProgress(ev: ProgressEvent) {
   ...
@@ -331,7 +345,7 @@ onProgress(ev: ProgressEvent) {
 When using Method.POST you might want to post a request load to the server. For that declare a widget
 property which will be automatically serialized to JSON and posted.
 
-```
+```typescript
   class Parent extends Widget {
     
     projectId : 5
@@ -353,7 +367,7 @@ property which will be automatically serialized to JSON and posted.
 
 If you need to add custom headers to your requests you can use this.
 
-```
+```typescript
   export const headers: TypedMap<string|StringFactory> = {
       'X-Api-Key': 'AbCdEfGhIjK1',
       'Content-Type': 'application/json',

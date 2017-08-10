@@ -11,6 +11,7 @@
 }
 
 .article .note code {
-    background-color: #8bd9fd;
+    background-color: transparent;
     color: black;
 }
+

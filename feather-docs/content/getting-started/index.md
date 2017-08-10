@@ -17,7 +17,7 @@ Create a **tsconfig.json** file in your project's root containing the following 
 since decorators are the beef of it all make sure they are enabled. Feather.js embeds the typescript emitted helpers so you can disable 
 them if you wish.
 
-```
+```typescript
 {
     ...
     "compilerOptions": {
@@ -52,7 +52,7 @@ feather.start();
 To get an impression of the code style you will be dealing with, here is a sample widget code. As you can see the code is
 very compact and flat.
 
-```
+```typescript
 module todomvc.feather {
 
     import Widget          = feather.core.Widget /* imports of referenced components */
