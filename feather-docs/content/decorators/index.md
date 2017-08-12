@@ -4,12 +4,12 @@ title: Decorators
 weight: 30
 ---
 
-Feather provides a bunch of decorators to add functionality to your components. However, most of 
+Feather provides a few decorators to add functionality to your components. However, most of 
 them decorate the instances and not the classes, which would be typescript's default behaviour. 
-This is achieved internally with a few tricks, but you should remember this difference when writing 
-components. For example you cannot use decorator arguments with references to *this*. Most of the 
-decorators that need access to instance variables provide a similar pattern that is used in template
-methods: tokens in double curly brackets within a string.
+This is achieved internally with a few tricks, but you should remember that difference when writing 
+components. For example you cannot use *this* in the decorator's arguments. Most of the 
+decorators that need access to instance properties provide a similar pattern that is used in template
+methods: tokens in double curly brackets within a string (double curly brackets).
 
 ## @Construct
 
@@ -25,7 +25,7 @@ The only *class* decorator, which defines which DOM element the widget should be
 
 ### selector
 
-The selector that creates a new component. Can be used either on document level or inside templates.
+The selector that creates a new component. Can be used either on the document level or inside a template.
 Only widgets that are pushed into an array of another widget don't need this decorator.
 
 ### attributes
@@ -39,7 +39,7 @@ A boolean marker that can be used with ```this.triggerSingleton()```. See more i
 
 ## @Bind
 
-Allows to bind component data to DOM hooks, which will update your UI whenever the underlying data
+Allows to data-bind component properties to DOM, which will update your UI whenever the bound property 
 changes.
 
 ```typescript
@@ -52,13 +52,12 @@ changes.
 ```
 
 ### templateName 
-  This is used with array bindings and specifies which template method should 
-  be used in the child widget class to render its children. If no name is used it defaults to
-  the method that is decorated with no-arg @Template()
+  This is used with array bindings and specifies which template method should be used for the children. 
+  If no name is used it defaults to the method that is decorated with no-argument @Template()
   
   {{< note title="Note" >}}
-  Note that child widget should not
-  call this.render() in the init method, since the framework will take care of this. 
+  Note that child widgets in an array should not call ```this.render()``` in the init method, since the 
+  framework will take care of this. However, you can still use the init method for other code as you wish. 
   {{< /note >}}
   
   Here an example:
@@ -96,8 +95,9 @@ changes.
 
 ### changeOn
 
-This is also used exclusively with array bindings and will trigger all template hooks to be re-evaluated. 
-Especially useful when you have transformers that reduce the array to a string or filter the array. 
+This is also used exclusively with array bindings and will trigger all template hooks for this array 
+to be re-evaluated. 
+Especially useful when you have transformers that reduce the array to a string or filter it. 
 
 ```typescript
   class Parent extends Widget {
@@ -123,17 +123,18 @@ Now if you change *state* the ```<ul>``` tag will show or hide its child widgets
 
 ### localStorage
 
-This boolean will initialize a binding value from *localstorage*. With array bindings, however, you must define 
+This boolean will initialize a binding's value from *localstorage*. With array bindings, however, you must define 
 ```@Read(arrayProperty: string)``` and ```@Write(arrayProperty: string)``` serializers for its children. 
 This is best explained in the following [source file](https://github.com/mendrik/feather-todo/blob/master/ts/todo-list.ts). 
 Primitives are stored without any serializers. The local storage name is calculated from the widgets
-path (resolved through parentWidgets). Each path segment is taken from a property called id, name, title or
-a function named like this. If no are present the widgets class name is taken.
+path (resolved through parent widgets). Each path segment is taken from a property called id, name, title or
+a function named like this. If no are present the widget's class name is taken. Make sure the path segments 
+are unique for widget instance.
 
 ### html
 
 With string bindings you might sometimes want to inject unescaped html fragments into the dom tree. The only
-restriction is that you cannot inject it at a template's root node. This is experimental, so use it with care.
+restriction is that you cannot inject it at a root node of template. This is experimental, so use it with care.
 
 ## @On
 
