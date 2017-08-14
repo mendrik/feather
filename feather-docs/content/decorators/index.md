@@ -134,7 +134,7 @@ are unique for widget instance.
 
 ### bequeath
 
-This property means that this property can be also bound in child widget in their templates. This is an easy
+This property means that this property can be also bound in child widget templates. This is an easy
 way to render parent properties in child components, without having to rely on @Subscribe to pass around data
 in your application.
 
