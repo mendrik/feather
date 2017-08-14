@@ -320,7 +320,7 @@ module feather.observe {
         property = current.findProperty(property)
         const conf = (collectAnnotationsFromTypeMap(binders, current) as TypedMap<BindProperties>)[property]
         if (conf && conf.bequeath) {
-            current.attachHooks([hook], true)
+            current.attachHooks.call(current, [hook], true)
         } else {
             tryToBindFromParentWidget(current.parentWidget as Widget, hook, property)
         }
@@ -336,7 +336,7 @@ module feather.observe {
                     conf = (collectAnnotationsFromTypeMap(binders, this) as TypedMap<BindProperties>)[property]
                 let value = this[property],
                     storedValue
-
+                // todo filter doesn't work when coming from parentWidget context
                 const fm: (s) => string = this.findMethod.bind(this),
                       filter  = compose<any>(filterFunctions
                               .map(fm)
