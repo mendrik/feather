@@ -26,7 +26,7 @@ module demo {
 
         @Template('simple')
         protected getSimpleTemplate() {
-            return (`<li>{{stringA}}</li>`)
+            return (`<li inherited="{{inheritedString}}">{{stringA}}</li>`)
         }
     }
 }

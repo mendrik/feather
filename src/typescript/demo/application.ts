@@ -25,6 +25,8 @@ module demo {
     @Construct({selector: '.application', singleton: true})
     export class Application extends Widget {
 
+        @Bind({bequeath: true}) inheritedString = 'inheritedString'
+
         data = {
             x: 1
         }
@@ -47,6 +49,11 @@ module demo {
 
         sortState: SortState = SortState.BOTH
         filterState: FilterState = FilterState.ALL
+
+        constructor() {
+            super()
+            window['app'] = this;
+        }
 
         init(element: HTMLElement) {
             this.render('default')

@@ -33,6 +33,7 @@ module feather.observe {
         templateName?: string   // when pushing new widgets into an array, the template name to render the children with
         changeOn?: string[] // list of property names
         localStorage?: boolean
+        bequeath?: boolean // child widget can bind thin in their own templates
         html?: boolean
     }
 
@@ -311,17 +312,41 @@ module feather.observe {
         parent.removeAttribute(`{{${hook.curly}}}`)
     }
 
+    function tryToBindFromParentWidget(current: Widget, hook: Hook, property: string) {
+        if (!current) {
+            console.log(`@Bind() ${property} annotation missing or 'bequeath' not set?`, hook, property, binders)
+            return
+        }
+        property = current.findProperty(property)
+        const conf = (collectAnnotationsFromTypeMap(binders, current) as TypedMap<BindProperties>)[property]
+        if (conf && conf.bequeath) {
+            current.attachHooks([hook], true)
+        } else {
+            tryToBindFromParentWidget(current.parentWidget as Widget, hook, property)
+        }
+    }
+
     export class Observable extends RouteAware {
 
-        protected attachHooks(hooks: Hook[]) {
+        attachHooks(hooks: Hook[], isParent: boolean = false) {
             for (const hook of hooks) {
 
                 const filterFunctions = hook.curly.split(/:/),
                     property = this.findProperty(filterFunctions.shift()),
                     conf = (collectAnnotationsFromTypeMap(binders, this) as TypedMap<BindProperties>)[property]
-                let value = this[property]
-                let storedValue
-                if (conf && conf.localStorage) {
+                let value = this[property],
+                    storedValue
+
+                const fm: (s) => string = this.findMethod.bind(this),
+                      filter  = compose<any>(filterFunctions
+                              .map(fm)
+                              .map(method => this[method].bind(this)))
+
+                // template has a hook that isn't bound via @Bind(), let's see if we can find the property from parent widgets
+                if (typeof conf === 'undefined') {
+                    tryToBindFromParentWidget(this.parentWidget as Widget, hook, property);
+                    continue
+                } else if (!isParent && conf.localStorage) {
                     try {
                         const json = localStorage.getItem(getPath(this as any, property))
                         if (json) {
@@ -333,15 +358,6 @@ module feather.observe {
                     if (typeof storedValue !== 'undefined' && !Array.isArray(storedValue)) {
                         this[property] = value = storedValue
                     }
-                }
-                const fm: (s) => string = this.findMethod.bind(this),
-                    filter = compose<any>(filterFunctions
-                        .map(fm)
-                        .map(method => this[method].bind(this)))
-
-                if (typeof conf === 'undefined') {
-                    console.log(`@Bind() ${property} annotation missing?`, hook, property, value, binders)
-                    continue
                 }
                 if (isObject(value)) {
                     console.log('Binding to objects is not supported. Use new widgets.')

@@ -30,7 +30,7 @@ module demo {
         @Template('default')
         protected getBaseTemplate() {
             return (`
-                <span text="{{text}}" bool="{{bool:yesOrNo}}" func={{funcResult}} number={{number}} >{{text}}</span>
+                <span text="{{text}}" bool="{{bool:yesOrNo}}" func={{funcResult}} number={{number}} inherited={{inheritedString}}>{{text}}</span>
             `)
         }
     }
