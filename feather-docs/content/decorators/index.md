@@ -136,7 +136,8 @@ are unique for widget instance.
 
 This property means that this property can be also bound in child widget templates. This is an easy
 way to render parent properties in child components, without having to rely on @Subscribe to pass around data
-in your application.
+in your application. Filter functions are currently not supported and neither is sharing text node 
+hooks with other widgets. This means if you bind an inherited variable use it alone in a text binding. 
 
 ### html
 
