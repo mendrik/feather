@@ -14,7 +14,7 @@ module demo {
     @Construct({selector: 'Inheritence'})
     export class Inheritence extends Widget {
 
-        @Bind() person: Person
+        @Bind({}) person: Person
 
         init() {
             const mother = {
@@ -32,14 +32,14 @@ module demo {
         @Template()
         protected getBaseTemplate() {
             return (`
-                <div id="inherit" test="{{inheritedString}}" length="{{filteredList:size}}">
+                <div id="inherit" test="{{inheritedString}}" length="{{filteredList:sizeOfArray}}">
                     <span>{{inheritedString}}</span>
-                    <div id="person" siblingsLength={{person.siblings:size}} uncles={{person.mother.siblings:size}}>{{person.name}}</div>
+                    <div id="person" siblingsLength={{person.siblings:sizeOfArray}} uncles={{person.mother.siblings:sizeOfArray}}>{{person.name}}</div>
                     <div id="mother">{{person.mother.name}}</div>
                 </div>
             `)
         }
 
-        size = (arr: ArrayElement[]) => arr.length
+        sizeOfArray = (arr: any[]) => `${arr.length}`
     }
 }

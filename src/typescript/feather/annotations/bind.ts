@@ -22,8 +22,9 @@ module feather.observe {
     import diff                = feather.arrays.diff
     import patch               = feather.arrays.patch
     import removeFromArray     = feather.arrays.removeFromArray
+    import deepValue           = feather.objects.deepValue
     import collectAnnotationsFromTypeMap = feather.objects.collectAnnotationsFromTypeMap
-    import deepValue = feather.objects.deepValue;
+    import createObjectPropertyListener  = feather.objects.createObjectPropertyListener
 
     const boundProperties = new WeakMap<Widget, TypedMap<Function[]>>()
     const binders = new WeakMap<Observable, TypedMap<BindProperties>>()
@@ -76,9 +77,9 @@ module feather.observe {
         })
     }
 
-    function maybeStore(parent: Observable, property: string, conf: BindProperties, value: any) {
+    function maybeStore(parent: Observable, property: string, conf: BindProperties, value: any, isArray: boolean) {
         if (conf && conf.localStorage) {
-            if (Array.isArray(value)) {
+            if (isArray) {
                 const serializer = collectAnnotationsFromTypeMap(serializers, parent)[property] as Serializer
                 value = value.map(parent[serializer.write])
             }
@@ -93,7 +94,7 @@ module feather.observe {
             observeArray(value, changeArrayListener(() => {
                 cb(value)
                 triggerParentArray(obj)
-                maybeStore(obj, property, conf, value)
+                maybeStore(obj, property, conf, value, true)
             }))
         } else {
             let listeners = boundProperties.get(obj)
@@ -110,7 +111,7 @@ module feather.observe {
                 },
                 set: (newValue: any) => {
                     if (newValue !== value) {
-                        maybeStore(obj, property, conf, newValue)
+                        maybeStore(obj, property, conf, newValue, false)
                         const old = value
                         value = newValue
                         for (const cb of listeners[property]) {
@@ -125,7 +126,7 @@ module feather.observe {
         }
     }
 
-    function bindBoolean(property: string, hook: Hook, filter: FuncOne, conf: BindProperties) {
+    function bindBoolean(property: string, value: any, hook: Hook, transform: FuncOne, conf: BindProperties, createListener: Function) {
         if (hook.type === HookType.ATTRIBUTE || hook.type === HookType.PROPERTY) {
 
             const el = (hook.node as HTMLElement),
@@ -139,12 +140,12 @@ module feather.observe {
 
             createListener(this, conf, property, function updateDom(val) {
                 if (typeof el[attributeName] === 'boolean') {
-                    el[attributeName] = !!filter(val)
+                    el[attributeName] = !!transform(val)
                 } else {
-                    setOrRemoveAttribute(el, attributeName, !!filter(val), '')
+                    setOrRemoveAttribute(el, attributeName, !!transform(val), '')
                 }
                 return updateDom
-            }(this[property]))
+            }(value))
 
         } else {
             throw Error('Bool value can only be bound to attributes ie. hidden="{{myBool}}. ' +
@@ -152,9 +153,9 @@ module feather.observe {
         }
     }
 
-    function bindStringOrNumber(property: string, hook: Hook, filter: FuncOne, conf: BindProperties) {
+    function bindStringOrNumber(property: string, value: string|number, hook: Hook, transform: FuncOne, conf: BindProperties, createListener: Function) {
         const widget = this,
-            el = hook.node as HTMLElement
+              el     = hook.node as HTMLElement
 
         if (hook.type === HookType.TEXT) { // <p>some text {{myVar}} goes here</p>
             createListener(this, conf, property, function updateDom() {
@@ -169,28 +170,28 @@ module feather.observe {
         } else if (hook.type === HookType.CLASS) { // <p class="red {{myVar}}">text goes here</p>
             createListener(this, conf, property, function updateDom(val, old?) {
                 if (typeof old !== 'undefined') {
-                    const fOld = filter(old)
+                    const fOld = transform(old)
                     if (fOld) {
                         el.classList.remove(fOld)
                     }
                 }
                 if (typeof val !== 'undefined') {
-                    const fVal = filter(val)
+                    const fVal = transform(val)
                     if (fVal) {
                         el.classList.add(fVal)
                     }
                 }
                 return updateDom
-            }(this[property]))
+            }(value))
             el.classList.remove(`{{${hook.curly}}}`)
         } else if (hook.type === HookType.ATTRIBUTE || hook.type === HookType.PROPERTY) { // <p style="{{myvar}}" {{hidden}}>text goes here</p>
             const attribName = hook.text || property
 
             createListener(this, conf, property, function updateDom(val) {
-                const formatted = filter(val)
+                const formatted = transform(val)
                 setOrRemoveAttribute(el, attribName, typeof formatted !== 'undefined', formatted)
                 return updateDom
-            }(this[property]))
+            }(value))
 
             if (!hook.text) {
                 el.removeAttribute(`{{${hook.curly}}}`)
@@ -239,14 +240,35 @@ module feather.observe {
         arr.push(...removed)
     }
 
-    function createObserver(property: string, value: Primitive, hook: Hook, conf: BindProperties, filter: FuncOne) {
-        const typeOfValue = Array.isArray(value) ? 'array' : (typeof value).toLowerCase()
+    function createDeepObserver(property: string, hook: Hook, transform: FuncOne) {
+        const dummyCreate = (a, b, c, callback) => dummyCreate,
+              rootProperty = property.split('.').shift(),
+              widget = this,
+              initialValue = deepValue(widget, property),
+              typeOfValue = (typeof transform(initialValue)).toLowerCase(),
+              conf = (collectAnnotationsFromTypeMap(binders, this) as TypedMap<BindProperties>)[rootProperty],
+              update = (oldVal, newVal) => {
+                  if (/boolean/.test(typeOfValue)) {
+                      bindBoolean.call(this, rootProperty, newVal, hook, transform, conf, dummyCreate.bind(widget))
+                  } else if (/string|number|undefined/.test(typeOfValue)) {
+                      bindStringOrNumber.call(this, rootProperty, newVal, hook, transform, conf, dummyCreate.bind(widget))
+                  } else {
+                      console.log('Deeply bound properties only work with primitive types (string, number, boolean). Use a transformer: {{var:myTransformer}}?')
+                  }
+                  return update;
+              }
+        createObjectPropertyListener(this, property, update(initialValue, initialValue))
+    }
+
+    function createObserver(property: string, value: Primitive, hook: Hook, conf: BindProperties, transform: FuncOne) {
+        const typeOfValue = Array.isArray(value) ? 'array' : (typeof value).toLowerCase(),
+              initialValue = this[property];
         if (/boolean/.test(typeOfValue)) {
-            bindBoolean.call(this, property, hook, filter, conf)
+            bindBoolean.call(this, property, initialValue, hook, transform, conf, createListener)
         } else if (/string|number|undefined/.test(typeOfValue)) {
-            bindStringOrNumber.call(this, property, hook, filter, conf)
+            bindStringOrNumber.call(this, property, initialValue, hook, transform, conf, createListener)
         } else if (/array/.test(typeOfValue)) {
-            bindArray.call(this, this[property], hook, conf)
+            bindArray.call(this, initialValue, hook, conf)
         } else {
             console.log('Bindings are only supported on arrays, booleans, strings and numbers')
         }
@@ -328,25 +350,24 @@ module feather.observe {
             const context: Widget = parent || this;
             for (const hook of hooks) {
 
-                const filterFunctions = hook.curly.split(/:/),
-                    property = this.findProperty(filterFunctions.shift()),
-                    conf = (collectAnnotationsFromTypeMap(binders, this) as TypedMap<BindProperties>)[property]
+                const transformFns = hook.curly.split(/:/),
+                      property = this.findProperty(transformFns.shift()),
+                      conf = (collectAnnotationsFromTypeMap(binders, this) as TypedMap<BindProperties>)[property]
                 let value = this[property],
                     storedValue
-                // todo filter doesn't work when coming from parentWidget context
+
                 const fm: (s) => string = context.findMethod.bind(context),
-                      filter  = compose<any>(filterFunctions
+                      transform  = compose<any>(transformFns
                               .map(fm)
                               .map(method => context[method].bind(context)))
 
-                // template has a hook that isn't bound via @Bind(), let's see if we can find the property from parent widgets
                 if (~property.indexOf('.')) {
                     value = deepValue(this, property)
                     if (typeof value === 'undefined') {
                         console.log(`Bound deep property ${property} is undefined. Set an initial value before rendering`);
                         continue
                     }
-                    console.log(`Deep binding detected ${property} ${value}`);
+                    createDeepObserver.call(this, property, hook, transform)
                     continue
                 } else if (isObject(value)) {
                     console.log('Binding to objects is not supported. Use new widgets or specify inner property: x.y.z')
@@ -371,17 +392,17 @@ module feather.observe {
                         this[property] = value = storedValue
                     }
                 }
-                value = filter(value)
+                value = transform(value)
 
                 if (Array.isArray(this[property]) && isFunction(value)) {
                     // special case: we need to create an array proxy
-                    createFilteredArrayProxy.call(this, property, hook, conf, filter)
+                    createFilteredArrayProxy.call(this, property, hook, conf, transform)
                     if (storedValue) {
                         const serializer = collectAnnotationsFromTypeMap(serializers, this)[property] as Serializer
                         this[property].push(...storedValue.map(this[serializer.read]))
                     }
                 } else {
-                    createObserver.call(this, property, value, hook, conf, filter)
+                    createObserver.call(this, property, value, hook, conf, transform)
                 }
             }
         }
