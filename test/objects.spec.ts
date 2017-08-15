@@ -1,13 +1,13 @@
-import {featherStart} from './test-head'
+import {loadPage} from './test-head'
 import {expect} from 'chai'
 import * as sinon from 'sinon'
 
 describe('Objects', () => {
 
     let window, feather, sandbox;
-    before(done => featherStart(w => (
+    before(done => loadPage(w => (
         window = w,
-            feather = w.feather
+        feather = w.feather
     ) && done()))
 
     beforeEach(() => this.sinon = sandbox = sinon.sandbox.create())

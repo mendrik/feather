@@ -2,7 +2,6 @@ module feather.objects {
 
     import TypedMap      = feather.types.TypedMap
     import observeArray  = feather.arrays.observeArray
-    import ArrayListener = feather.arrays.ArrayListener
 
     export const isObject = (obj: any): boolean => (obj !== null && typeof(obj) === 'object' && Object.prototype.toString.call(obj) === '[object Object]')
 
@@ -75,42 +74,50 @@ module feather.objects {
 
     const objectCallbacks = new WeakMap<any, PropertyCallback[]>()
 
+    const notifyDeepListeners = (obj: {}, property: string, oldVal, newVal) => (objectCallbacks.get(obj) || [])
+        .filter(pc => pc.property === property)
+        .forEach(pc => pc.callback(oldVal, newVal))
+
+    function notifyOnChange(obj: {}, property: string, callback: ValueChange) {
+        let val = obj[property]
+        Object.defineProperty(obj, property, {
+            get: () => val,
+            set: (newVal) => {
+                const oldVal = val
+                val = newVal
+                listenToObjectOrArray(newVal, property, callback)
+                notifyDeepListeners(obj, property, oldVal, newVal)
+                return val
+            }
+        });
+    }
+
     export function createObjectPropertyListener(obj: any, property: string, callback: ValueChange) {
         if (typeof obj !== 'undefined') {
-            let val = obj[property],
-                callbacks = objectCallbacks.get(obj);
+            let callbacks = objectCallbacks.get(obj);
             if (!callbacks) {
-                objectCallbacks.set(obj, callbacks = [{property, callback}])
-                Object.defineProperty(obj, property, {
-                    get: () => val,
-                    set: (newVal) => {
-                        const oldVal = val
-                        val = newVal
-                        listenToObjectOrArray(newVal, property, callback, callbacks)
-                        callbacks.filter(pc => pc.property === property).forEach(pc => pc.callback(oldVal, newVal))
-                        return val
-                    }
-                });
-            } else {
-                callbacks.push({property, callback})
+                objectCallbacks.set(obj, callbacks = [])
             }
-            listenToObjectOrArray(val, property, callback, callbacks)
+            callbacks.push({property, callback})
+            notifyOnChange(obj, property, callback)
+            listenToObjectOrArray(obj[property], property, callback)
         }
     }
 
-    const listenToObjectOrArray = (val: any, property: string, callback: ValueChange, callbacks: PropertyCallback[]) => {
-        if (isObject(val)) {
-            Object.keys(val).forEach(k => {
-                createObjectPropertyListener(val, k, callback);
+    const listenToObjectOrArray = (obj: any, property: string, callback: ValueChange) => {
+        if (isObject(obj)) {
+            Object.keys(obj).forEach(k => {
+                createObjectPropertyListener(obj, k, callback);
             });
-        } else if (Array.isArray(val)) {
-            observeArray(val, {
-                sort: () => callback(val, val),
+        } else if (Array.isArray(obj)) {
+            observeArray(obj, {
+                sort: () => notifyDeepListeners(obj, property, obj, obj),
                 splice: (s, d, items: any[]) => {
+                    console.log(items, property, obj)
                     items.forEach(i =>
-                        listenToObjectOrArray(i, `${property}[${i}]`, callback, callbacks)
+                        listenToObjectOrArray(i, `${property}[${i}]`, callback)
                     )
-                    callbacks.filter(pc => pc.property === property).forEach(pc => pc.callback(val, val))
+                    notifyDeepListeners(obj, property, obj, obj)
                 }
             })
         }

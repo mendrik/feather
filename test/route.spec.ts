@@ -1,17 +1,5 @@
 import {loadPage} from './test-head'
 import * as sinon from 'sinon'
-import {SinonSandbox} from 'sinon';
-
-/* doesn't work with latest jsdom
-const mockLocation = (window) => {
-    const path = '/'
-    Object.defineProperty(window.location, 'pathname', {
-        value: path
-    })
-    // sinon.stub(window.location ,'replace').callsFake((p) => path = p)
-    return true
-}
-*/
 
 describe('Routes', () => {
 
