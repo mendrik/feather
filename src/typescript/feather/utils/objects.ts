@@ -1,8 +1,8 @@
 module feather.objects {
 
-    import TypedMap = feather.types.TypedMap
-    import observeArray = feather.arrays.observeArray;
-    import changeArrayListener = feather.arrays.changeArrayListener;
+    import TypedMap      = feather.types.TypedMap
+    import observeArray  = feather.arrays.observeArray
+    import ArrayListener = feather.arrays.ArrayListener
 
     export const isObject = (obj: any): boolean => (obj !== null && typeof(obj) === 'object' && Object.prototype.toString.call(obj) === '[object Object]')
 
@@ -66,24 +66,37 @@ module feather.objects {
         return handlers
     }
 
-    function createObjectPropertyListener(obj: any, property: string, callback: () => void) {
-        let val = obj[property];
-        Object.defineProperty(obj, property, {
-            get: () => val,
-            set: (newVal) => {
-                val = newVal;
-                callback();
-                if (typeof newVal === 'object') {
-                    observeObject(newVal, callback);
-                } else if (Array.isArray(newVal)) {
-                    observeArray(newVal, changeArrayListener(callback))
+    export function createObjectPropertyListener(obj: any, property: string, callback: () => void) {
+        if (typeof obj !== 'undefined') {
+            let val = obj[property];
+            Object.defineProperty(obj, property, {
+                get: () => val,
+                set: (newVal) => {
+                    val = newVal;
+                    listenToObjectOrArray(val, callback)
+                    callback()
+                    return val
                 }
-                return val;
-            }
-        } as PropertyDescriptor);
+            });
+            listenToObjectOrArray(val, callback)
+        }
     }
 
-    function observeObject(obj: any, callback: () => void) {
+    const listenToObjectOrArray = (val: any, callback: () => void) => {
+        if (isObject(val)) {
+            observeObject(val, callback)
+        } else if (Array.isArray(val)) {
+            observeArray(val, {
+                sort: callback,
+                splice: (s, d, items: any[]) => {
+                    items.forEach(i => listenToObjectOrArray(i, callback))
+                    callback()
+                }
+            } as ArrayListener<any>)
+        }
+    }
+
+    const observeObject = (obj: any, callback: () => void) => {
         Object.keys(obj).forEach(k => {
             createObjectPropertyListener(obj, k, callback);
         });

@@ -1,13 +1,17 @@
 import {featherStart} from './test-head'
 import {expect} from 'chai'
+import * as sinon from 'sinon'
 
 describe('Objects', () => {
 
-    let window, feather;
+    let window, feather, sandbox;
     before(done => featherStart(w => (
         window = w,
-        feather = w.feather
+            feather = w.feather
     ) && done()))
+
+    beforeEach(() => this.sinon = sandbox = sinon.sandbox.create())
+    afterEach(() => sandbox.restore())
 
     describe('isObject', () => {
 
@@ -73,6 +77,112 @@ describe('Objects', () => {
             expect(deepValue(test2, 'a.b')).to.not.be.undefined
             expect(deepValue(test2, 'a.b.c')).to.be.equal(10)
 
+        })
+    })
+
+    describe('Observe object property', () => {
+
+        interface City {
+            plc: number;
+            name: string;
+        }
+
+        interface Address {
+            street: string;
+            home: boolean;
+            city: City;
+        }
+
+        interface User {
+            name: string;
+            mainAddress: Address;
+            additional: Address[];
+        }
+
+        const city1: City = {
+            plc: 510,
+            name: 'Helsinki'
+        }
+
+        const city2: City = {
+            plc: 570,
+            name: 'Turku'
+        }
+
+        const address1: Address = {
+            street: 'Mannerheimhintie 13 A',
+            home: true,
+            city: city1
+        }
+
+        const address2: Address = {
+            street: 'Sturenkatu 17',
+            home: false,
+            city: city2
+        }
+
+        const user: User = {
+            name: 'Matti Mattison',
+            mainAddress: address1,
+            additional: []
+        };
+
+        class Test {
+            constructor(public user?: User) {}
+            callback () {
+                // ignore
+            }
+        }
+
+        it('Should trigger callback', () => {
+            const test = new Test();
+            const observe = feather.objects.createObjectPropertyListener;
+            expect(test.user).to.be.undefined
+            const spy = this.sinon.spy(test, 'callback')
+            observe(test, 'user', test.callback)
+
+            test.user = user;
+            expect(test.user).to.not.be.undefined
+            spy.should.have.been.calledOnce
+            spy.reset()
+
+            const newName = 'Peter Peterson'
+            test.user.name = newName
+            spy.should.have.been.calledOnce
+            expect(test.user.name).to.be.equal(newName)
+            spy.reset()
+
+            test.user.mainAddress.city.plc = 600
+            spy.should.have.been.calledOnce
+            spy.reset()
+
+            test.user.additional.push(address1)
+            spy.should.have.been.calledOnce
+            spy.reset()
+
+            test.user.additional = []
+            spy.should.have.been.calledOnce
+            spy.reset()
+
+            test.user.additional.push(address2)
+            spy.should.have.been.calledOnce
+            spy.reset()
+
+            test.user.mainAddress.city = city2
+            spy.should.have.been.calledOnce
+            spy.reset()
+
+            test.user.mainAddress.city.plc = 700
+            spy.should.have.been.calledOnce
+            spy.reset()
+
+            test.user.additional[0].city = city1
+            spy.should.have.been.calledOnce
+            spy.reset()
+
+            test.user.additional[0].city.plc = 900
+            spy.should.have.been.calledOnce
+            spy.reset()
         })
     })
 })
