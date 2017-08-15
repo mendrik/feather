@@ -23,6 +23,7 @@ module feather.observe {
     import patch               = feather.arrays.patch
     import removeFromArray     = feather.arrays.removeFromArray
     import collectAnnotationsFromTypeMap = feather.objects.collectAnnotationsFromTypeMap
+    import deepValue = feather.objects.deepValue;
 
     const boundProperties = new WeakMap<Widget, TypedMap<Function[]>>()
     const binders = new WeakMap<Observable, TypedMap<BindProperties>>()
@@ -151,7 +152,7 @@ module feather.observe {
         }
     }
 
-    function bindString(property: string, hook: Hook, filter: FuncOne, conf: BindProperties) {
+    function bindStringOrNumber(property: string, hook: Hook, filter: FuncOne, conf: BindProperties) {
         const widget = this,
             el = hook.node as HTMLElement
 
@@ -239,16 +240,11 @@ module feather.observe {
     }
 
     function createObserver(property: string, value: Primitive, hook: Hook, conf: BindProperties, filter: FuncOne) {
-        let typeOfValue
-        if (typeof value === 'undefined') {
-            typeOfValue = 'string' // it's the only possibility that makes sense here
-        } else {
-            typeOfValue = (Array.isArray(value) ? 'array' : typeof value).toLowerCase()
-        }
+        const typeOfValue = Array.isArray(value) ? 'array' : (typeof value).toLowerCase()
         if (/boolean/.test(typeOfValue)) {
             bindBoolean.call(this, property, hook, filter, conf)
-        } else if (/string|number/.test(typeOfValue)) {
-            bindString.call(this, property, hook, filter, conf)
+        } else if (/string|number|undefined/.test(typeOfValue)) {
+            bindStringOrNumber.call(this, property, hook, filter, conf)
         } else if (/array/.test(typeOfValue)) {
             bindArray.call(this, this[property], hook, conf)
         } else {
@@ -344,6 +340,21 @@ module feather.observe {
                               .map(method => context[method].bind(context)))
 
                 // template has a hook that isn't bound via @Bind(), let's see if we can find the property from parent widgets
+                if (~property.indexOf('.')) {
+                    value = deepValue(this, property)
+                    if (typeof value === 'undefined') {
+                        console.log(`Bound deep property ${property} is undefined. Set an initial value before rendering`);
+                        continue
+                    }
+                    console.log(`Deep binding detected ${property} ${value}`);
+                    continue
+                } else if (isObject(value)) {
+                    console.log('Binding to objects is not supported. Use new widgets or specify inner property: x.y.z')
+                    continue
+                } else if (isFunction(value)) {
+                    console.log('Binding to functions is not supported. Use new filters.')
+                    continue
+                }
                 if (typeof conf === 'undefined') {
                     tryToBindFromParentWidget(this.parentWidget as Observable, this, hook, property);
                     continue
@@ -359,13 +370,6 @@ module feather.observe {
                     if (typeof storedValue !== 'undefined' && !Array.isArray(storedValue)) {
                         this[property] = value = storedValue
                     }
-                }
-                if (isObject(value)) {
-                    console.log('Binding to objects is not supported. Use new widgets.')
-                    continue
-                } else if (isFunction(value)) {
-                    console.log('Binding to functions is not supported. Use new filters.')
-                    continue
                 }
                 value = filter(value)
 

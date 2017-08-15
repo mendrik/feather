@@ -32,13 +32,13 @@ describe('Bequeath', () => {
             const inherit = document.querySelector('#inherit')
             expect(inherit.getAttribute('test')).to.been.equal('v1')
             expect(inherit.getAttribute('length')).to.been.equal('4')
-            expect(inherit.textContent).to.been.equal('v1')
+            expect(inherit.firstElementChild.textContent).to.been.equal('v1')
             app.inheritedString = 'v2'
             const ArrayElement = window.demo.ArrayElement
             app.filteredList.push(new ArrayElement(true, 'v1'))
             expect(inherit.getAttribute('test')).to.been.equal('v2')
             expect(inherit.getAttribute('length')).to.been.equal('5')
-            expect(inherit.textContent).to.been.equal('v2')
+            expect(inherit.firstElementChild.textContent).to.been.equal('v2')
             app.filteredList.pop()
         })
     })

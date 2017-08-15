@@ -66,15 +66,16 @@ module feather.objects {
         return handlers
     }
 
-    export function createObjectPropertyListener(obj: any, property: string, callback: () => void) {
+    export function createObjectPropertyListener(obj: any, property: string, callback: (oldVal, newVal) => void) {
         if (typeof obj !== 'undefined') {
             let val = obj[property];
             Object.defineProperty(obj, property, {
                 get: () => val,
                 set: (newVal) => {
-                    val = newVal;
+                    const oldVal = val
+                    val = newVal
                     listenToObjectOrArray(val, callback)
-                    callback()
+                    callback(oldVal, newVal)
                     return val
                 }
             });
@@ -82,21 +83,21 @@ module feather.objects {
         }
     }
 
-    const listenToObjectOrArray = (val: any, callback: () => void) => {
+    const listenToObjectOrArray = (val: any, callback: (oldVal, newVal) => void) => {
         if (isObject(val)) {
             observeObject(val, callback)
         } else if (Array.isArray(val)) {
             observeArray(val, {
-                sort: callback,
+                sort: () => callback(val, val),
                 splice: (s, d, items: any[]) => {
                     items.forEach(i => listenToObjectOrArray(i, callback))
-                    callback()
+                    callback(val, val)
                 }
             } as ArrayListener<any>)
         }
     }
 
-    const observeObject = (obj: any, callback: () => void) => {
+    const observeObject = (obj: any, callback: (oldVal, newVal) => void) => {
         Object.keys(obj).forEach(k => {
             createObjectPropertyListener(obj, k, callback);
         });
