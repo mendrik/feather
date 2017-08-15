@@ -18,8 +18,8 @@
     },
     "files": [
         "utils/functions.ts",
-        "utils/objects.ts",
         "utils/arrays.ts",
+        "utils/objects.ts",
         "utils/dom.ts",
         "utils/types.ts",
         "utils/strings.ts",

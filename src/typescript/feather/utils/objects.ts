@@ -1,6 +1,8 @@
 module feather.objects {
 
     import TypedMap = feather.types.TypedMap
+    import observeArray = feather.arrays.observeArray;
+    import changeArrayListener = feather.arrays.changeArrayListener;
 
     export const isObject = (obj: any): boolean => (obj !== null && typeof(obj) === 'object' && Object.prototype.toString.call(obj) === '[object Object]')
 
@@ -62,5 +64,28 @@ module feather.objects {
             handlers = mergeArrayTypedMap(handlers, collectAnnotationsFromTypeMap(map, proto))
         }
         return handlers
+    }
+
+    function createObjectPropertyListener(obj: any, property: string, callback: () => void) {
+        let val = obj[property];
+        Object.defineProperty(obj, property, {
+            get: () => val,
+            set: (newVal) => {
+                val = newVal;
+                callback();
+                if (typeof newVal === 'object') {
+                    observeObject(newVal, callback);
+                } else if (Array.isArray(newVal)) {
+                    observeArray(newVal, changeArrayListener(callback))
+                }
+                return val;
+            }
+        } as PropertyDescriptor);
+    }
+
+    function observeObject(obj: any, callback: () => void) {
+        Object.keys(obj).forEach(k => {
+            createObjectPropertyListener(obj, k, callback);
+        });
     }
 }

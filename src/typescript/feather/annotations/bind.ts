@@ -312,7 +312,7 @@ module feather.observe {
         parent.removeAttribute(`{{${hook.curly}}}`)
     }
 
-    function tryToBindFromParentWidget(current: Widget, hook: Hook, property: string) {
+    function tryToBindFromParentWidget(current: Observable, context: Observable, hook: Hook, property: string) {
         if (!current) {
             console.log(`@Bind() ${property} annotation missing or 'bequeath' not set?`, hook, property, binders)
             return
@@ -320,15 +320,16 @@ module feather.observe {
         property = current.findProperty(property)
         const conf = (collectAnnotationsFromTypeMap(binders, current) as TypedMap<BindProperties>)[property]
         if (conf && conf.bequeath) {
-            current.attachHooks.call(current, [hook], true)
+            current.attachHooks.call(current, [hook], context)
         } else {
-            tryToBindFromParentWidget(current.parentWidget as Widget, hook, property)
+            tryToBindFromParentWidget(current.parentWidget as Widget, context, hook, property)
         }
     }
 
     export class Observable extends RouteAware {
 
-        attachHooks(hooks: Hook[], isParent: boolean = false) {
+        attachHooks(hooks: Hook[], parent?: any) {
+            const context: Widget = parent || this;
             for (const hook of hooks) {
 
                 const filterFunctions = hook.curly.split(/:/),
@@ -337,16 +338,16 @@ module feather.observe {
                 let value = this[property],
                     storedValue
                 // todo filter doesn't work when coming from parentWidget context
-                const fm: (s) => string = this.findMethod.bind(this),
+                const fm: (s) => string = context.findMethod.bind(context),
                       filter  = compose<any>(filterFunctions
                               .map(fm)
-                              .map(method => this[method].bind(this)))
+                              .map(method => context[method].bind(context)))
 
                 // template has a hook that isn't bound via @Bind(), let's see if we can find the property from parent widgets
                 if (typeof conf === 'undefined') {
-                    tryToBindFromParentWidget(this.parentWidget as Widget, hook, property);
+                    tryToBindFromParentWidget(this.parentWidget as Observable, this, hook, property);
                     continue
-                } else if (!isParent && conf.localStorage) {
+                } else if (!parent && conf.localStorage) {
                     try {
                         const json = localStorage.getItem(getPath(this as any, property))
                         if (json) {

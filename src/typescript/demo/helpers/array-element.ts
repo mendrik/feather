@@ -26,7 +26,9 @@ module demo {
 
         @Template('simple')
         protected getSimpleTemplate() {
-            return (`<li inherited="{{inheritedString}}">{{stringA}}</li>`)
+            return (`<li inherited="{{inheritedString}}" inheritedUpperCase={{inheritedString:toUpperCase}}>{{stringA}}</li>`)
         }
+
+        toUpperCase = (str: string) => str.toUpperCase()
     }
 }

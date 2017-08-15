@@ -18,17 +18,17 @@ describe('Array', () => {
         it('should propagate from arrays', () => {
             const app = window.app as demo.Application,
                   childWidgets = app.childWidgets
-            expect(childWidgets.length).to.be.equal(13)
+            expect(childWidgets.length).to.be.equal(14)
             expect(childWidgets[0].parentWidget).to.be.equal(app)
         })
 
         it('should have subwidgets in arrays', () => {
             const app = window.app,
                   childWidgets = app.childWidgets
-            expect(childWidgets[5].childWidgets.length).to.be.equal(1)
             expect(childWidgets[6].childWidgets.length).to.be.equal(1)
             expect(childWidgets[7].childWidgets.length).to.be.equal(1)
             expect(childWidgets[8].childWidgets.length).to.be.equal(1)
+            expect(childWidgets[9].childWidgets.length).to.be.equal(1)
         })
     })
 

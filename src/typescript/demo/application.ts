@@ -25,13 +25,13 @@ module demo {
     @Construct({selector: '.application', singleton: true})
     export class Application extends Widget {
 
-        @Bind({bequeath: true}) inheritedString = 'inheritedString'
+        @Bind({bequeath: true}) inheritedString = 'v1'
 
         data = {
             x: 1
         }
 
-        @Bind({templateName: 'default', changeOn: ['filterState']})
+        @Bind({templateName: 'default', changeOn: ['filterState'], bequeath: true})
         filteredList: ArrayElement[] = [
             new ArrayElement(true, 'ItemA'),
             new ArrayElement(false, 'ItemB'),
@@ -120,6 +120,7 @@ module demo {
                 <ul id="sorted-list" {{sortTestArray:sortFilter}}/>
                 <AttributeWidget id="aw1" text="{'a'+'b'}" bool="{true}" func="{this.printStuff}" number="{3+1}"/>
                 <AttributeWidget id="aw2" text={this.printStuff()} bool={false} func={this.printStuff} number={5}/>
+                <Inheritence/>
             `)
         }
 
