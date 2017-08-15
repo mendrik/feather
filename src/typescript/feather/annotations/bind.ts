@@ -186,7 +186,6 @@ module feather.observe {
             el.classList.remove(`{{${hook.curly}}}`)
         } else if (hook.type === HookType.ATTRIBUTE || hook.type === HookType.PROPERTY) { // <p style="{{myvar}}" {{hidden}}>text goes here</p>
             const attribName = hook.text || property
-
             createListener(this, conf, property, function updateDom(val) {
                 const formatted = transform(val)
                 setOrRemoveAttribute(el, attribName, typeof formatted !== 'undefined', formatted)
@@ -241,7 +240,7 @@ module feather.observe {
     }
 
     function createDeepObserver(property: string, hook: Hook, transform: FuncOne) {
-        const dummyCreate = (a, b, c, callback) => dummyCreate,
+        const dummyCreate = (old, newVal) => (a, b, c, callback) => dummyCreate,
               rootProperty = property.split('.').shift(),
               widget = this,
               initialValue = deepValue(widget, property),
@@ -249,15 +248,15 @@ module feather.observe {
               conf = (collectAnnotationsFromTypeMap(binders, this) as TypedMap<BindProperties>)[rootProperty],
               update = (oldVal, newVal) => {
                   if (/boolean/.test(typeOfValue)) {
-                      bindBoolean.call(this, rootProperty, newVal, hook, transform, conf, dummyCreate.bind(widget))
+                      bindBoolean.call(this, rootProperty, newVal, hook, transform, conf, dummyCreate)
                   } else if (/string|number|undefined/.test(typeOfValue)) {
-                      bindStringOrNumber.call(this, rootProperty, newVal, hook, transform, conf, dummyCreate.bind(widget))
+                      bindStringOrNumber.call(this, rootProperty, newVal, hook, transform, conf, dummyCreate)
                   } else {
                       console.log('Deeply bound properties only work with primitive types (string, number, boolean). Use a transformer: {{var:myTransformer}}?')
                   }
                   return update;
               }
-        createObjectPropertyListener(this, property, update(initialValue, initialValue))
+        createObjectPropertyListener(this, rootProperty, update(initialValue, initialValue))
     }
 
     function createObserver(property: string, value: Primitive, hook: Hook, conf: BindProperties, transform: FuncOne) {

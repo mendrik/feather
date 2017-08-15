@@ -16,6 +16,11 @@ module demo {
 
         @Bind({}) person: Person
 
+        constructor() {
+            super();
+            window['inh'] = this
+        }
+
         init() {
             const mother = {
                 name: 'Michaela',

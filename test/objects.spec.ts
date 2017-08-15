@@ -184,5 +184,18 @@ describe('Objects', () => {
             spy.should.have.been.calledOnce
             spy.reset()
         })
+
+        it('Can have multiple listeners', () => {
+            const test = new Test();
+            const observe = feather.objects.createObjectPropertyListener;
+            expect(test.user).to.be.undefined
+            const spy = this.sinon.spy(test, 'callback')
+            observe(test, 'user', test.callback);
+            observe(test, 'user', test.callback);
+            test.user = user;
+            spy.should.have.been.calledTwice
+            spy.reset()
+
+        })
     })
 })
