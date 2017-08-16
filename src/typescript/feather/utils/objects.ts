@@ -4,6 +4,7 @@ module feather.objects {
     import observeArray  = feather.arrays.observeArray
     import isFunction = feather.functions.isFunction;
     import lis = feather.arrays.lis;
+    import SimpleMap = feather.types.SimpleMap;
 
     export const isObject = (obj: any): boolean => (obj !== null && typeof(obj) === 'object' && Object.prototype.toString.call(obj) === '[object Object]')
 
@@ -67,21 +68,15 @@ module feather.objects {
         return handlers
     }
 
-    export type ObjectChange = {
-        property: string,
-        callback: (val: any) => void
-    }
-
+    export type ObjectChange = (val: any) => void;
     export type Callback = () => void
 
-    const objectCallbacks = new WeakMap<{}, ObjectChange[]>()
+    const objectCallbacks = new WeakMap<{}, TypedMap<ObjectChange[]>>()
 
-    const notifyListeners = (obj, property, val) => {
-        const listeners = objectCallbacks.get(obj);
+    const notifyListeners = (obj, path) => {
+        const listeners = objectCallbacks.get(obj)[path];
         if (listeners) {
-            listeners
-                .filter(oc => oc.property === property)
-                .forEach(oc => oc.callback(val))
+            listeners.forEach(oc => oc(deepValue(obj, path)))
         }
     }
 
@@ -101,18 +96,17 @@ module feather.objects {
         }
     }
 
-    export const createObjectPropertyListener = (obj: {}, property: string, callback: (val: any) => void) => {
+    export const createObjectPropertyListener = (obj: {}, path: string, callback: (val: any) => void) => {
         let callbacks = objectCallbacks.get(obj)
-        const rootProperty = property.split('.').shift()
         if (!callbacks) {
-            objectCallbacks.set(obj, callbacks = [])
+            objectCallbacks.set(obj, callbacks = {})
         }
-        callbacks.push({property, callback})
-        const _callback = () => {
-            const val = deepValue(obj, property);
-            notifyListeners(obj, property, val)
+        const rootProperty = path.split('.').shift()
+        notifyOnChange(obj, rootProperty, () => notifyListeners(obj, path))
+        if (!callbacks[path]) {
+            callbacks[path] = []
         }
-        notifyOnChange(obj, rootProperty, _callback)
+        callbacks[path].push(callback)
     }
 
     const listenToObjectOrArray = (obj: any, callback: Callback) => {

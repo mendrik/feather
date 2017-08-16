@@ -22,6 +22,15 @@ describe('Deep property bind', () => {
             expect(personDiv.getAttribute('uncles')).to.be.equal('1')
             expect(personDiv.textContent).to.be.equal('Andreas')
             expect(motherDiv.textContent).to.be.equal('Michaela')
+            inh.person.siblings.pop()
+            inh.person.mother.siblings.pop()
+            expect(personDiv.getAttribute('siblingsLength')).to.be.equal('1')
+            expect(personDiv.getAttribute('uncles')).to.be.equal('0')
+
+            inh.person.name = 'Peter'
+            inh.person.mother.name = 'Angela'
+            expect(personDiv.textContent).to.be.equal('Peter')
+            expect(motherDiv.textContent).to.be.equal('Angela')
         })
     })
 })
