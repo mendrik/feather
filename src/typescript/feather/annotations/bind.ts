@@ -330,6 +330,7 @@ module feather.observe {
     }
 
     function tryToBindFromParentWidget(current: Observable, context: Observable, hook: Hook, property: string) {
+        property = property.split('.').shift()
         if (!current) {
             console.log(`@Bind() ${property} annotation missing or 'bequeath' not set?`, hook, property, binders)
             return
@@ -362,7 +363,11 @@ module feather.observe {
 
                 if (~property.indexOf('.')) {
                     value = deepValue(this, property)
-                    createDeepObserver.call(this, property, hook, transform)
+                    if (typeof value === 'undefined') {
+                        tryToBindFromParentWidget(this.parentWidget as Observable, this, hook, property);
+                    } else {
+                        createDeepObserver.call(this, property, hook, transform)
+                    }
                     continue
                 } else if (isObject(value)) {
                     console.log('Binding to objects is not supported. Use new widgets or specify inner property: x.y.z')
