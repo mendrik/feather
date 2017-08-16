@@ -2,6 +2,8 @@ module feather.objects {
 
     import TypedMap      = feather.types.TypedMap
     import observeArray  = feather.arrays.observeArray
+    import isFunction = feather.functions.isFunction;
+    import lis = feather.arrays.lis;
 
     export const isObject = (obj: any): boolean => (obj !== null && typeof(obj) === 'object' && Object.prototype.toString.call(obj) === '[object Object]')
 
@@ -65,59 +67,62 @@ module feather.objects {
         return handlers
     }
 
-    export type ValueChange = (oldVal, newVal) => void
+    export type ObjectChange = (val: any) => void
+    export type Callback = () => void
 
-    interface PropertyCallback {
-        property: string,
-        callback: ValueChange
+    const objectCallbacks = new WeakMap<{}, ObjectChange[]>()
+
+    const notifyListeners = (obj, val) => {
+        const listeners = objectCallbacks.get(obj);
+        if (listeners) {
+            listeners.forEach(c => c(val))
+        }
     }
 
-    const objectCallbacks = new WeakMap<any, PropertyCallback[]>()
-
-    const notifyDeepListeners = (obj: {}, property: string, oldVal, newVal) => (objectCallbacks.get(obj) || [])
-        .filter(pc => pc.property === property)
-        .forEach(pc => pc.callback(oldVal, newVal))
-
-    function notifyOnChange(obj: {}, property: string, callback: ValueChange) {
+    const notifyOnChange = (obj: {}, property: string, callback: Callback) => {
         let val = obj[property]
         Object.defineProperty(obj, property, {
             get: () => val,
             set: (newVal) => {
-                const oldVal = val
                 val = newVal
-                listenToObjectOrArray(newVal, property, callback)
-                notifyDeepListeners(obj, property, oldVal, newVal)
+                listenToObjectOrArray(newVal, callback)
+                callback()
                 return val
             }
         });
-    }
-
-    export function createObjectPropertyListener(obj: any, property: string, callback: ValueChange) {
-        if (typeof obj !== 'undefined') {
-            let callbacks = objectCallbacks.get(obj);
-            if (!callbacks) {
-                objectCallbacks.set(obj, callbacks = [])
-            }
-            callbacks.push({property, callback})
-            notifyOnChange(obj, property, callback)
-            listenToObjectOrArray(obj[property], property, callback)
+        if (typeof val !== 'undefined') {
+            listenToObjectOrArray(val, callback)
         }
     }
 
-    const listenToObjectOrArray = (obj: any, property: string, callback: ValueChange) => {
+    export const createObjectPropertyListener = (obj: {}, property: string, callback: ObjectChange) => {
+        let callbacks = objectCallbacks.get(obj)
+        const rootProperty = property.split('.').shift()
+        if (!callbacks) {
+            objectCallbacks.set(obj, callbacks = [])
+        }
+        callbacks.push(callback)
+        const _callback = () => {
+            notifyListeners(obj, deepValue(obj, rootProperty))
+        }
+        notifyOnChange(obj, property, _callback)
+    }
+
+    const listenToObjectOrArray = (obj: any, callback: Callback) => {
         if (isObject(obj)) {
             Object.keys(obj).forEach(k => {
-                createObjectPropertyListener(obj, k, callback);
+                if (!/parentWidget|childWidgets/.test(k) && !isFunction(obj[k])) {
+                    notifyOnChange(obj, k, callback)
+                }
             });
         } else if (Array.isArray(obj)) {
             observeArray(obj, {
-                sort: () => notifyDeepListeners(obj, property, obj, obj),
+                sort: () => callback(),
                 splice: (s, d, items: any[]) => {
-                    console.log(items, property, obj)
                     items.forEach(i =>
-                        listenToObjectOrArray(i, `${property}[${i}]`, callback)
+                        listenToObjectOrArray(i, callback)
                     )
-                    notifyDeepListeners(obj, property, obj, obj)
+                    callback()
                 }
             })
         }
