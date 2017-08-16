@@ -240,7 +240,7 @@ module feather.observe {
     }
 
     function createDeepObserver(property: string, hook: Hook, transform: FuncOne) {
-        const dummyCreate = (old, newVal) => (a, b, c, callback) => dummyCreate,
+        const dummyCreate = (newVal) => (a, b, c, callback) => dummyCreate,
               rootProperty = property.split('.').shift(),
               widget = this,
               initialValue = deepValue(widget, property),
@@ -248,15 +248,15 @@ module feather.observe {
               conf = (collectAnnotationsFromTypeMap(binders, this) as TypedMap<BindProperties>)[rootProperty],
               update = (val) => {
                   if (/boolean/.test(typeOfValue)) {
-                      bindBoolean.call(this, rootProperty, transform(val), hook, transform, conf, dummyCreate)
+                      bindBoolean.call(this, rootProperty, val, hook, transform, conf, dummyCreate)
                   } else if (/string|number|undefined/.test(typeOfValue)) {
-                      bindStringOrNumber.call(this, rootProperty, transform(val), hook, transform, conf, dummyCreate)
+                      bindStringOrNumber.call(this, rootProperty, val, hook, transform, conf, dummyCreate)
                   } else {
                       console.log('Deeply bound properties only work with primitive types (string, number, boolean). Use a transformer: {{var:myTransformer}}?')
                   }
                   return update;
               }
-        createObjectPropertyListener(this, rootProperty, update(initialValue))
+        createObjectPropertyListener(this, property, update(initialValue))
     }
 
     function createObserver(property: string, value: Primitive, hook: Hook, conf: BindProperties, transform: FuncOne) {

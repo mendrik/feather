@@ -195,7 +195,6 @@ describe('Objects', () => {
             test.user = user;
             spy.should.have.been.calledTwice
             spy.reset()
-
         })
     })
 })

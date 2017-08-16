@@ -67,15 +67,21 @@ module feather.objects {
         return handlers
     }
 
-    export type ObjectChange = (val: any) => void
+    export type ObjectChange = {
+        property: string,
+        callback: (val: any) => void
+    }
+
     export type Callback = () => void
 
     const objectCallbacks = new WeakMap<{}, ObjectChange[]>()
 
-    const notifyListeners = (obj, val) => {
+    const notifyListeners = (obj, property, val) => {
         const listeners = objectCallbacks.get(obj);
         if (listeners) {
-            listeners.forEach(c => c(val))
+            listeners
+                .filter(oc => oc.property === property)
+                .forEach(oc => oc.callback(val))
         }
     }
 
@@ -95,17 +101,18 @@ module feather.objects {
         }
     }
 
-    export const createObjectPropertyListener = (obj: {}, property: string, callback: ObjectChange) => {
+    export const createObjectPropertyListener = (obj: {}, property: string, callback: (val: any) => void) => {
         let callbacks = objectCallbacks.get(obj)
         const rootProperty = property.split('.').shift()
         if (!callbacks) {
             objectCallbacks.set(obj, callbacks = [])
         }
-        callbacks.push(callback)
+        callbacks.push({property, callback})
         const _callback = () => {
-            notifyListeners(obj, deepValue(obj, rootProperty))
+            const val = deepValue(obj, property);
+            notifyListeners(obj, property, val)
         }
-        notifyOnChange(obj, property, _callback)
+        notifyOnChange(obj, rootProperty, _callback)
     }
 
     const listenToObjectOrArray = (obj: any, callback: Callback) => {
@@ -119,10 +126,10 @@ module feather.objects {
             observeArray(obj, {
                 sort: () => callback(),
                 splice: (s, d, items: any[]) => {
+                    callback()
                     items.forEach(i =>
                         listenToObjectOrArray(i, callback)
                     )
-                    callback()
                 }
             })
         }
