@@ -362,10 +362,6 @@ module feather.observe {
 
                 if (~property.indexOf('.')) {
                     value = deepValue(this, property)
-                    if (typeof value === 'undefined') {
-                        console.log(`Bound deep property ${property} is undefined. Set an initial value before rendering`);
-                        continue
-                    }
                     createDeepObserver.call(this, property, hook, transform)
                     continue
                 } else if (isObject(value)) {
