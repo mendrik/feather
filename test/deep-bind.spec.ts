@@ -16,8 +16,8 @@ describe('Deep property bind', () => {
             const inh = window.inh as demo.Inheritence
             const personDiv = document.querySelector('#person')
             const motherDiv = document.querySelector('#mother')
-            expect(inh['person'].siblings.length).to.be.equal(2)
-            expect(inh['person'].mother.siblings.length).to.be.equal(1)
+            expect(inh.person.siblings.length).to.be.equal(2)
+            expect(inh.person.mother.siblings.length).to.be.equal(1)
             expect(personDiv.getAttribute('siblingsLength')).to.be.equal('2')
             expect(personDiv.getAttribute('uncles')).to.be.equal('1')
             expect(personDiv.textContent).to.be.equal('Andreas')

@@ -5,7 +5,7 @@ module demo {
     import Template  = feather.annotations.Template
     import Bind      = feather.observe.Bind
 
-    interface Person {
+    export interface Person {
         name: string,
         siblings?: Person[],
         mother?: Person
