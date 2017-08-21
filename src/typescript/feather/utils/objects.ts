@@ -71,22 +71,18 @@ module feather.objects {
     export type ObjectChange = (val: any) => void;
     export type Callback = () => void
 
-    const objectCallbacks = new WeakMap<{}, TypedMap<ObjectChange[]>>()
+    const objectCallbacks = new WeakMap<any, TypedMap<Array<ObjectChange>>>()
 
-    const notifyListeners = (obj, path) => {
-        const listeners = objectCallbacks.get(obj)[path];
-        if (listeners) {
-            listeners.forEach(oc => oc(deepValue(obj, path)))
-        }
-    }
+    const notifyListeners = (obj, path, callbacks: ObjectChange[]) =>
+        callbacks.forEach(oc => oc(deepValue(obj, path)))
 
-    const notifyOnChange = (obj: {}, property: string, callback: Callback) => {
+    const addPropertyListener = (obj: {}, property: string, callback: Callback) => {
         let val = obj[property]
         Object.defineProperty(obj, property, {
             get: () => val,
             set: (newVal) => {
                 val = newVal
-                listenToObjectOrArray(newVal, callback)
+                listenToObjectOrArray(val, callback)
                 callback()
                 return val
             }
@@ -96,29 +92,28 @@ module feather.objects {
         }
     }
 
-    export const createObjectPropertyListener = (obj: {}, path: string, callback: (val: any) => void) => {
+    export const createObjectPropertyListener = (obj: {}, path: string, callback: ObjectChange) => {
         let callbacks = objectCallbacks.get(obj)
-        if (!callbacks) {
+        if (typeof callbacks === 'undefined') {
             objectCallbacks.set(obj, callbacks = {})
         }
-        const rootProperty = path.split('.').shift()
-        notifyOnChange(obj, rootProperty, () => notifyListeners(obj, path))
         if (!callbacks[path]) {
             callbacks[path] = []
         }
         callbacks[path].push(callback)
+        addPropertyListener(obj, path.split('.').shift(), () => notifyListeners(obj, path, callbacks[path]))
     }
 
     const listenToObjectOrArray = (obj: any, callback: Callback) => {
         if (isObject(obj)) {
             Object.keys(obj).forEach(k => {
                 if (!/parentWidget|childWidgets/.test(k) && !isFunction(obj[k])) {
-                    notifyOnChange(obj, k, callback)
+                    addPropertyListener(obj, k, callback)
                 }
             });
         } else if (Array.isArray(obj)) {
             observeArray(obj, {
-                sort: () => callback(),
+                sort: callback,
                 splice: (s, d, items: any[]) => {
                     callback()
                     items.forEach(i =>

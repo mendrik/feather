@@ -12,7 +12,7 @@ describe('Deep property bind', () => {
 
     describe('Deep properties in objects', () => {
 
-        it('Binds correctly', () => {
+        it('Binds arrays correctly', () => {
             const inh = window.inh as demo.Inheritence
             const personDiv = document.querySelector('#person')
             const motherDiv = document.querySelector('#mother')
@@ -26,7 +26,12 @@ describe('Deep property bind', () => {
             inh.person.mother.siblings.pop()
             expect(personDiv.getAttribute('siblingsLength')).to.be.equal('1')
             expect(personDiv.getAttribute('uncles')).to.be.equal('0')
+        })
 
+        it('Binds properties correctly', () => {
+            const inh = window.inh as demo.Inheritence
+            const personDiv = document.querySelector('#person')
+            const motherDiv = document.querySelector('#mother')
             inh.person.name = 'Peter'
             inh.person.mother.name = 'Angela'
             expect(personDiv.textContent).to.be.equal('Peter')
