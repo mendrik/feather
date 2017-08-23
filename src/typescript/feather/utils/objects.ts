@@ -2,9 +2,8 @@ module feather.objects {
 
     import TypedMap      = feather.types.TypedMap
     import observeArray  = feather.arrays.observeArray
-    import isFunction = feather.functions.isFunction;
-    import lis = feather.arrays.lis;
-    import SimpleMap = feather.types.SimpleMap;
+    import isFunction    = feather.functions.isFunction
+    import range         = feather.arrays.range
 
     export const isObject = (obj: any): boolean => (obj !== null && typeof(obj) === 'object' && Object.prototype.toString.call(obj) === '[object Object]')
 
@@ -73,35 +72,45 @@ module feather.objects {
 
     const objectCallbacks = new WeakMap<any, TypedMap<Array<ObjectChange>>>()
 
-    const notifyListeners = (obj, path, callbacks: ObjectChange[]) =>
-        callbacks.forEach(oc => oc(deepValue(obj, path)))
-
-    const addPropertyListener = (obj: {}, property: string, callback: Callback) => {
-        let val = obj[property]
-        Object.defineProperty(obj, property, {
-            get: () => val,
-            set: (newVal) => {
-                val = newVal
-                listenToObjectOrArray(val, callback)
-                callback()
-                return val
-            }
-        });
-        if (typeof val !== 'undefined') {
-            listenToObjectOrArray(val, callback)
-        }
-    }
-
-    export const createObjectPropertyListener = (obj: {}, path: string, callback: ObjectChange) => {
+    const ensureListeners = (obj: {}, property: string, callback: ObjectChange) => {
         let callbacks = objectCallbacks.get(obj)
         if (typeof callbacks === 'undefined') {
             objectCallbacks.set(obj, callbacks = {})
         }
-        if (!callbacks[path]) {
-            callbacks[path] = []
+        if (!callbacks[property]) {
+            callbacks[property] = []
         }
-        callbacks[path].push(callback)
-        addPropertyListener(obj, path.split('.').shift(), () => notifyListeners(obj, path, callbacks[path]))
+        callbacks[property].push(callback)
+        return callbacks[property]
+    }
+
+    const addPropertyListener = (obj: {}, property: string, callback: ObjectChange) => {
+        const callbacks = ensureListeners(obj,property, callback)
+        const desc = Object.getOwnPropertyDescriptor(obj, property);
+        if (typeof desc === 'undefined' ||
+           (typeof desc.set === 'undefined' && desc.writable)) {
+            let val = obj[property]
+            const call = () => callbacks.forEach(cb => cb(val))
+            Object.defineProperty(obj, property, {
+                get: () => val,
+                set: (newVal) => {
+                    val = newVal
+                    listenToObjectOrArray(val, call)
+                    call()
+                    return val
+                }
+            });
+            listenToObjectOrArray(val, call)
+        }
+    }
+
+    export const createObjectPropertyListener = (obj: {}, path: string, callback: ObjectChange) => {
+        const segments = path.split('.')
+        range(1, segments.length - 1).forEach(i => {
+            const partial = segments.slice(0, i),
+                  val = deepValue(obj, partial.join('.'))
+            addPropertyListener(val, segments[i], callback)
+        })
     }
 
     const listenToObjectOrArray = (obj: any, callback: Callback) => {
@@ -117,7 +126,7 @@ module feather.objects {
                 splice: (s, d, items: any[]) => {
                     callback()
                     items.forEach(i =>
-                        listenToObjectOrArray(i, callback)
+                       listenToObjectOrArray(i, callback)
                     )
                 }
             })
