@@ -251,17 +251,18 @@ module feather.observe {
                   } else if (/string|number|undefined/.test(typeOfValue)) {
                       bindStringOrNumber.call(this, null, val, hook, transform, conf, dummyCreate)
                   } else {
-                      console.log('Deeply bound properties only work with primitive types (string, number, boolean). ' +
-                          'For arrays you can use a transformer: {{var:myTransformer}}?')
+                      console.log('Deeply bound properties only work with primitive types ' +
+                          '(string, number, boolean). For arrays you can use a transformer: ' +
+                          '{{var:myTransformer}}?')
                   }
-                  return update;
+                  return update
               }
         createObjectPropertyListener(this, path, update(initialValue))
     }
 
     function createObserver(property: string, value: Primitive, hook: Hook, conf: BindProperties, transform: FuncOne) {
         const typeOfValue = Array.isArray(value) ? 'array' : (typeof value).toLowerCase(),
-              initialValue = this[property];
+              initialValue = this[property]
         if (/boolean/.test(typeOfValue)) {
             bindBoolean.call(this, property, initialValue, hook, transform, conf, createListener)
         } else if (/string|number|undefined/.test(typeOfValue)) {
@@ -347,7 +348,7 @@ module feather.observe {
     export class Observable extends RouteAware {
 
         attachHooks(hooks: Hook[], parent?: any) {
-            const context: Widget = parent || this;
+            const context: Widget = parent || this
             for (const hook of hooks) {
 
                 const transformFns = hook.curly.split(/:/),
@@ -364,7 +365,7 @@ module feather.observe {
                 if (~property.indexOf('.')) {
                     value = deepValue(this, property)
                     if (typeof value === 'undefined') {
-                        tryToBindFromParentWidget(this.parentWidget as Observable, this, hook, property);
+                        tryToBindFromParentWidget(this.parentWidget as Observable, this, hook, property)
                     } else {
                         createDeepObserver.call(this, property, hook, transform)
                     }
@@ -377,7 +378,7 @@ module feather.observe {
                     continue
                 }
                 if (typeof conf === 'undefined') {
-                    tryToBindFromParentWidget(this.parentWidget as Observable, this, hook, property);
+                    tryToBindFromParentWidget(this.parentWidget as Observable, this, hook, property)
                     continue
                 } else if (!parent && conf.localStorage) {
                     try {

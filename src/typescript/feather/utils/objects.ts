@@ -3,7 +3,6 @@ module feather.objects {
     import TypedMap      = feather.types.TypedMap
     import observeArray  = feather.arrays.observeArray
     import isFunction    = feather.functions.isFunction
-    import range         = feather.arrays.range
 
     export const isObject = (obj: any): boolean => (obj !== null && typeof(obj) === 'object' && Object.prototype.toString.call(obj) === '[object Object]')
 
@@ -11,7 +10,7 @@ module feather.objects {
 
     export function deepValue(obj: {}, path: string): any {
         if (path === '') {
-            return obj;
+            return obj
         }
         let i, len, pathArr
         for (i = 0, pathArr = path.split('.'), len = pathArr.length; i < len; i++) {
@@ -70,7 +69,7 @@ module feather.objects {
         return handlers
     }
 
-    export type ObjectChange = (val: any) => void;
+    export type ObjectChange = (val: any) => void
     export type Callback = () => void
 
     const objectCallbacks = new WeakMap<any, TypedMap<Array<ObjectChange>>>()
@@ -88,8 +87,8 @@ module feather.objects {
     }
 
     const addPropertyListener = (obj: {}, property: string, callback: Callback) => {
-        const callbacks = ensureListeners(obj,property, callback)
-        const desc = Object.getOwnPropertyDescriptor(obj, property);
+        const callbacks = ensureListeners(obj, property, callback),
+              desc = Object.getOwnPropertyDescriptor(obj, property)
         if (typeof desc === 'undefined' ||
            (typeof desc.set === 'undefined' && desc.writable)) {
             let val = obj[property]
@@ -102,7 +101,7 @@ module feather.objects {
                     call()
                     return val
                 }
-            });
+            })
             listenToObjectOrArray(val, call)
         }
     }
@@ -117,9 +116,9 @@ module feather.objects {
                 if (!/parentWidget|childWidgets/.test(k) && !isFunction(obj[k])) {
                     addPropertyListener(obj, k, callback)
                 }
-            });
+            })
         } else if (Array.isArray(obj)) {
-            (obj as any[]).forEach(i => listenToObjectOrArray(i, callback))
+            obj.forEach(i => listenToObjectOrArray(i, callback))
             observeArray(obj, {
                 sort: callback,
                 splice: (s, d, items: any[]) => {
