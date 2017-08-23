@@ -169,11 +169,11 @@ describe('Objects', () => {
             spy.reset()
 
             test.user.mainAddress.city = city2
-            spy.should.have.been.calledOnce
+            spy.should.have.been.calledTwice
             spy.reset()
 
             test.user.mainAddress.city.plc = 700
-            spy.should.have.been.calledOnce
+            spy.should.have.been.calledThrice
             spy.reset()
 
             test.user.additional[0].city = city1
@@ -181,7 +181,7 @@ describe('Objects', () => {
             spy.reset()
 
             test.user.additional[0].city.plc = 900
-            spy.should.have.been.calledOnce
+            spy.should.have.been.calledThrice
             spy.reset()
         })
 

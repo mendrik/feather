@@ -10,6 +10,9 @@ module feather.objects {
     export const values = <T>(data: TypedMap<T>): T[] => 'values' in Object ? Object['values'](data) : Array.apply(null, Object.keys(data).map(o => data[o]))
 
     export function deepValue(obj: {}, path: string): any {
+        if (path === '') {
+            return obj;
+        }
         let i, len, pathArr
         for (i = 0, pathArr = path.split('.'), len = pathArr.length; i < len; i++) {
             obj = obj[pathArr[i]]
@@ -84,7 +87,10 @@ module feather.objects {
         return callbacks[property]
     }
 
-    const addPropertyListener = (obj: {}, property: string, callback: ObjectChange) => {
+    const addPropertyListener = (obj: {}, property: string, callback: Callback) => {
+        if (typeof obj === 'undefined') {
+            return;
+        }
         const callbacks = ensureListeners(obj,property, callback)
         const desc = Object.getOwnPropertyDescriptor(obj, property);
         if (typeof desc === 'undefined' ||
@@ -106,10 +112,10 @@ module feather.objects {
 
     export const createObjectPropertyListener = (obj: {}, path: string, callback: ObjectChange) => {
         const segments = path.split('.')
-        range(1, segments.length - 1).forEach(i => {
+        range(0, segments.length - 1).forEach(i => {
             const partial = segments.slice(0, i),
                   val = deepValue(obj, partial.join('.'))
-            addPropertyListener(val, segments[i], callback)
+            addPropertyListener(val, segments[i], () => callback(deepValue(obj, path)))
         })
     }
 
@@ -117,7 +123,7 @@ module feather.objects {
         if (isObject(obj)) {
             Object.keys(obj).forEach(k => {
                 if (!/parentWidget|childWidgets/.test(k) && !isFunction(obj[k])) {
-                    addPropertyListener(obj, k, callback)
+                    addPropertyListener(obj, k, () => callback())
                 }
             });
         } else if (Array.isArray(obj)) {
@@ -126,7 +132,7 @@ module feather.objects {
                 splice: (s, d, items: any[]) => {
                     callback()
                     items.forEach(i =>
-                       listenToObjectOrArray(i, callback)
+                       listenToObjectOrArray(i, () => callback())
                     )
                 }
             })
