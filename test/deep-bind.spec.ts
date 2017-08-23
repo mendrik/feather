@@ -16,6 +16,7 @@ describe('Deep property bind', () => {
             const inh = window.inh as demo.Inheritence
             const personDiv = document.querySelector('#person')
             const motherDiv = document.querySelector('#mother')
+            const siblingDiv = document.querySelector('#sibling-names')
             expect(inh.person.siblings.length).to.be.equal(2)
             expect(inh.person.mother.siblings.length).to.be.equal(1)
             expect(personDiv.getAttribute('siblingsLength')).to.be.equal('2')
@@ -26,6 +27,9 @@ describe('Deep property bind', () => {
             inh.person.mother.siblings.pop()
             expect(personDiv.getAttribute('siblingsLength')).to.be.equal('1')
             expect(personDiv.getAttribute('uncles')).to.be.equal('0')
+            expect(siblingDiv.textContent).to.be.equal('Peter')
+            inh.person.siblings[0].name = 'Hans'
+            expect(siblingDiv.textContent).to.be.equal('Hans')
         })
 
         it('Binds properties correctly', () => {

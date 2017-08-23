@@ -88,9 +88,6 @@ module feather.objects {
     }
 
     const addPropertyListener = (obj: {}, property: string, callback: Callback) => {
-        if (typeof obj === 'undefined') {
-            return;
-        }
         const callbacks = ensureListeners(obj,property, callback)
         const desc = Object.getOwnPropertyDescriptor(obj, property);
         if (typeof desc === 'undefined' ||
@@ -111,28 +108,24 @@ module feather.objects {
     }
 
     export const createObjectPropertyListener = (obj: {}, path: string, callback: ObjectChange) => {
-        const segments = path.split('.')
-        range(0, segments.length - 1).forEach(i => {
-            const partial = segments.slice(0, i),
-                  val = deepValue(obj, partial.join('.'))
-            addPropertyListener(val, segments[i], () => callback(deepValue(obj, path)))
-        })
+        addPropertyListener(obj, path.split('.').shift(), () => callback(deepValue(obj, path)))
     }
 
     const listenToObjectOrArray = (obj: any, callback: Callback) => {
         if (isObject(obj)) {
             Object.keys(obj).forEach(k => {
                 if (!/parentWidget|childWidgets/.test(k) && !isFunction(obj[k])) {
-                    addPropertyListener(obj, k, () => callback())
+                    addPropertyListener(obj, k, callback)
                 }
             });
         } else if (Array.isArray(obj)) {
+            (obj as any[]).forEach(i => listenToObjectOrArray(i, callback))
             observeArray(obj, {
                 sort: callback,
                 splice: (s, d, items: any[]) => {
                     callback()
                     items.forEach(i =>
-                       listenToObjectOrArray(i, () => callback())
+                       listenToObjectOrArray(i, callback)
                     )
                 }
             })

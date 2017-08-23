@@ -41,10 +41,12 @@ module demo {
                     <span>{{inheritedString}}</span>
                     <div id="person" siblingsLength={{person.siblings:sizeOfArray}} uncles={{person.mother.siblings:sizeOfArray}}>{{person.name}}</div>
                     <div id="mother">{{person.mother.name}}</div>
+                    <div id="sibling-names">{{person.siblings:names}}</div>
                 </div>
             `)
         }
 
         sizeOfArray = (arr: any[]) => `${arr.length}`
+        names = (arr: Person[]) => `${arr.map(p => p.name).join(', ')}`
     }
 }
