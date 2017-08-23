@@ -112,11 +112,9 @@ module feather.objects {
 
     const listenToObjectOrArray = (obj: any, callback: Callback) => {
         if (isObject(obj)) {
-            Object.keys(obj).forEach(k => {
-                if (!/parentWidget|childWidgets/.test(k) && !isFunction(obj[k])) {
-                    addPropertyListener(obj, k, callback)
-                }
-            })
+            Object.keys(obj).forEach(k =>
+                addPropertyListener(obj, k, callback)
+            )
         } else if (Array.isArray(obj)) {
             obj.forEach(i => listenToObjectOrArray(i, callback))
             observeArray(obj, {
