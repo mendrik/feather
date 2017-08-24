@@ -4,16 +4,17 @@ module feather.annotations {
     import Widget        = feather.core.Widget
     import from          = feather.arrays.from
     import allChildNodes = feather.dom.allChildNodes
-    import collectAnnotationsFromTypeMap = feather.objects.collectAnnotationsFromTypeMap
+    import collect       = feather.objects.collectAnnotationsFromTypeMap
+    import ensure        = feather.functions.ensure;
 
-    const supportsTemplate           = 'content' in document.createElement('template') && 'firstElementChild' in document.createDocumentFragment()
-    const CURLIES                    = /{{(.*?)}}/
-    const ALL_CURLIES                = /{{(.*?)}}/g
-    const templates                  = new WeakMap<Widget, TypedMap<Function>>()
-    const parsedTemplateCache        = {} as Map<string, PreparsedTemplate>
-    const template                   = supportsTemplate ? document.createElement('template') : document.createElement('div')
-    export const selfClosingTags     = /<(\w+)((\s+([^=\s\/<>]+|\w+=('[^']*'|"[^"]*"|[^"']\S*)))*)\s*\/>/gi
-    export const openTags            = '<$1$2></$1>'
+    const supportsTemplate       = 'content' in document.createElement('template') && 'firstElementChild' in document.createDocumentFragment()
+    const CURLIES                = /{{(.*?)}}/
+    const ALL_CURLIES            = /{{(.*?)}}/g
+    const templates              = new WeakMap<Widget, TypedMap<Function>>()
+    const parsedTemplateCache    = {} as Map<string, PreparsedTemplate>
+    const template               = supportsTemplate ? document.createElement('template') : document.createElement('div')
+    export const selfClosingTags = /<(\w+)((\s+([^=\s\/<>]+|\w+=('[^']*'|"[^"]*"|[^"']\S*)))*)\s*\/>/gi
+    export const openTags        = '<$1$2></$1>'
 
     export const enum HookType {
         CLASS,
@@ -116,7 +117,7 @@ module feather.annotations {
     export class TemplateFactory {
 
         static getTemplate(widget: Widget, name: string): ParsedTemplate {
-            const method = (collectAnnotationsFromTypeMap(templates, widget) as TypedMap<Function>)[name],
+            const method = (collect(templates, widget) as TypedMap<Function>)[name],
                   templateString: string = method.call(widget)
             let preparsedTemplate = parsedTemplateCache[templateString]
             if (!preparsedTemplate) {
@@ -129,12 +130,8 @@ module feather.annotations {
     }
 
     export let Template = (name: string = 'default', warmUp = true) => (proto: Widget, method: string) => {
-        let widgetTemplates = templates.get(proto)
-        if (!widgetTemplates) {
-            templates.set(proto, widgetTemplates = {})
-        }
+        const widgetTemplates = ensure(templates, proto, {})
         widgetTemplates[name] = proto[method]
-
         if (warmUp) {
             try {
                 const str = proto[method].call({})

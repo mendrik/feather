@@ -23,6 +23,7 @@ module feather.observe {
     import patch               = feather.arrays.patch
     import removeFromArray     = feather.arrays.removeFromArray
     import deepValue           = feather.objects.deepValue
+    import ensure              = feather.functions.ensure
     import collectAnnotationsFromTypeMap = feather.objects.collectAnnotationsFromTypeMap
     import createObjectPropertyListener  = feather.objects.createObjectPropertyListener
 
@@ -30,8 +31,6 @@ module feather.observe {
     const binders         = new WeakMap<Observable, TypedMap<BindProperties>>()
     const serializers     = new WeakMap<Observable, TypedMap<Serializer>>()
     const attributeMapper = {} as Map<string, string>
-
-    type ValueCallback    = (newVal?: Primitive, oldVal?: Primitive) => void
 
     export interface BindProperties {
         templateName?: string   // when pushing new widgets into an array, the template name to render the children with
@@ -456,11 +455,8 @@ module feather.observe {
         read?: string
     }
 
-    const ensure = (proto: Observable, property): Serializer => {
-        let map = serializers.get(proto)
-        if (!map) {
-            serializers.set(proto, map = {})
-        }
+    const ensureMap = (proto: Observable, property): Serializer => {
+        const map = ensure(serializers, proto, {})
         if (!map[property]) {
             map[property] = {}
         }
@@ -468,9 +464,9 @@ module feather.observe {
     }
 
     export const Write = (arrayName: string) => (proto, property: string) => {
-        ensure(proto, arrayName).write = property
+        ensureMap(proto, arrayName).write = property
     }
     export const Read = (arrayName: string) => (proto, property: string) => {
-        ensure(proto, arrayName).read = property
+        ensureMap(proto, arrayName).read = property
     }
 }

@@ -3,6 +3,7 @@ module feather.event {
     import selectorMatches             = feather.dom.selectorMatches
     import collectAnnotationsFromArray = feather.objects.collectAnnotationsFromArray
     import MediaQueryAware             = feather.media.MediaQueryAware
+    import ensure                      = feather.functions.ensure
 
     export enum Scope {
         Direct,
@@ -138,12 +139,7 @@ module feather.event {
 
     export let On = (ec: EventConfig) => (proto: EventAware, method: string) => {
         const scope = typeof ec.scope === 'undefined' ? Scope.Delegate : ec.scope
-        let handlers = eventHandlers[scope].get(proto)
-
-        if (!handlers) {
-            eventHandlers[scope].set(proto, handlers = [] as Handler[])
-        }
-
+        const handlers = ensure(eventHandlers[scope], proto, [])
         ec.event.split(/\s+/).forEach(e =>
             handlers.push({
                 event: e,

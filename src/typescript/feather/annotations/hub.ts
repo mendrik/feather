@@ -1,9 +1,10 @@
 module feather.hub {
 
-    import TypedMap   = feather.types.TypedMap
-    import EventAware = feather.event.EventAware
-    import flatten    = feather.arrays.flatten
-    import collectAnnotationsFromTypeMap = feather.objects.collectAnnotationsFromTypeMap
+    import TypedMap      = feather.types.TypedMap
+    import EventAware    = feather.event.EventAware
+    import flatten       = feather.arrays.flatten
+    import ensure        = feather.functions.ensure
+    import collect       = feather.objects.collectAnnotationsFromTypeMap
     import WidgetFactory = feather.boot.WidgetFactory
 
     const subscribers = new WeakMap<Subscribable, TypedMap<Subscriber[]>>()
@@ -36,7 +37,7 @@ module feather.hub {
         }
 
         private static trigger(event: string, context: Subscribable, ...data: any[]) {
-            const subs = collectAnnotationsFromTypeMap(subscribers, context) as TypedMap<Subscriber[]>
+            const subs = collect(subscribers, context) as TypedMap<Subscriber[]>
             if (subs[event]) {
                 for (const sub of subs[event]) {
                     context[sub.method].apply(context, flatten(data))
@@ -51,10 +52,7 @@ module feather.hub {
     }
 
     export let Subscribe = (event: string) => (proto: Subscribable, method: string) => {
-        let s = subscribers.get(proto)
-        if (!s) {
-            subscribers.set(proto, s = {})
-        }
+        const s = ensure(subscribers, proto, {})
         if (!s[event]) {
             s[event] = []
         }

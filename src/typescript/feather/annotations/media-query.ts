@@ -1,6 +1,7 @@
 module feather.media {
 
-    import collectAnnotationsFromArray = feather.objects.collectAnnotationsFromArray
+    import collect = feather.objects.collectAnnotationsFromArray
+    import ensure  = feather.functions.ensure;
 
     export interface MediaConfig {
         query: string,
@@ -18,7 +19,7 @@ module feather.media {
     export class MediaQueryAware {
 
         attachMediaListeners() {
-            collectAnnotationsFromArray(mediaHandlers, this).forEach(h => {
+            collect(mediaHandlers, this).forEach(h => {
                 const mq = window.matchMedia(h.query),
                       listener = (mq: MediaQueryList) => {
                         if (mq.matches) {
@@ -47,12 +48,7 @@ module feather.media {
     }
 
     export const Media = (query: string) => (proto: MediaQueryAware, method: string) => {
-        let handlers = mediaHandlers.get(proto)
-
-        if (!handlers) {
-            mediaHandlers.set(proto, handlers = [])
-        }
-
+        const handlers = ensure(mediaHandlers, proto, [])
         handlers.push({
             method: method,
             query: query

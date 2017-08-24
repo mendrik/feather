@@ -1,9 +1,9 @@
 module feather.xhr {
 
-    import TypedMap  = feather.types.TypedMap
-    import Widget    = feather.core.Widget
-    import format    = feather.strings.format
-    import deepValue = feather.objects.deepValue
+    import TypedMap   = feather.types.TypedMap
+    import Widget     = feather.core.Widget
+    import format     = feather.strings.format
+    import deepValue  = feather.objects.deepValue
     import isFunction = feather.functions.isFunction
 
     export type MethodValue = 'GET' | 'POST' | 'DELETE' | 'PUT'

@@ -11,9 +11,9 @@ module feather.strings {
         for (let i = 0; i < l; i++) {
             current = splits[i]
             if (i % 2) {
-                const filters = current.split(/:/),
-                      key = filters.shift()
-                let resolved = ~key.indexOf('.') ? deepValue(obj, key) : obj[key]
+                const filters  = current.split(/:/),
+                      key      = filters.shift()
+                let   resolved = ~key.indexOf('.') ? deepValue(obj, key) : obj[key]
                 for (const f of filters) {
                     resolved = filterLib[f].call(obj, resolved)
                 }
