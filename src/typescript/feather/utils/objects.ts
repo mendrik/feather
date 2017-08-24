@@ -2,7 +2,6 @@ module feather.objects {
 
     import TypedMap      = feather.types.TypedMap
     import observeArray  = feather.arrays.observeArray
-    import isFunction    = feather.functions.isFunction
 
     export const isObject = (obj: any): boolean => (obj !== null && typeof(obj) === 'object' && Object.prototype.toString.call(obj) === '[object Object]')
 

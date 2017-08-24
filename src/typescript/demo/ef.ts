@@ -62,6 +62,7 @@ module demo {
 
         @Subscribe('singleton-pong')
         receivePong(data: any) {
+            //
         }
 
         @Subscribe('message-up')
