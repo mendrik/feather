@@ -127,7 +127,7 @@ module feather.objects {
                     items.forEach(i =>
                        listenToObjectOrArray(i, callback)
                     )
-                    dels.forEach(objectCallbacks.delete)
+                    dels.forEach(i => objectCallbacks.delete(i))
                 }
             })
         }
