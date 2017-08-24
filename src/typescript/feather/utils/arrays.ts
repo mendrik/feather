@@ -1,12 +1,11 @@
 module feather.arrays {
 
-    type MethodKey = 'sort' | 'splice'
-
+    type MethodKey  = 'sort' | 'splice'
     const observers = new WeakMap<any[], ArrayListener<any>[]>()
 
     export interface ArrayListener<T> {
         sort(indices: number[])
-        splice(start: number, deleteCount: number, items: T[], deleted: T[])
+        splice(start: number, deleteCount: number, addedItems: T[], deletedItems: T[])
     }
 
     export function from<T>(object: any): T[] {
@@ -29,23 +28,27 @@ module feather.arrays {
         const old       = arr[key],
               listeners = observers.get(arr),
               notifyListenersWithArgs = (arr, method: MethodKey, args: any[]) => {
-                for (const listener of listeners) {
-                    listener[method].apply(arr, args)
-                }
+                  for (const listener of listeners) {
+                      listener[method].apply(arr, args)
+                  }
             }
 
         if (key === 'splice') {
             // add docs that removing and re-adding elements to the same array kills event listeners
-            arr.splice = (index, dels, ...adds) => {
-                const res = old.call(arr, index, dels, ...adds)
-                notifyListenersWithArgs(arr, key, [index, dels, adds, res])
-                return res
+            arr.splice = (index, deleteCount, ...addedItems) => {
+                const deletedItems = old.call(arr, index, deleteCount, ...addedItems)
+                notifyListenersWithArgs(arr, key, [index, deleteCount, addedItems, deletedItems])
+                return deletedItems
             }
         } else if (key === 'sort') {
             arr.sort = (cmp) => {
                 // sort is a special case, we need to inform listeners how sorting has changed the array
                 const indices = range(0, arr.length - 1),
-                      args = cmp ? [arr.map((e, i) => i).sort((a, b) => cmp(arr[a], arr[b])).map(e => indices[e])] : indices,
+                      args = cmp ? [
+                          arr.map((e, i) => i)
+                             .sort((a, b) => cmp(arr[a], arr[b]))
+                             .map(e => indices[e])
+                      ] : indices,
                       res = old.call(arr, cmp)
                 notifyListenersWithArgs(arr, key, args)
                 return res

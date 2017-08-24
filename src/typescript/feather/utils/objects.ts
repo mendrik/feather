@@ -1,11 +1,10 @@
 module feather.objects {
 
-    import TypedMap      = feather.types.TypedMap
-    import observeArray  = feather.arrays.observeArray
+    import TypedMap       = feather.types.TypedMap
+    import observeArray   = feather.arrays.observeArray
 
     export const isObject = (obj: any): boolean => (obj !== null && typeof(obj) === 'object' && Object.prototype.toString.call(obj) === '[object Object]')
-
-    export const values = <T>(data: TypedMap<T>): T[] => 'values' in Object ? Object['values'](data) : Array.apply(null, Object.keys(data).map(o => data[o]))
+    export const values   = <T>(data: TypedMap<T>): T[] => 'values' in Object ? Object['values'](data) : Array.apply(null, Object.keys(data).map(o => data[o]))
 
     export function deepValue(obj: {}, path: string): any {
         if (path === '') {

@@ -26,20 +26,22 @@ module feather.observe {
     import collectAnnotationsFromTypeMap = feather.objects.collectAnnotationsFromTypeMap
     import createObjectPropertyListener  = feather.objects.createObjectPropertyListener
 
-    const boundProperties = new WeakMap<Widget, TypedMap<Function[]>>()
-    const binders = new WeakMap<Observable, TypedMap<BindProperties>>()
-    const serializers = new WeakMap<Observable, TypedMap<Serializer>>()
+    const boundProperties = new WeakMap<Observable, TypedMap<Function[]>>()
+    const binders         = new WeakMap<Observable, TypedMap<BindProperties>>()
+    const serializers     = new WeakMap<Observable, TypedMap<Serializer>>()
     const attributeMapper = {} as Map<string, string>
+
+    type ValueCallback    = (newVal?: Primitive, oldVal?: Primitive) => void
 
     export interface BindProperties {
         templateName?: string   // when pushing new widgets into an array, the template name to render the children with
-        changeOn?: string[] // list of property names
-        localStorage?: boolean
-        bequeath?: boolean // child widget can bind thin in their own templates
-        html?: boolean
+        changeOn?: string[]     // list of property names that trigger an array update
+        localStorage?: boolean  // initialize values from local storage
+        bequeath?: boolean      // child widget can bind this in their own templates
+        html?: boolean          // string contains html, do not bind to template root. experimental.
     }
 
-    function setOrRemoveAttribute(el: HTMLElement, attribute: string, condition: boolean, val: string) {
+    const setOrRemoveAttribute = (el: HTMLElement, attribute: string, condition: boolean, val: string) => {
         if (condition) {
             el.setAttribute(attribute, val)
         } else {
@@ -47,9 +49,9 @@ module feather.observe {
         }
     }
 
-    function triggerParentArray(obj: Widget) {
+    const triggerParentArray = (obj: Observable) => {
         if (obj.parentWidget) {
-            const parent = obj.parentWidget as any
+            const parent = obj.parentWidget
             for (const key of Object.keys(parent)) {
                 notifyListeners(parent[key])
             }
@@ -61,7 +63,7 @@ module feather.observe {
         return isFunction(name) ? name() : name
     }
 
-    const getPath = (obj: Widget, property: string) => {
+    const getPath = (obj: Observable, property: string) => {
         const segments = [property]
         let parent = obj
         do {
@@ -70,20 +72,20 @@ module feather.observe {
         return segments.join('.')
     }
 
-    function destroyListeners(...obj: Widget[]) {
-        obj.forEach(w => {
+    const destroyListeners = (...widgets: Observable[]) => {
+        for (const w of widgets) {
             w.cleanUp()
             boundProperties.delete(w)
-        })
+        }
     }
 
-    function maybeStore(parent: Observable, property: string, conf: BindProperties, value: any, isArray: boolean) {
+    const maybeStore = (parent: Observable, property: string, conf: BindProperties, value: any, isArray: boolean) => {
         if (conf && conf.localStorage) {
             if (isArray) {
                 const serializer = collectAnnotationsFromTypeMap(serializers, parent)[property] as Serializer
                 value = value.map(parent[serializer.write])
             }
-            localStorage.setItem(getPath(parent as any, property), JSON.stringify({value}))
+            localStorage.setItem(getPath(parent, property), JSON.stringify({value}))
         }
     }
 
@@ -130,7 +132,7 @@ module feather.observe {
         if (hook.type === HookType.ATTRIBUTE || hook.type === HookType.PROPERTY) {
 
             const el = (hook.node as HTMLElement),
-                attributeName = hook.text || property
+                  attributeName = hook.text || property
 
             if (!hook.text) {
                 el.removeAttribute(`{{${hook.curly}}}`)
@@ -158,7 +160,7 @@ module feather.observe {
               el     = hook.node as HTMLElement
 
         if (hook.type === HookType.TEXT) { // <p>some text {{myVar}} goes here</p>
-            createListener(this, conf, property, function updateDom() {
+            const updateDom = () => {
                 const formatted = format(hook.text, widget, widget)
                 if (conf.html) {
                     el.parentElement.innerHTML = formatted
@@ -166,9 +168,10 @@ module feather.observe {
                     el.textContent = formatted
                 }
                 return updateDom
-            }())
+            }
+            createListener(this, conf, property, updateDom())
         } else if (hook.type === HookType.CLASS) { // <p class="red {{myVar}}">text goes here</p>
-            createListener(this, conf, property, function updateDom(val, old?) {
+            const updateDom = (val: any, old?: any) => {
                 if (typeof old !== 'undefined') {
                     const fOld = transform(old)
                     if (fOld) {
@@ -182,16 +185,17 @@ module feather.observe {
                     }
                 }
                 return updateDom
-            }(value))
+            }
+            createListener(this, conf, property, updateDom(value))
             el.classList.remove(`{{${hook.curly}}}`)
         } else if (hook.type === HookType.ATTRIBUTE || hook.type === HookType.PROPERTY) { // <p style="{{myvar}}" {{hidden}}>text goes here</p>
-            const attribName = hook.text || property
-            createListener(this, conf, property, function updateDom(val) {
-                const formatted = transform(val)
-                setOrRemoveAttribute(el, attribName, typeof formatted !== 'undefined', formatted)
-                return updateDom
-            }(value))
-
+            const attributeName = hook.text || property,
+                  updateDom = (val) => {
+                      const formatted = transform(val)
+                      setOrRemoveAttribute(el, attributeName, typeof formatted !== 'undefined', formatted)
+                      return updateDom
+                  }
+            createListener(this, conf, property, updateDom(value))
             if (!hook.text) {
                 el.removeAttribute(`{{${hook.curly}}}`)
             }
@@ -218,7 +222,7 @@ module feather.observe {
                 feather.arrays.removeFromArray(childWidgets, deleted)
                 destroyListeners(...deleted)
 
-                if (added && added.length) {
+                if (added.length) {
                     const frag = document.createDocumentFragment()
                     for (const item of added) {
                         item.parentWidget = widget
@@ -233,7 +237,7 @@ module feather.observe {
 
     function bindArray(arr: Widget[], hook: Hook, conf: BindProperties) {
         const removed = arr.splice(0, arr.length),
-            el = hook.node as HTMLElement
+            el = hook.node
         observeArray(arr, defaultArrayListener(hook, conf, this))
         el.removeAttribute(`{{${hook.curly}}}`)
         arr.push(...removed)
@@ -352,10 +356,10 @@ module feather.observe {
             for (const hook of hooks) {
 
                 const transformFns = hook.curly.split(/:/),
-                      property = this.findProperty(transformFns.shift()),
-                      conf = (collectAnnotationsFromTypeMap(binders, this) as TypedMap<BindProperties>)[property]
-                let value = this[property],
-                    storedValue
+                      property     = this.findProperty(transformFns.shift()),
+                      conf         = (collectAnnotationsFromTypeMap(binders, this) as TypedMap<BindProperties>)[property]
+                let   value        = this[property],
+                      storedValue
 
                 const fm: (s) => string = context.findMethod.bind(context),
                       transform  = compose<any>(transformFns
@@ -382,7 +386,7 @@ module feather.observe {
                     continue
                 } else if (!parent && conf.localStorage) {
                     try {
-                        const json = localStorage.getItem(getPath(this as any, property))
+                        const json = localStorage.getItem(getPath(this, property))
                         if (json) {
                             storedValue = JSON.parse(json).value
                         }
@@ -435,8 +439,8 @@ module feather.observe {
 
     export const Bind = (props?: BindProperties) => (proto: Observable, property: string) => {
         const defProps: BindProperties = {templateName: 'default', localStorage: false, changeOn: [], html: false},
-            finalProps = props ? {...defProps, ...props} : {...defProps},
-            protoBinders = binders.get(proto)
+              finalProps               = props ? {...defProps, ...props} : {...defProps},
+              protoBinders             = binders.get(proto)
 
         if (!protoBinders) {
             binders.set(proto, {

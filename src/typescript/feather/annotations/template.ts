@@ -24,7 +24,7 @@ module feather.annotations {
 
     export class Hook {
 
-        constructor(public node: Node,
+        constructor(public node: Element,
                     public type: HookType,
                     public curly: string,
                     public text?: string) {}

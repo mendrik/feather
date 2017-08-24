@@ -10,11 +10,11 @@ module feather.event {
     }
 
     export interface EventConfig {
-        event: string // supports multiple event when separated with spaces
-        scope?: Scope
-        selector?: string
+        event:           string // supports multiple space-separated events
+        scope?:          Scope
+        selector?:       string
         preventDefault?: boolean
-        bubble?: boolean
+        bubble?:         boolean
     }
 
     export interface Handler extends EventConfig {
@@ -22,7 +22,7 @@ module feather.event {
     }
 
     export type HandlersRegistry = {[s: number]: WeakMap<EventAware, Handler[]>}
-    export type HandlersMap = {[s: number]: Handler[]}
+    export type HandlersMap      = {[s: number]: Handler[]}
 
     const eventHandlers: HandlersRegistry = {
         [Scope.Direct]: new WeakMap<EventAware, Handler[]>(),
@@ -128,7 +128,9 @@ module feather.event {
             super.cleanUp()
             const listeners = listenerDeregistry.get(this.element as HTMLElement)
             if (listeners) {
-                listeners.forEach(l => this.element.removeEventListener(l.event, l.fn))
+                for (const l of listeners) {
+                    this.element.removeEventListener(l.event, l.fn)
+                }
                 listenerDeregistry.delete(this.element as HTMLElement)
             }
         }
@@ -150,7 +152,7 @@ module feather.event {
                 bubble: ec.bubble,
                 scope: scope,
                 selector: ec.selector
-            } as Handler)
+            })
         )
     }
 }

@@ -14,8 +14,13 @@ module feather.dom {
         return true
     }
 
-    const _selectorMatches = ['matches' , 'webkitMatchesSelector', 'mozMatchesSelector', 'msMatchesSelector', 'matchesSelector']
-        .reduce((p, c) => Element.prototype[c] || p) as any as (s: string) => boolean
+    const _selectorMatches: (s: string) => boolean = [
+            'matches',
+            'webkitMatchesSelector',
+            'mozMatchesSelector',
+            'msMatchesSelector',
+            'matchesSelector'
+        ].reduce((p, c) => Element.prototype[c] || p) as any
 
     export function querySelectorWithRoot(root: ValidRoot, selector: string): HTMLElement[] {
         const result: any[] = root.nodeType === Node.ELEMENT_NODE && selectorMatches(root, selector) ? [root] : []
@@ -27,7 +32,7 @@ module feather.dom {
         return _selectorMatches.call(el, selector)
     }
 
-    export function allChildNodes(doc: Node): Node[] {
+    export function allChildNodes(doc: Node): Element[] {
         this.acceptNode = NODE_FILTER
         const walker = document.createTreeWalker(doc, NodeFilter.SHOW_ALL, NODE_FILTER as any, false),
               nodes = []
