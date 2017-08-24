@@ -37,8 +37,8 @@ module demo {
         @Template()
         protected getBaseTemplate() {
             return (`
-                <div id="inherit" test="{{inheritedString}}" length="{{filteredList:sizeOfArray}}">
-                    <span>{{inheritedString}}</span>
+                <div id="inherit" test="{{inheritedString}}" length="{{filteredList:sizeOfArray}}" >
+                    <span uncles={{person.mother.siblings:sizeOfArray}}>{{inheritedString}}</span>
                     <div id="person" siblingsLength={{person.siblings:sizeOfArray}} uncles={{person.mother.siblings:sizeOfArray}}>{{person.name}}</div>
                     <div id="mother">{{person.mother.name}}</div>
                     <div id="sibling-names">{{person.siblings:names}}</div>
