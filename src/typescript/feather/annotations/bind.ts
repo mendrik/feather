@@ -24,13 +24,13 @@ module feather.observe {
     import removeFromArray     = feather.arrays.removeFromArray
     import deepValue           = feather.objects.deepValue
     import ensure              = feather.functions.ensure
-    import collectAnnotationsFromTypeMap = feather.objects.collectAnnotationsFromTypeMap
-    import createObjectPropertyListener  = feather.objects.createObjectPropertyListener
+    import collect             = feather.objects.collectAnnotationsFromTypeMap
+    import observe             = feather.objects.createObjectPropertyListener
 
-    const boundProperties = new WeakMap<Observable, TypedMap<Function[]>>()
-    const binders         = new WeakMap<Observable, TypedMap<BindProperties>>()
-    const serializers     = new WeakMap<Observable, TypedMap<Serializer>>()
-    const attributeMapper = {} as Map<string, string>
+    const boundProperties      = new WeakMap<Observable, TypedMap<Function[]>>()
+    const binders              = new WeakMap<Observable, TypedMap<BindProperties>>()
+    const serializers          = new WeakMap<Observable, TypedMap<Serializer>>()
+    const attributeMapper      = {} as Map<string, string>
 
     export interface BindProperties {
         templateName?: string   // when pushing new widgets into an array, the template name to render the children with
@@ -81,7 +81,7 @@ module feather.observe {
     const maybeStore = (parent: Observable, property: string, conf: BindProperties, value: any, isArray: boolean) => {
         if (conf && conf.localStorage) {
             if (isArray) {
-                const serializer = collectAnnotationsFromTypeMap(serializers, parent)[property] as Serializer
+                const serializer = collect(serializers, parent)[property] as Serializer
                 value = value.map(parent[serializer.write])
             }
             localStorage.setItem(getPath(parent, property), JSON.stringify({value}))
@@ -170,19 +170,15 @@ module feather.observe {
             }
             createListener(this, conf, property, updateDom())
         } else if (hook.type === HookType.CLASS) { // <p class="red {{myVar}}">text goes here</p>
-            const updateDom = (val: any, old?: any) => {
-                if (typeof old !== 'undefined') {
-                    const fOld = transform(old)
-                    if (fOld) {
-                        el.classList.remove(fOld)
-                    }
-                }
+            const classList = (val: any, fn: Function) => {
                 if (typeof val !== 'undefined') {
-                    const fVal = transform(val)
-                    if (fVal) {
-                        el.classList.add(fVal)
-                    }
+                    const nVal = transform(val)
+                    nVal && fn(nVal)
                 }
+            }
+            const updateDom = (val: any, old?: any) => {
+                classList(old, (v) => el.classList.remove(v))
+                classList(val, (v) => el.classList.add(v))
                 return updateDom
             }
             createListener(this, conf, property, updateDom(value))
@@ -247,7 +243,7 @@ module feather.observe {
               rootProperty = path.split('.').shift(),
               initialValue = deepValue(this, path),
               typeOfValue = (typeof transform(initialValue)).toLowerCase(),
-              conf = (collectAnnotationsFromTypeMap(binders, this) as TypedMap<BindProperties>)[rootProperty],
+              conf = (collect(binders, this) as TypedMap<BindProperties>)[rootProperty],
               update = (val) => {
                   if (/boolean/.test(typeOfValue)) {
                       bindBoolean.call(this, null, val, hook, transform, conf, dummyCreate)
@@ -260,7 +256,7 @@ module feather.observe {
                   }
                   return update
               }
-        createObjectPropertyListener(this, path, update(initialValue))
+        observe(this, path, update(initialValue))
     }
 
     function createObserver(property: string, value: Primitive, hook: Hook, conf: BindProperties, transform: FuncOne) {
@@ -340,7 +336,7 @@ module feather.observe {
             return
         }
         property = current.findProperty(property)
-        const conf = (collectAnnotationsFromTypeMap(binders, current) as TypedMap<BindProperties>)[property]
+        const conf = (collect(binders, current) as TypedMap<BindProperties>)[property]
         if (conf && conf.bequeath) {
             current.attachHooks.call(current, [hook], context)
         } else {
@@ -356,7 +352,7 @@ module feather.observe {
 
                 const transformFns = hook.curly.split(/:/),
                       property     = this.findProperty(transformFns.shift()),
-                      conf         = (collectAnnotationsFromTypeMap(binders, this) as TypedMap<BindProperties>)[property]
+                      conf         = (collect(binders, this) as TypedMap<BindProperties>)[property]
                 let   value        = this[property],
                       storedValue
 
@@ -402,7 +398,7 @@ module feather.observe {
                     // special case: we need to create an array proxy
                     createFilteredArrayProxy.call(this, property, hook, conf, transform)
                     if (storedValue) {
-                        const serializer = collectAnnotationsFromTypeMap(serializers, this)[property] as Serializer
+                        const serializer = collect(serializers, this)[property] as Serializer
                         this[property].push(...storedValue.map(this[serializer.read]))
                     }
                 } else {
