@@ -96,6 +96,9 @@ module feather.objects {
             Object.defineProperty(obj, property, {
                 get: () => val,
                 set: (newVal) => {
+                    if (val instanceof Object) {
+                        objectCallbacks.delete(val)
+                    }
                     val = newVal
                     listenToObjectOrArray(val, call)
                     call()
@@ -119,11 +122,12 @@ module feather.objects {
             obj.forEach(i => listenToObjectOrArray(i, callback))
             observeArray(obj, {
                 sort: callback,
-                splice: (s, d, items: any[]) => {
+                splice: (s, d, items: any[], dels: any[]) => {
                     callback()
                     items.forEach(i =>
                        listenToObjectOrArray(i, callback)
                     )
+                    dels.forEach(objectCallbacks.delete)
                 }
             })
         }
