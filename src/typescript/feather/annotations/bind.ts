@@ -99,14 +99,7 @@ module feather.observe {
                 maybeStore(obj, property, conf, value, true)
             }))
         } else {
-            let listeners = boundProperties.get(obj)
-            if (!listeners) {
-                boundProperties.set(obj, listeners = {
-                    [property]: []
-                })
-            } else if (!listeners[property]) {
-                listeners[property] = []
-            }
+            const listeners = ensure(boundProperties, obj, {[property]: []})
             Object.defineProperty(obj, property, {
                 get: function () {
                     return value

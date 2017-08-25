@@ -67,6 +67,7 @@ module feather.objects {
                 a[k] = bk
             }
         })
+        return a
     }
 
     export function collectAnnotationsFromTypeMap<T, P extends Object>(map: WeakMap<P, TypedMap<TypeOrArray<T>>>, start: P): TypedMap<TypeOrArray<T>> {

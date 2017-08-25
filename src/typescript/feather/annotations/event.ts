@@ -4,6 +4,7 @@ module feather.event {
     import collectAnnotationsFromArray = feather.objects.collectAnnotationsFromArray
     import MediaQueryAware             = feather.media.MediaQueryAware
     import ensure                      = feather.objects.ensure
+    import merge = feather.objects.merge;
 
     export enum Scope {
         Direct,
@@ -39,12 +40,7 @@ module feather.event {
 
     export let addListener = (el: HTMLElement, event: string, listener: EventListenerOrEventListenerObject) => {
         el.addEventListener(event, listener)
-        let listeners = listenerDeregistry.get(el)
-        if (!listeners) {
-            listeners = []
-            listenerDeregistry.set(el, listeners)
-        }
-        listeners.push({event: event, fn: listener})
+        ensure(listenerDeregistry, el, [{event: event, fn: listener}])
     }
 
     function attachDelegatedEvent(context: EventAware, event: string, handlers: Handler[]) {
@@ -75,19 +71,10 @@ module feather.event {
             this.attachDirect(this.handlers(Scope.Direct))
         }
 
-        private handlers(scope: Scope): HandlersMap {
-            const handlers = collectAnnotationsFromArray(eventHandlers[scope], this),
-                  map = {}
-            handlers.reduce((p, c) => {
-                const e = c.event
-                if (!p[e]) {
-                    p[e] = []
-                }
-                p[e].push(c)
-                return p
-            }, map)
-            return map
-        }
+        handlers = (scope: Scope): HandlersMap =>
+            collectAnnotationsFromArray(eventHandlers[scope], this)
+            .reduce((p, c: Handler) =>
+                merge(p, {[c.event]: [c]}), {})
 
         attachDirect(handlerMap: HandlersMap) {
             const root = this.element
