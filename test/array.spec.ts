@@ -99,7 +99,22 @@ describe('Arrays', () => {
             const r1 = feather.arrays.range(1, 10),
                   r2 = feather.arrays.range(3, 7)
             feather.arrays.removeFromArray(r1, r2)
-            expect(r1).to.be.deep.equal([1,2,8,9,10])
+            expect(r1).to.be.deep.equal([1, 2, 8, 9, 10])
+
+            const r3 = feather.arrays.range(1, 10),
+                  r4 = [1, 3, 5, 7, 9]
+            feather.arrays.removeFromArray(r3, r4)
+            expect(r3).to.be.deep.equal([2, 4, 6, 8, 10])
+
+            const r5 = feather.arrays.range(1, 10),
+                  r6 = feather.arrays.range(1, 5)
+            feather.arrays.removeFromArray(r5, r6)
+            expect(r5).to.be.deep.equal([6, 7, 8, 9, 10])
+
+            const r7 = feather.arrays.range(1, 10),
+                  r8 = feather.arrays.range(6, 10)
+            feather.arrays.removeFromArray(r7, r8)
+            expect(r7).to.be.deep.equal([1, 2, 3, 4, 5])
         })
     })
 

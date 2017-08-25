@@ -4,7 +4,7 @@ module feather.event {
     import collectAnnotationsFromArray = feather.objects.collectAnnotationsFromArray
     import MediaQueryAware             = feather.media.MediaQueryAware
     import ensure                      = feather.objects.ensure
-    import merge = feather.objects.merge;
+    import merge                       = feather.objects.merge
 
     export enum Scope {
         Direct,
@@ -73,8 +73,7 @@ module feather.event {
 
         handlers = (scope: Scope): HandlersMap =>
             collectAnnotationsFromArray(eventHandlers[scope], this)
-            .reduce((p, c: Handler) =>
-                merge(p, {[c.event]: [c]}), {})
+            .reduce((p, c: Handler) => merge(p, {[c.event]: [c]}), {})
 
         attachDirect(handlerMap: HandlersMap) {
             const root = this.element

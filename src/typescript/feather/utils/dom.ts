@@ -8,7 +8,7 @@ module feather.dom {
             return true
         } else if (nodeType === Node.DOCUMENT_FRAGMENT_NODE) {
             return false
-        } else if (nodeType === Node.TEXT_NODE && /^\s*$/.test(n.textContent)) {
+        } else if (nodeType === Node.TEXT_NODE && !n.textContent.trim()) {
             return false
         }
         return true

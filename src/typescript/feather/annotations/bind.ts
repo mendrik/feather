@@ -209,7 +209,9 @@ module feather.observe {
         return {
             sort(indices: any[]) {
                 const children = from<HTMLElement>(el.children)
-                indices.forEach(i => el.appendChild(children[i]))
+                for (const i of indices) {
+                    el.appendChild(children[i])
+                }
             },
             splice(index: number, deleteCount: number, added: Widget[], deleted: Widget[] = []) {
                 if (index === 0 && deleteCount === 0 && added.length === 0) {
@@ -294,17 +296,17 @@ module feather.observe {
                 // let's remove excess elements from UI and proxy array
                 if (p.remove.length) {
                     removeFromArray(proxy, p.remove)
-                    p.remove.forEach(w => {
+                    for (const w of p.remove) {
                         parent.removeChild(w.element)
-                    })
+                    }
                 }
                 addLength = p.add.length
                 if (addLength) {
                     const doc = addLength !== 1 ? document.createDocumentFragment() : parent
-                    p.add.forEach(w => {
+                    for (const w of p.add) {
                         w.parentWidget = parentWidget
                         w.appendTemplateRoot(doc, conf.templateName)
-                    })
+                    }
                     parentWidget.childWidgets.push(...p.add)
                     // let's add missing elements to UI and array in one go to the end of the list
                     if (addLength !== 1) {

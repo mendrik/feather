@@ -7,7 +7,7 @@ module feather.hub {
     import collect       = feather.objects.collectAnnotationsFromTypeMap
     import WidgetFactory = feather.boot.WidgetFactory
 
-    const subscribers = new WeakMap<Subscribable, TypedMap<Subscriber[]>>()
+    const subscribers    = new WeakMap<Subscribable, TypedMap<Subscriber[]>>()
 
     export class Subscriber {
         constructor(public event: string, public method: string) {

@@ -1,11 +1,11 @@
 module feather.annotations {
 
-    import TypedMap      = feather.types.TypedMap
-    import Widget        = feather.core.Widget
-    import from          = feather.arrays.from
-    import allChildNodes = feather.dom.allChildNodes
-    import collect       = feather.objects.collectAnnotationsFromTypeMap
-    import ensure        = feather.objects.ensure
+    import TypedMap              = feather.types.TypedMap
+    import Widget                = feather.core.Widget
+    import from                  = feather.arrays.from
+    import allChildNodes         = feather.dom.allChildNodes
+    import collect               = feather.objects.collectAnnotationsFromTypeMap
+    import ensure                = feather.objects.ensure
 
     const supportsTemplate       = 'content' in document.createElement('template') && 'firstElementChild' in document.createDocumentFragment()
     const CURLIES                = /{{(.*?)}}/
@@ -126,7 +126,6 @@ module feather.annotations {
             }
             return preparsedTemplate.asParsedTemplate()
         }
-
     }
 
     export let Template = (name: string = 'default', warmUp = true) => (proto: Widget, method: string) => {

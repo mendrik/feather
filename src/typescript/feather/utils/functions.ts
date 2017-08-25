@@ -1,13 +1,14 @@
 module feather.functions {
 
-    import FnOne   = feather.types.FnOne
+    import FnOne = feather.types.FnOne
 
-    export const compose = <U>(fns: FnOne[]): (any) => U => (res: any): U =>
+    const getType = {}.toString
+
+    export const compose = <U>(fns: FnOne[]): any => (res: any): U =>
         fns.reduce((p, c) => c(p), res) as U
 
     export function isFunction(functionToCheck) {
-        const getType = {}
-        return functionToCheck && getType.toString.call(functionToCheck) === '[object Function]'
+        return functionToCheck && getType.call(functionToCheck) === '[object Function]'
     }
 
     const inheritedMethodCache = new WeakMap<any, string[]>()
