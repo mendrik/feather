@@ -405,15 +405,16 @@ module feather.observe {
                 }
                 value = transform(value)
 
-                if (Array.isArray(this[property]) && isFunction(value)) {
-                    // special case: we need to create an array proxy
+                const isArray = Array.isArray(this[property])
+                // special case: we need to create an array proxy
+                if (isArray && isFunction(value)) {
                     createFilteredArrayProxy.call(this, property, hook, conf, transform)
-                    if (storedValue) {
-                        const serializer = collect(serializers, this)[property] as Serializer
-                        this[property].push(...storedValue.map(this[serializer.read]))
-                    }
                 } else {
                     createObserver.call(this, property, value, hook, conf, transform)
+                }
+                if (typeof storedValue !== 'undefined' && isArray) {
+                    const serializer = collect(serializers, this)[property] as Serializer
+                    this[property].push(...storedValue.map(this[serializer.read]))
                 }
             }
         }
@@ -450,6 +451,6 @@ module feather.observe {
     }
 
     export const Read = (arrayName: string) => (proto: Observable, method: string) => {
-        ensure(serializers, proto, {[arrayName]: {read: proto[method]}})
+        ensure(serializers, proto, {[arrayName]: {read: method}})
     }
 }
