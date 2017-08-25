@@ -36,10 +36,10 @@ module feather.observe {
 
     export interface BindProperties {
         templateName?: string   // when pushing new widgets into an array, the template name to render the children with
-        changeOn?: string[]     // list of property names that trigger an array update
+        changeOn?:     string[] // list of property names that trigger an array update
         localStorage?: boolean  // initialize values from local storage
-        bequeath?: boolean      // child widget can bind this in their own templates
-        html?: boolean          // string contains html, do not bind to template root. experimental.
+        bequeath?:     boolean  // child widget can bind this in their own templates
+        html?:         boolean  // string contains html, do not bind to template root. experimental.
     }
 
     const setOrRemoveAttribute = (el: HTMLElement, attribute: string, condition: boolean, val: string) => {
@@ -284,15 +284,22 @@ module feather.observe {
 
     function createFilteredArrayProxy(property: string, hook: Hook, conf: BindProperties,
                                       filterFactory: () => (widget: Widget) => boolean) {
-        const parentWidget = this as Widget,
-            proxy: Widget[] = [],
-            original: Widget[] = this[property],
-            parent = hook.node as HTMLElement,
-            syncProxy = () => {
+
+        const parentWidget       = this as Widget,
+              proxy: Widget[]    = [],
+              original: Widget[] = this[property],
+              parent             = hook.node as HTMLElement
+
+        const syncProxy = () => {
 
                 const target = original.filter(filterFactory()),
-                    p = patch(target, proxy)
-                let outOfPlace, place, proxyIndices, needSorting, addLength
+                      p      = patch(target, proxy)
+                let   outOfPlace,
+                      place,
+                      proxyIndices,
+                      needSorting,
+                      addLength
+
                 // let's remove excess elements from UI and proxy array
                 if (p.remove.length) {
                     removeFromArray(proxy, p.remove)
@@ -301,6 +308,7 @@ module feather.observe {
                     }
                 }
                 addLength = p.add.length
+
                 if (addLength) {
                     const doc = addLength !== 1 ? document.createDocumentFragment() : parent
                     for (const w of p.add) {
@@ -314,6 +322,7 @@ module feather.observe {
                     }
                     proxy.push(...p.add)
                 }
+
                 // now let's check if some of the elements need repositioning
                 proxyIndices = proxy.map(x => target.indexOf(x))
                 needSorting = diff(proxyIndices, lis(proxyIndices)).sort((a, b) => b - a)
@@ -332,9 +341,12 @@ module feather.observe {
                 syncProxy()
             }
         })
+
+        // add extra listeners for properties that should trigger fake array change
         for (const prop of conf.changeOn) {
             createListener(this, conf, prop, () => notifyListeners(original))
         }
+
         parent.removeAttribute(`{{${hook.curly}}}`)
     }
 
@@ -361,14 +373,13 @@ module feather.observe {
 
                 const transformFns = hook.curly.split(/:/),
                       property     = this.findProperty(transformFns.shift()),
-                      conf         = (collect(binders, this) as TypedMap<BindProperties>)[property]
+                      conf         = (collect(binders, this) as TypedMap<BindProperties>)[property],
+                      fm           = context.findMethod.bind(context) as (s) => string ,
+                      transform    = compose<any>(transformFns
+                                     .map(fm)
+                                     .map(method => context[method].bind(context)))
                 let   value        = this[property],
                       storedValue
-
-                const fm: (s) => string = context.findMethod.bind(context),
-                      transform  = compose<any>(transformFns
-                                   .map(fm)
-                                   .map(method => context[method].bind(context)))
 
                 if (~property.indexOf('.')) {
                     value = deepValue(this, property)
@@ -418,17 +429,19 @@ module feather.observe {
 
         // attributes are case insensitive, so let's try to find the matching property like this
         findProperty(ci: string): string {
-            return getOrCreate(attributeMapper, ci, () =>
-                Object.getOwnPropertyNames(this)
-                    .find(p => p.toLowerCase() === ci.toLowerCase()) || ci
-            )
+            return getOrCreate(attributeMapper, ci, () => {
+                const lc = ci.toLowerCase();
+                return Object.getOwnPropertyNames(this)
+                    .find(p => p.toLowerCase() === lc) || ci
+            })
         }
 
         findMethod(ci: string): string {
-            return getOrCreate(attributeMapper, ci, () =>
-                getInheritedMethods(this)
-                    .find(p => p.toLowerCase() === ci.toLowerCase()) || ci
-            )
+            return getOrCreate(attributeMapper, ci, () => {
+                const lc = ci.toLowerCase();
+                return getInheritedMethods(this)
+                    .find(p => p.toLowerCase() === lc) || ci
+            })
         }
     }
 

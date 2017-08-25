@@ -20,24 +20,25 @@ module feather.boot {
         ) {}
     }
 
+    const attributeParser = (node: HTMLElement, context?: any) => (key: string) => {
+        let value: any = node.getAttribute(key)
+        const m = (value || '').match(/^{(.+?)}\/?$/i)
+        if (m) {
+            const js = m[1]
+            value = context[js] || (function(str) {
+                return eval(str)
+            }).bind(context)(js)
+            if (typeof value !== 'undefined') {
+                node.removeAttribute(key)
+            }
+        }
+        return value
+    }
+
     export class WidgetFactory {
         private static widgetRegistry: ComponentInfo[] = []
         public static singletonRegistry: Widget[] = []
 
-        static attributeParser = (node: HTMLElement, context?: any) => (key: string) => {
-            let value: any = node.getAttribute(key)
-            const m = (value || '').match(/^{(.+?)}\/?$/i)
-            if (m) {
-                const js = m[1]
-                value = context[js] || (function(str) {
-                    return eval(str)
-                }).bind(context)(js)
-                if (typeof value !== 'undefined') {
-                    node.removeAttribute(key)
-                }
-            }
-            return value
-        }
 
         static start(scope: ValidRoot = document, parentWidget?: Widget) {
             const reg = WidgetFactory.widgetRegistry
@@ -46,7 +47,7 @@ module feather.boot {
                       nodes = querySelectorWithRoot(scope, info.selector)
                 for (let j = 0, m = nodes.length; j < m; j++) {
                     const node = nodes[j],
-                          args = info.attributes.map(WidgetFactory.attributeParser(node, parentWidget || window)),
+                          args = info.attributes.map(attributeParser(node, parentWidget || window)),
                           widget: Widget = new (Function.prototype.bind.apply(info.component, [null, ...args]))
                     if (info.singleton) {
                         WidgetFactory.singletonRegistry.push(widget)

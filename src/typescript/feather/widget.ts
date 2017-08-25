@@ -29,6 +29,7 @@ module feather.core {
             this.attachMediaListeners()
         }
 
+        // noinspection JSUnusedGlobalSymbols
         protected render(templateName: string = 'default') {
             const parsed = this.getParsed(templateName)
             this.element.appendChild(parsed.doc)
@@ -43,6 +44,7 @@ module feather.core {
             return template
         }
 
+        // noinspection JSUnusedLocalSymbols
         init(element: HTMLElement) {
             // override this with this.render('templatename') in sub classes of Widget
         }

@@ -130,7 +130,7 @@ module feather.annotations {
 
     export let Template = (name: string = 'default', warmUp = true) => (proto: Widget, method: string) => {
         ensure(templates, proto, {[name]: proto[method]})
-        if (warmUp) {
+        if (warmUp) { // preparse template for better performance
             try {
                 const str = proto[method].call({})
                 parsedTemplateCache[str] = getPreparsedTemplate(str)

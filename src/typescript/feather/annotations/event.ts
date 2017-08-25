@@ -27,13 +27,13 @@ module feather.event {
     export type HandlersMap      = {[s: number]: Handler[]}
 
     const eventHandlers: HandlersRegistry = {
-        [Scope.Direct]: new WeakMap<EventAware, Handler[]>(),
-        [Scope.Delegate]: new WeakMap<EventAware, Handler[]>(),
+        [Scope.Direct]:   new WeakMap<EventAware, Handler[]>(),
+        [Scope.Delegate]: new WeakMap<EventAware, Handler[]>()
     }
 
     interface Listener {
         event: string,
-        fn: EventListenerOrEventListenerObject
+        fn:    EventListenerOrEventListenerObject
     }
 
     const listenerDeregistry = new WeakMap<HTMLElement, Listener[]>()

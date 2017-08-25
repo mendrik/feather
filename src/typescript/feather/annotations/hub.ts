@@ -18,6 +18,7 @@ module feather.hub {
         parentWidget: Subscribable
         childWidgets: Array<Subscribable> = []
 
+        // noinspection JSUnusedGlobalSymbols
         triggerUp(event: string, ...data: any[]) {
             feather.hub.Subscribable.trigger(event, this, data)
             if (this.parentWidget) {
@@ -25,6 +26,7 @@ module feather.hub {
             }
         }
 
+        // noinspection JSUnusedGlobalSymbols
         triggerSingleton(event: string, ...data: any[]) {
             WidgetFactory.singletonRegistry.forEach(w => feather.hub.Subscribable.trigger(event, w, data))
         }
