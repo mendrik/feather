@@ -47,6 +47,10 @@ const loadPage = (callback: Function) => {
         setItem: (key: string, val: any) => this[key] = val
     }
 
+    window['matchMedia'] = (query: string) => ({
+        addListener: () => 0
+    })
+
     const server = module.exports.server = sinon.fakeServer.create({
         autoRespond: true,
         autoRespondAfter: 1

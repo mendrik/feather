@@ -28,14 +28,10 @@ module feather.media {
                       }
                 mq.addListener(listener)
 
-                let deregistry = mediaQueryListeners.get(this)
-                if (!deregistry) {
-                    mediaQueryListeners.set(this, deregistry = [])
-                }
-                deregistry.push({
+                ensure(mediaQueryListeners, this, [{
                     mediaQuery: mq,
                     listener
-                })
+                }])
 
                 listener(mq)
             })

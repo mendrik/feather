@@ -8,6 +8,7 @@ module demo {
     import Rest      = feather.xhr.Rest
     import Subscribe = feather.hub.Subscribe
     import Route     = feather.routing.Route
+    import Media     = feather.media.Media
 
     export enum FilterState {
         ALL,
@@ -78,6 +79,16 @@ module demo {
         @Subscribe('singleton-event-noop')
         singletonEventNoop(data: any) {
             // ignore
+        }
+
+        @Media('(min-width: 768px')
+        desktop() {
+            console.log('desktop')
+        }
+
+        @Media('(max-width: 767px')
+        mobile() {
+            console.log('mobile')
         }
 
         arrayFilter() {

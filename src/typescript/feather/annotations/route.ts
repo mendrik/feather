@@ -91,10 +91,9 @@ module feather.routing {
     }
 
     export const Route = (route: string) => (proto: Widget, method: string) => {
-        const s = ensure(routes, proto, [])
-        s.push({
+        ensure(routes, proto, [{
             route: route,
             handler: method
-        } as RouteConfig)
+        }])
     }
 }
