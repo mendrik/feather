@@ -398,16 +398,15 @@ module feather.observe {
                 }
                 value = transform(value)
 
-                const isArray = Array.isArray(this[property])
                 // special case: we need to create an array proxy
-                if (isArray && isFunction(value)) {
+                if (Array.isArray(this[property]) && isFunction(value)) {
                     createFilteredArrayProxy.call(this, property, hook, conf, transform)
+                    if (typeof storedValue !== 'undefined') {
+                        const serializer = collect(serializers, this)[property] as Serializer
+                        this[property].push(...storedValue.map(this[serializer.read]))
+                    }
                 } else {
                     createObserver.call(this, property, value, hook, conf, transform)
-                }
-                if (typeof storedValue !== 'undefined' && isArray) {
-                    const serializer = collect(serializers, this)[property] as Serializer
-                    this[property].push(...storedValue.map(this[serializer.read]))
                 }
             }
         }
