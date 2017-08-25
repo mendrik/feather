@@ -27,6 +27,7 @@ module feather.observe {
     import observe             = feather.objects.createObjectPropertyListener
     import getOrCreate         = feather.objects.getOrCreate
     import FnOne               = feather.types.FnOne
+    import OldNewCallback      = feather.types.OldNewCallback
 
     const boundProperties      = new WeakMap<Observable, TypedMap<Function[]>>()
     const binders              = new WeakMap<Observable, TypedMap<BindProperties>>()
@@ -89,7 +90,10 @@ module feather.observe {
         }
     }
 
-    function createListener(obj: Widget, conf: BindProperties, property: string, cb: (newVal?: Primitive, oldVal?: Primitive) => void) {
+    function createListener(obj: Widget,
+                            conf: BindProperties,
+                            property: string,
+                            cb: OldNewCallback<Primitive>) {
         let value = obj[property]
 
         if (Array.isArray(value)) { // arrays are special case so we sort of fake getters and setters
@@ -99,7 +103,7 @@ module feather.observe {
                 maybeStore(obj, property, conf, value, true)
             }))
         } else {
-            const listeners = ensure(boundProperties, obj, {[property]: []})
+            const listeners = ensure(boundProperties, obj, {[property]: [cb]})
             Object.defineProperty(obj, property, {
                 get: function () {
                     return value
@@ -117,7 +121,6 @@ module feather.observe {
                     return newValue
                 }
             })
-            listeners[property].push(cb)
         }
     }
 
