@@ -13,7 +13,7 @@ describe('Deep property bind', () => {
     describe('Deep properties in objects', () => {
 
         it('Binds arrays correctly', () => {
-            const inh = window.inh as demo.Inheritence
+            const inh = window.inh as demo.Inheritance
             const personDiv = document.querySelector('#person')
             const motherDiv = document.querySelector('#mother')
             const siblingDiv = document.querySelector('#sibling-names')
@@ -33,7 +33,7 @@ describe('Deep property bind', () => {
         })
 
         it('Binds properties correctly', () => {
-            const inh = window.inh as demo.Inheritence
+            const inh = window.inh as demo.Inheritance
             const personDiv = document.querySelector('#person')
             const motherDiv = document.querySelector('#mother')
             inh.person.name = 'Peter'

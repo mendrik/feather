@@ -3,7 +3,7 @@ module feather.event {
     import selectorMatches             = feather.dom.selectorMatches
     import collectAnnotationsFromArray = feather.objects.collectAnnotationsFromArray
     import MediaQueryAware             = feather.media.MediaQueryAware
-    import ensure                      = feather.functions.ensure
+    import ensure                      = feather.objects.ensure
 
     export enum Scope {
         Direct,

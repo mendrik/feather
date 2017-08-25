@@ -120,7 +120,7 @@ module demo {
                 <ul id="sorted-list" {{sortTestArray:sortFilter}}/>
                 <AttributeWidget id="aw1" text="{'a'+'b'}" bool="{true}" func="{this.printStuff}" number="{3+1}"/>
                 <AttributeWidget id="aw2" text={this.printStuff()} bool={false} func={this.printStuff} number={5}/>
-                <Inheritence/>
+                <Inheritance/>
             `)
         }
 

@@ -2,6 +2,10 @@ module feather.objects {
 
     import TypedMap       = feather.types.TypedMap
     import observeArray   = feather.arrays.observeArray
+    import TypeOrArray    = feather.types.TypeOrArray
+    import ObjectChange   = feather.types.ObjectChange
+    import Callback       = feather.types.Callback
+    import Factory        = feather.types.Factory
 
     export const isObject = (obj: any): boolean =>
         (obj !== null && typeof(obj) === 'object' && Object.prototype.toString.call(obj) === '[object Object]')
@@ -45,19 +49,24 @@ module feather.objects {
         return handlers
     }
 
-    export type TypeOrArray<T> = T[] | T
-
-    export const mergeArrayTypedMap = <T>(a: TypedMap<TypeOrArray<T>>, b: TypedMap<TypeOrArray<T>>) => {
-        const target = {}
-        Object.keys(a).forEach(k => target[k] = a[k])
+    /**
+     * deep merge objects and if some values are arrays, merge those accordingly
+     * @param a
+     * @param b
+     * @returns {any}
+     */
+    export const merge = (a: any = {}, b: any) => {
         Object.keys(b).forEach(k => {
-            if (target[k] && Array.isArray(b[k])) {
-                target[k].push(...(b[k] as T[]))
+            const ak = a[k],
+                  bk = b[k]
+            if (Array.isArray(ak)) {
+                ak.push(...bk)
+            } else if (isObject(ak)) {
+                merge(ak, bk)
             } else {
-                target[k] = b[k]
+                a[k] = bk
             }
         })
-        return target
     }
 
     export function collectAnnotationsFromTypeMap<T, P extends Object>(map: WeakMap<P, TypedMap<TypeOrArray<T>>>, start: P): TypedMap<TypeOrArray<T>> {
@@ -65,29 +74,17 @@ module feather.objects {
             return {}
         }
         const proto = Object.getPrototypeOf(start)
-        let handlers: TypedMap<TypeOrArray<T>> = map.get(proto) || {}
+        const handlers: TypedMap<TypeOrArray<T>> = map.get(proto) || {}
         if (proto) {
-            handlers = mergeArrayTypedMap(handlers, collectAnnotationsFromTypeMap(map, proto))
+            merge(handlers, collectAnnotationsFromTypeMap(map, proto))
         }
         return handlers
     }
 
-    export type ObjectChange = (val: any) => void
-    export type Callback = () => void
-
     const objectCallbacks = new WeakMap<any, TypedMap<Array<ObjectChange>>>()
 
-    const ensureListeners = (obj: {}, property: string, callback: ObjectChange) => {
-        let callbacks = objectCallbacks.get(obj)
-        if (typeof callbacks === 'undefined') {
-            objectCallbacks.set(obj, callbacks = {})
-        }
-        if (!callbacks[property]) {
-            callbacks[property] = []
-        }
-        callbacks[property].push(callback)
-        return callbacks[property]
-    }
+    const ensureListeners = (obj: {}, property: string, callback: ObjectChange) =>
+        ensure(objectCallbacks, obj, {[property]: [callback]})[property]
 
     const addPropertyListener = (obj: {}, property: string, callback: Callback) => {
         const callbacks = ensureListeners(obj, property, callback),
@@ -125,14 +122,31 @@ module feather.objects {
             obj.forEach(i => listenToObjectOrArray(i, callback))
             observeArray(obj, {
                 sort: callback,
-                splice: (s, d, items: any[], dels: any[]) => {
+                splice: (s, d, addedItems: any[], deletedItems: any[]) => {
                     callback()
-                    items.forEach(i =>
+                    addedItems.forEach(i =>
                        listenToObjectOrArray(i, callback)
                     )
-                    dels.forEach(i => objectCallbacks.delete(i))
+                    deletedItems.forEach(i => objectCallbacks.delete(i))
                 }
             })
         }
     }
+
+    export const ensure = <T>(map: WeakMap<{}, T>,
+                              obj: any,
+                              defaultValue: any): T => {
+        let lookup: any = map.get(obj)
+        if (!lookup) {
+            map.set(obj, lookup = defaultValue)
+        } else if (Array.isArray(lookup) && Array.isArray(defaultValue)) {
+            lookup.push(...defaultValue)
+        } else if (isObject(lookup)) {
+            merge(lookup, defaultValue)
+        }
+        return lookup
+    }
+
+    export const getOrCreate = <T>(store: Map<any, T>, property: string, factory: Factory<T>) =>
+        store[property] || (store[property] = factory())
 }

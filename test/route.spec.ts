@@ -20,7 +20,6 @@ describe('Routes', () => {
         spy.should.have.been.calledOnce
         spy.should.have.been.calledOn(window.app)
         spy.should.have.been.calledWith({})
-        spy.restore()
     })
 
     it('after navigation event', () => {
@@ -31,6 +30,5 @@ describe('Routes', () => {
         spy.should.have.been.calledOnce
         spy.should.have.been.calledOn(window.app)
         spy.should.have.been.calledWith({})
-        spy.restore()
     })
 })

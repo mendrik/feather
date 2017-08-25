@@ -3,7 +3,7 @@ module feather.hub {
     import TypedMap      = feather.types.TypedMap
     import EventAware    = feather.event.EventAware
     import flatten       = feather.arrays.flatten
-    import ensure        = feather.functions.ensure
+    import ensure        = feather.objects.ensure
     import collect       = feather.objects.collectAnnotationsFromTypeMap
     import WidgetFactory = feather.boot.WidgetFactory
 
@@ -51,11 +51,6 @@ module feather.hub {
         }
     }
 
-    export let Subscribe = (event: string) => (proto: Subscribable, method: string) => {
-        const s = ensure(subscribers, proto, {})
-        if (!s[event]) {
-            s[event] = []
-        }
-        s[event].push(new Subscriber(event, method))
-    }
+    export let Subscribe = (event: string) => (proto: Subscribable, method: string) =>
+        ensure(subscribers, proto, {[event]: [new Subscriber(event, method)]})
 }

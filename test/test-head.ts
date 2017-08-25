@@ -9,7 +9,7 @@ const fs = require('fs'),
 
 const {JSDOM} = jsdom
 const virtualConsole = new jsdom.VirtualConsole()
-// virtualConsole.sendTo(console, {omitJSDOMErrors: true})
+virtualConsole.sendTo(console, {omitJSDOMErrors: true})
 
 import * as chai from 'chai'
 
@@ -41,6 +41,11 @@ const loadPage = (callback: Function) => {
     window.XMLHttpRequest = sinon.useFakeXMLHttpRequest()
     window.requestAnimationFrame = (func) => func();
     sinon.xhr.supportsCORS = true
+
+    window['localStorage'] = {
+        getItem: (key: string) => this[key],
+        setItem: (key: string, val: any) => this[key] = val
+    }
 
     const server = module.exports.server = sinon.fakeServer.create({
         autoRespond: true,

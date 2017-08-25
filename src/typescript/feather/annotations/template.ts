@@ -5,7 +5,7 @@ module feather.annotations {
     import from          = feather.arrays.from
     import allChildNodes = feather.dom.allChildNodes
     import collect       = feather.objects.collectAnnotationsFromTypeMap
-    import ensure        = feather.functions.ensure;
+    import ensure        = feather.objects.ensure
 
     const supportsTemplate       = 'content' in document.createElement('template') && 'firstElementChild' in document.createDocumentFragment()
     const CURLIES                = /{{(.*?)}}/
@@ -130,8 +130,7 @@ module feather.annotations {
     }
 
     export let Template = (name: string = 'default', warmUp = true) => (proto: Widget, method: string) => {
-        const widgetTemplates = ensure(templates, proto, {})
-        widgetTemplates[name] = proto[method]
+        ensure(templates, proto, {[name]: proto[method]})
         if (warmUp) {
             try {
                 const str = proto[method].call({})

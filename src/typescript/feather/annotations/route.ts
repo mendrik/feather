@@ -5,7 +5,7 @@ module feather.routing {
     import Subscribable    = feather.hub.Subscribable
     import namedRegexMatch = feather.strings.namedRegexMatch
     import collect         = feather.objects.collectAnnotationsFromArray
-    import ensure          = feather.functions.ensure
+    import ensure          = feather.objects.ensure
 
     interface RouteConfig {
         route:   string,

@@ -12,7 +12,6 @@ module feather.observe {
     import insertBefore        = feather.dom.insertBefore
     import getInheritedMethods = feather.functions.getInheritedMethods
     import isFunction          = feather.functions.isFunction
-    import FuncOne             = feather.functions.FuncOne
     import compose             = feather.functions.compose
     import RouteAware          = feather.routing.RouteAware
     import notifyListeners     = feather.arrays.notifyListeners
@@ -23,9 +22,11 @@ module feather.observe {
     import patch               = feather.arrays.patch
     import removeFromArray     = feather.arrays.removeFromArray
     import deepValue           = feather.objects.deepValue
-    import ensure              = feather.functions.ensure
+    import ensure              = feather.objects.ensure
     import collect             = feather.objects.collectAnnotationsFromTypeMap
     import observe             = feather.objects.createObjectPropertyListener
+    import getOrCreate         = feather.objects.getOrCreate
+    import FnOne               = feather.types.FnOne
 
     const boundProperties      = new WeakMap<Observable, TypedMap<Function[]>>()
     const binders              = new WeakMap<Observable, TypedMap<BindProperties>>()
@@ -127,7 +128,12 @@ module feather.observe {
         }
     }
 
-    function bindBoolean(property: string, value: any, hook: Hook, transform: FuncOne, conf: BindProperties, createListener: Function) {
+    function bindBoolean(property: string,
+                         value: any,
+                         hook: Hook,
+                         transform: FnOne,
+                         conf: BindProperties,
+                         createListener: Function) {
         if (hook.type === HookType.ATTRIBUTE || hook.type === HookType.PROPERTY) {
 
             const el = (hook.node as HTMLElement),
@@ -154,7 +160,12 @@ module feather.observe {
         }
     }
 
-    function bindStringOrNumber(property: string, value: string|number, hook: Hook, transform: FuncOne, conf: BindProperties, createListener: Function) {
+    function bindStringOrNumber(property: string,
+                                value: string|number,
+                                hook: Hook,
+                                transform: FnOne,
+                                conf: BindProperties,
+                                createListener: Function) {
         const widget = this,
               el     = hook.node as HTMLElement
 
@@ -186,7 +197,7 @@ module feather.observe {
         } else if (hook.type === HookType.ATTRIBUTE || hook.type === HookType.PROPERTY) { // <p style="{{myvar}}" {{hidden}}>text goes here</p>
             const attributeName = hook.text || property,
                   updateDom = (val) => {
-                      const formatted = transform(val)
+                      const formatted: string = transform(val)
                       setOrRemoveAttribute(el, attributeName, typeof formatted !== 'undefined', formatted)
                       return updateDom
                   }
@@ -238,7 +249,7 @@ module feather.observe {
         arr.push(...removed)
     }
 
-    function createDeepObserver(path: string, hook: Hook, transform: FuncOne) {
+    function createDeepObserver(path: string, hook: Hook, transform: FnOne) {
         const dummyCreate = (newVal) => (a, b, c, callback) => dummyCreate,
               rootProperty = path.split('.').shift(),
               initialValue = deepValue(this, path),
@@ -259,7 +270,7 @@ module feather.observe {
         observe(this, path, update(initialValue))
     }
 
-    function createObserver(property: string, value: Primitive, hook: Hook, conf: BindProperties, transform: FuncOne) {
+    function createObserver(property: string, value: Primitive, hook: Hook, conf: BindProperties, transform: FnOne) {
         const typeOfValue = Array.isArray(value) ? 'array' : (typeof value).toLowerCase(),
               initialValue = this[property]
         if (/boolean/.test(typeOfValue)) {
@@ -358,8 +369,8 @@ module feather.observe {
 
                 const fm: (s) => string = context.findMethod.bind(context),
                       transform  = compose<any>(transformFns
-                              .map(fm)
-                              .map(method => context[method].bind(context)))
+                                   .map(fm)
+                                   .map(method => context[method].bind(context)))
 
                 if (~property.indexOf('.')) {
                     value = deepValue(this, property)
@@ -409,60 +420,36 @@ module feather.observe {
 
         // attributes are case insensitive, so let's try to find the matching property like this
         findProperty(ci: string): string {
-            let prop = attributeMapper[ci]
-            if (!prop) {
-                prop = Object.getOwnPropertyNames(this)
+            return getOrCreate(attributeMapper, ci, () =>
+                Object.getOwnPropertyNames(this)
                     .find(p => p.toLowerCase() === ci.toLowerCase()) || ci
-                attributeMapper[ci] = prop
-            }
-            return prop
+            )
         }
 
         findMethod(ci: string): string {
-            let prop = attributeMapper[ci]
-            if (!prop) {
-                prop = getInheritedMethods(this)
+            return getOrCreate(attributeMapper, ci, () =>
+                getInheritedMethods(this)
                     .find(p => p.toLowerCase() === ci.toLowerCase()) || ci
-                attributeMapper[ci] = prop
-            }
-            if (!this[prop]) {
-                throw Error(`Couldn't find method '${ci}'`)
-            }
-            return prop
+            )
         }
     }
 
     export const Bind = (props?: BindProperties) => (proto: Observable, property: string) => {
         const defProps: BindProperties = {templateName: 'default', localStorage: false, changeOn: [], html: false},
-              finalProps               = props ? {...defProps, ...props} : {...defProps},
-              protoBinders             = binders.get(proto)
-
-        if (!protoBinders) {
-            binders.set(proto, {
-                [property]: finalProps
-            })
-        } else {
-            protoBinders[property] = finalProps
-        }
+              finalProps               = props ? {...defProps, ...props} : {...defProps}
+        ensure(binders, proto, {[property]: finalProps})
     }
 
-    interface Serializer {
+    export interface Serializer {
         write?: string,
         read?: string
     }
 
-    const ensureMap = (proto: Observable, property): Serializer => {
-        const map = ensure(serializers, proto, {})
-        if (!map[property]) {
-            map[property] = {}
-        }
-        return map[property]
+    export const Write = (arrayName: string) => (proto: Observable, method: string) => {
+        ensure(serializers, proto, {[arrayName]: {write: method}})
     }
 
-    export const Write = (arrayName: string) => (proto, property: string) => {
-        ensureMap(proto, arrayName).write = property
-    }
-    export const Read = (arrayName: string) => (proto, property: string) => {
-        ensureMap(proto, arrayName).read = property
+    export const Read = (arrayName: string) => (proto: Observable, method: string) => {
+        ensure(serializers, proto, {[arrayName]: {read: proto[method]}})
     }
 }

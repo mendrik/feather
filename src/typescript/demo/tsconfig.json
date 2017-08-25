@@ -20,7 +20,7 @@
   "files": [
     "helpers/array-element.ts",
     "helpers/widget.ts",
-    "helpers/inheritence.ts",
+    "helpers/inheritance.ts",
     "helpers/attribute-widget.ts",
     "app/boolean.ts",
     "app/string.ts",

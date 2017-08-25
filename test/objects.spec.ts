@@ -196,5 +196,23 @@ describe('Objects', () => {
             spy.should.have.been.calledTwice
             spy.reset()
         })
+
+        it('MergeArrayTypedMap', () => {
+            const merge = feather.objects.merge;
+            const a = {a: 1, b: 2}
+            const b = {c: 3, d: 4}
+            merge(a, b)
+            expect(a).to.be.deep.equal({a: 1, b: 2, c: 3, d: 4})
+
+            const c = {a: [1,2], b: [1,2]}
+            const d = {a: [3,4], b: [3,4]}
+            merge(c, d)
+            expect(c).to.be.deep.equal({a: [1, 2, 3, 4], b: [1, 2, 3, 4]})
+
+            const e = {a: {b: [1]}}
+            const f = {a: {b: [2]}}
+            merge(e, f)
+            expect(e).to.be.deep.equal({a: {b: [1, 2]}})
+        })
     })
 })
