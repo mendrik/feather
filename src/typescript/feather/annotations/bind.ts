@@ -32,10 +32,7 @@ module feather.observe {
     const serializers          = new WeakMap<Observable, TypedMap<Serializer>>()
     const parentArrays         = new WeakMap<Observable, Observable[]>()
     const attributeMapper      = {} as Map<string, string>
-
-    const isBoolean            = /boolean/.compile()
-    const isStringNumberNull   = /string|number|undefined/.compile()
-    const isArray              = /array/.compile()
+    const storeQueue           =  new WeakMap<any, any>()
 
     export interface BindProperties {
         templateName?: string   // when pushing new widgets into an array, the template name to render the children with
@@ -90,13 +87,23 @@ module feather.observe {
         }
     }
 
+    const store = (parent, property, value) =>
+        localStorage.setItem(getPath(parent, property), JSON.stringify({value}))
+
     const maybeStore = (parent: Observable, property: string, conf: BindProperties, value: any, isArray: boolean) => {
         if (conf && conf.localStorage) {
             if (isArray) {
-                const serializer = collect(serializers, parent)[property] as Serializer
-                value = value.map(parent[serializer.write])
+                if (storeQueue.has(value)) {
+                    clearTimeout(storeQueue.get(value))
+                }
+                storeQueue.set(value, setTimeout(() => {
+                    const serializer = collect(serializers, parent)[property] as Serializer
+                    value = value.map(parent[serializer.write])
+                    store(parent, property, value)
+                }, 50))
+            } else {
+                store(parent, property, value)
             }
-            localStorage.setItem(getPath(parent, property), JSON.stringify({value}))
         }
     }
 
@@ -312,7 +319,7 @@ module feather.observe {
               original: Widget[] = this[property],
               parent             = hook.node as HTMLElement
 
-        const syncProxy = () => {
+        const syncProxy = (sort: boolean) => {
 
                 const target = original.filter(filterFactory()),
                       p      = patch(target, proxy)
@@ -320,10 +327,12 @@ module feather.observe {
                       place,
                       proxyIndices,
                       needSorting,
-                      addLength
+                      addLength,
+                      delLength
 
+                delLength = p.remove.length
                 // let's remove excess elements from UI and proxy array
-                if (p.remove.length) {
+                if (delLength) {
                     removeFromArray(proxy, p.remove)
                     removeFromArray(parentWidget.childWidgets, p.remove)
                     for (const w of p.remove) {
@@ -349,21 +358,23 @@ module feather.observe {
 
                 // now let's check if some of the elements need repositioning
                 // we use longest increasing sequence to reduce the amount of repositioning
-                proxyIndices = proxy.map(x => target.indexOf(x))
-                needSorting = diff(proxyIndices, lis(proxyIndices)).sort((a, b) => b - a)
-                for (let i = 0, n = needSorting.length; i < n; i++) {
-                    outOfPlace = target[needSorting[i]]
-                    place = target[needSorting[i] + 1]
-                    parent.insertBefore(outOfPlace.element, place ? place.element : null)
+                if (addLength || delLength || sort) {
+                    proxyIndices = proxy.map(x => target.indexOf(x))
+                    needSorting = diff(proxyIndices, lis(proxyIndices)).sort((a, b) => b - a)
+                    for (let i = 0, n = needSorting.length; i < n; i++) {
+                        outOfPlace = target[needSorting[i]]
+                        place = target[needSorting[i] + 1]
+                        parent.insertBefore(outOfPlace.element, place ? place.element : null)
+                    }
+                    proxy.splice(0, proxy.length, ...target)
                 }
-                proxy.splice(0, proxy.length, ...target)
             }
-        syncProxy()
+        syncProxy(true)
         observeArray(original, {
-            sort: syncProxy,
+            sort: () => syncProxy(true),
             splice: (i, d, added, deleted) => {
                 destroyListeners(deleted)
-                syncProxy()
+                syncProxy(false)
             }
         })
 

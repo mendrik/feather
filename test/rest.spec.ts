@@ -36,8 +36,6 @@ describe('XHR', () => {
                 response: true,
                 method: 'GET'
             })
-
-            spy.restore()
         })
 
         it('POST fetches data', () => {
@@ -51,8 +49,6 @@ describe('XHR', () => {
                 response: true,
                 method: 'POST'
             })
-
-            spy.restore()
         })
     })
 })
