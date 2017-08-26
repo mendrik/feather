@@ -9,7 +9,7 @@ const fs = require('fs'),
 
 const {JSDOM} = jsdom
 const virtualConsole = new jsdom.VirtualConsole()
-// virtualConsole.sendTo(console, {omitJSDOMErrors: true})
+virtualConsole.sendTo(console, {omitJSDOMErrors: true})
 
 import * as chai from 'chai'
 

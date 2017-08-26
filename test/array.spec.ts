@@ -99,18 +99,21 @@ describe('Arrays', () => {
             const range = feather.arrays.range;
             const remove = feather.arrays.removeFromArray;
 
-            const a = [1,2,3,4],
-                  b = [1,2,3,4],
-                  c = [1,2,3,4],
-                  d = [1,2,3,4]
+            const a = [1, 2, 3, 4],
+                b = [1, 2, 3, 4],
+                c = [1, 2, 3, 4],
+                d = [1, 2, 3, 4],
+                e = [1, 2, 3, 4]
             remove(a, [4])
             remove(b, [1])
-            remove(c, [1,4])
-            remove(d, [1,2,3, 4])
+            remove(c, [1, 4])
+            remove(d, [1, 2, 3, 4])
+            remove(e, [])
             expect(a).to.be.deep.equal([1, 2, 3])
             expect(b).to.be.deep.equal([2, 3, 4])
             expect(c).to.be.deep.equal([2, 3])
             expect(d).to.be.deep.equal([])
+            expect(e).to.be.deep.equal([1, 2, 3, 4])
 
             const r1 = range(1, 10),
                   r2 = range(3, 7)

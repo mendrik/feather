@@ -13,7 +13,6 @@ module feather.observe {
     import ArrayListener       = feather.arrays.ArrayListener
     import from                = feather.arrays.from
     import notifyListeners     = feather.arrays.notifyListeners
-    import changeArrayListener = feather.arrays.changeArrayListener
     import lis                 = feather.arrays.lis
     import diff                = feather.arrays.diff
     import patch               = feather.arrays.patch
@@ -31,6 +30,7 @@ module feather.observe {
     const boundProperties      = new WeakMap<Observable, TypedMap<Function[]>>()
     const binders              = new WeakMap<Observable, TypedMap<BindProperties>>()
     const serializers          = new WeakMap<Observable, TypedMap<Serializer>>()
+    const parentArrays         = new WeakMap<Observable, Observable[]>()
     const attributeMapper      = {} as Map<string, string>
 
     export interface BindProperties {
@@ -49,13 +49,16 @@ module feather.observe {
         }
     }
 
-    const triggerParentArray = (obj: Observable) => {
-        if (obj.parentWidget) {
-            const parent = obj.parentWidget
-            for (const key of Object.keys(parent)) {
-                notifyListeners(parent[key])
-            }
+    const setParentArray = (arr: any[], widgets: Observable[]) => {
+        for (const w of widgets) {
+            parentArrays.set(w, arr)
+            setParentArray(arr, w.childWidgets as Observable[])
         }
+    }
+
+    const triggerParentArray = (obj: Observable) => {
+        const parentArray = parentArrays.get(obj)
+        parentArray && notifyListeners(parentArray)
     }
 
     const getWidgetId = (w: any) => {
@@ -76,6 +79,8 @@ module feather.observe {
         for (const w of widgets) {
             w.cleanUp()
             boundProperties.delete(w)
+            parentArrays.delete(w)
+            destroyListeners(...w.childWidgets as Observable[])
         }
     }
 
@@ -95,12 +100,23 @@ module feather.observe {
                             cb: OldNewCallback<Primitive>) {
         let value = obj[property]
 
-        if (Array.isArray(value)) { // arrays are special case so we sort of fake getters and setters
-            observeArray(value, changeArrayListener(() => {
+        // arrays are special case so we sort of fake getters and setters
+        if (Array.isArray(value)) {
+            // this is for arrays transformed to strings or booleans
+            const proxyCallback = () => {
                 cb(value)
-                triggerParentArray(obj)
                 maybeStore(obj, property, conf, value, true)
-            }))
+            }
+            observeArray(value, {
+                sort: proxyCallback,
+                splice: (i, dc, a, d) => {
+                    for (const w of a) {
+                        parentArrays.set(w, value)
+                    }
+                    destroyListeners(...d)
+                    proxyCallback()
+                }
+            })
         } else {
             const listeners = ensure(boundProperties, obj, {[property]: [cb]})
             Object.defineProperty(obj, property, {
@@ -227,11 +243,12 @@ module feather.observe {
 
                 if (added.length) {
                     const frag = document.createDocumentFragment()
+                    childWidgets.push(...added)
                     for (const item of added) {
                         item.parentWidget = widget
                         item.appendTemplateRoot(frag, conf.templateName)
+                        setParentArray(this, [item])
                     }
-                    childWidgets.push(...added)
                     el.insertBefore(frag, el.children[index])
                 }
             }
@@ -281,8 +298,12 @@ module feather.observe {
         }
     }
 
-    function createFilteredArrayProxy(property: string, hook: Hook, conf: BindProperties,
-                                      filterFactory: () => (widget: Widget) => boolean) {
+    type FilterFactory = () => (widget: Widget) => boolean
+
+    function createFilteredArrayProxy(property: string,
+                                      hook: Hook,
+                                      conf: BindProperties,
+                                      filterFactory: FilterFactory) {
 
         const parentWidget       = this as Widget,
               proxy: Widget[]    = [],
@@ -310,11 +331,12 @@ module feather.observe {
 
                 if (addLength) {
                     const doc = addLength !== 1 ? document.createDocumentFragment() : parent
+                    parentWidget.childWidgets.push(...p.add)
                     for (const w of p.add) {
                         w.parentWidget = parentWidget
                         w.appendTemplateRoot(doc, conf.templateName)
+                        setParentArray(original, [w])
                     }
-                    parentWidget.childWidgets.push(...p.add)
                     // let's add missing elements to UI and array in one go to the end of the list
                     if (addLength !== 1) {
                         parent.appendChild(doc)
@@ -323,6 +345,7 @@ module feather.observe {
                 }
 
                 // now let's check if some of the elements need repositioning
+                // we use longest increasing sequence to reduce the amount of repositioning
                 proxyIndices = proxy.map(x => target.indexOf(x))
                 needSorting = diff(proxyIndices, lis(proxyIndices)).sort((a, b) => b - a)
                 for (let i = 0, n = needSorting.length; i < n; i++) {

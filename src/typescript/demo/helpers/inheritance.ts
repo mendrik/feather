@@ -22,6 +22,7 @@ module demo {
 
         @Bind({}) person: Person
         @Bind({localStorage: true}) people: Person[] = []
+        @Bind({templateName: 'minimal'}) elements: ArrayElement[] = []
 
         constructor() {
             super();
@@ -49,6 +50,7 @@ module demo {
                     <div id="person" siblingsLength={{person.siblings:sizeOfArray}} uncles={{person.mother.siblings:sizeOfArray}}>{{person.name}}</div>
                     <div id="mother">{{person.mother.name}}</div>
                     <div id="sibling-names">{{person.siblings:names}}</div>
+                    <ul {{elements}}></ul>
                 </div>
             `)
         }

@@ -1,9 +1,6 @@
 module feather.arrays {
 
-    import Callback = feather.types.Callback
-
     type MethodKey  = 'sort' | 'splice'
-
     const observers = new WeakMap<any[], ArrayListener<any>[]>()
 
     export interface ArrayListener<T> {
@@ -39,15 +36,15 @@ module feather.arrays {
         }
     }
 
-    function createProperty<T>(key: MethodKey, arr: any) {
-        const old       = arr[key],
-              listeners = observers.get(arr),
-              notifyListenersWithArgs = (arr, method: MethodKey, args: any[]) => {
-                  for (const listener of listeners) {
-                      listener[method].apply(arr, args)
-                  }
-            }
+    const notifyListenersWithArgs = (arr, method: MethodKey, args: any[]) => {
+        const listeners = observers.get(arr)
+        for (const listener of listeners) {
+            listener[method].apply(arr, args)
+        }
+    }
 
+    function createProperty<T>(key: MethodKey, arr: any) {
+        const old       = arr[key]
         if (key === 'splice') {
             // add docs that removing and re-adding elements to the same array kills event listeners
             arr.splice = (index, deleteCount, ...addedItems) => {
@@ -86,14 +83,12 @@ module feather.arrays {
         remove: T[]
     }
 
-    export function patch<T>(target: T[], current: T[]): Patch<T> {
-        return {
-            add: diff(target, current),
-            remove: diff(current, target)
-        }
-    }
+    export const patch = <T>(target: T[], current: T[]): Patch<T> => ({
+        add: diff(target, current),
+        remove: diff(current, target)
+    })
 
-    export function range(start: number, end: number): number[] {
+    export const range = (start: number, end: number): number[] => {
         const len = end - start + 1,
               arr = new Array<number>(len)
         for (let i = 0, l = arr.length; i < l; i++) {
@@ -103,7 +98,7 @@ module feather.arrays {
     }
 
     // essentially we can reduce array modifying functions to two implementations: sort and splice
-    export function observeArray<T>(arr: T[], listener: ArrayListener<T>) {
+    export const observeArray = <T>(arr: T[], listener: ArrayListener<T>) => {
         const listeners = observers.get(arr)
         if (!listeners) {
             observers.set(arr, [listener])
@@ -136,14 +131,7 @@ module feather.arrays {
         }
     }
 
-    export function changeArrayListener(cb: Callback): ArrayListener<any> {
-        return {
-            sort:    cb,
-            splice:  cb
-        }
-    }
-
-    export function lis(x: number[]) {
+    export const lis = (x: number[]): number[] => {
         const n = x.length,
               len = new Array(n),
               pred = new Array(n)
