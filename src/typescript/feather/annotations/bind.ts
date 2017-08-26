@@ -33,6 +33,10 @@ module feather.observe {
     const parentArrays         = new WeakMap<Observable, Observable[]>()
     const attributeMapper      = {} as Map<string, string>
 
+    const isBoolean            = /boolean/.compile()
+    const isStringNumberNull   = /string|number|undefined/.compile()
+    const isArray              = /array/.compile()
+
     export interface BindProperties {
         templateName?: string   // when pushing new widgets into an array, the template name to render the children with
         changeOn?:     string[] // list of property names that trigger an array update
@@ -52,7 +56,9 @@ module feather.observe {
     const setParentArray = (arr: any[], widgets: Observable[]) => {
         for (const w of widgets) {
             parentArrays.set(w, arr)
-            setParentArray(arr, w.childWidgets as Observable[])
+            if (w.childWidgets) {
+                setParentArray(arr, w.childWidgets as Observable[])
+            }
         }
     }
 
@@ -75,12 +81,12 @@ module feather.observe {
         return segments.join('.')
     }
 
-    const destroyListeners = (...widgets: Observable[]) => {
+    const destroyListeners = (widgets: Observable[]) => {
         for (const w of widgets) {
             w.cleanUp()
             boundProperties.delete(w)
             parentArrays.delete(w)
-            destroyListeners(...w.childWidgets as Observable[])
+            destroyListeners(w.childWidgets as Observable[])
         }
     }
 
@@ -109,20 +115,16 @@ module feather.observe {
             }
             observeArray(value, {
                 sort: proxyCallback,
-                splice: (i, dc, a, d) => {
-                    for (const w of a) {
-                        parentArrays.set(w, value)
-                    }
-                    destroyListeners(...d)
+                splice: (i, dc, added, deleted) => {
+                    setParentArray(value, added)
+                    destroyListeners(deleted)
                     proxyCallback()
                 }
             })
         } else {
             const listeners = ensure(boundProperties, obj, {[property]: [cb]})
             Object.defineProperty(obj, property, {
-                get: function () {
-                    return value
-                },
+                get: () => value,
                 set: (newValue: any) => {
                     if (newValue !== value) {
                         maybeStore(obj, property, conf, newValue, false)
@@ -148,23 +150,22 @@ module feather.observe {
         if (hook.type === HookType.ATTRIBUTE || hook.type === HookType.PROPERTY) {
 
             const el = (hook.node as HTMLElement),
-                  attributeName = hook.text || property
+                  attributeName = hook.text || property,
+                  updateDom = (val) => {
+                      if (typeof el[attributeName] === 'boolean') {
+                          el[attributeName] = !!transform(val)
+                      } else {
+                          setOrRemoveAttribute(el, attributeName, !!transform(val), '')
+                      }
+                      return updateDom
+                  }
 
             if (!hook.text) {
                 el.removeAttribute(`{{${hook.curly}}}`)
             } else {
                 el.setAttribute(hook.text, '')
             }
-
-            createListener(this, conf, property, function updateDom(val) {
-                if (typeof el[attributeName] === 'boolean') {
-                    el[attributeName] = !!transform(val)
-                } else {
-                    setOrRemoveAttribute(el, attributeName, !!transform(val), '')
-                }
-                return updateDom
-            }(value))
-
+            createListener(this, conf, property, updateDom(value))
         } else {
             throw Error('Bool value can only be bound to attributes ie. hidden="{{myBool}}. ' +
                 'Consider using filters to convert them to strings (true|false|yes|no etc)"')
@@ -239,7 +240,7 @@ module feather.observe {
                 const childWidgets = widget.childWidgets
 
                 feather.arrays.removeFromArray(childWidgets, deleted)
-                destroyListeners(...deleted)
+                destroyListeners(deleted)
 
                 if (added.length) {
                     const frag = document.createDocumentFragment()
@@ -247,8 +248,8 @@ module feather.observe {
                     for (const item of added) {
                         item.parentWidget = widget
                         item.appendTemplateRoot(frag, conf.templateName)
-                        setParentArray(this, [item])
                     }
+                    setParentArray(this, added)
                     el.insertBefore(frag, el.children[index])
                 }
             }
@@ -275,9 +276,10 @@ module feather.observe {
                   } else if (/string|number|undefined/.test(typeOfValue)) {
                       bindStringOrNumber.call(this, null, val, hook, transform, conf, dummyCreate)
                   } else {
-                      console.log('Deeply bound properties only work with primitive types ' +
-                          '(string, number, boolean). For arrays you can use a transformer: ' +
-                          '{{var:myTransformer}}?')
+                      console.log(
+                          'Deeply bound properties work only with strings, numbers or booleans. ' +
+                          'For arrays you can use a transformer: {{var:myTransformer}}?'
+                      )
                   }
                   return update
               }
@@ -335,8 +337,8 @@ module feather.observe {
                     for (const w of p.add) {
                         w.parentWidget = parentWidget
                         w.appendTemplateRoot(doc, conf.templateName)
-                        setParentArray(original, [w])
                     }
+                    setParentArray(original, p.add)
                     // let's add missing elements to UI and array in one go to the end of the list
                     if (addLength !== 1) {
                         parent.appendChild(doc)
@@ -358,8 +360,8 @@ module feather.observe {
         syncProxy()
         observeArray(original, {
             sort: syncProxy,
-            splice: (i, d, a, deleted: Widget[] = []) => {
-                destroyListeners(...deleted)
+            splice: (i, d, added, deleted) => {
+                destroyListeners(deleted)
                 syncProxy()
             }
         })

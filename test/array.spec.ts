@@ -87,13 +87,6 @@ describe('Arrays', () => {
         })
     })
 
-    describe('Arrays.flatten', () => {
-        it('should flatten arrays', () => {
-            const r1 = [[1,2],[3,4],[5, [6, 7]]]
-            expect(feather.arrays.flatten(r1)).to.be.deep.equal([1,2,3,4,5,[6,7]])
-        })
-    })
-
     describe('Arrays.removeFromArray', () => {
         it('should remove elements from array', () => {
             const range = feather.arrays.range;

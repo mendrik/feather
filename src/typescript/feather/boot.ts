@@ -52,9 +52,6 @@ module feather.boot {
                     if (info.singleton) {
                         WidgetFactory.singletonRegistry.push(widget)
                     }
-                    if (node.hasAttribute('id')) {
-                        widget.id = node.getAttribute('id')
-                    }
                     if (parentWidget) {
                         widget.parentWidget = parentWidget
                         parentWidget.childWidgets.push(widget)
