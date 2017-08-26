@@ -66,9 +66,9 @@ module feather.observe {
             if (triggerQueue.has(parentArray)) {
                 clearTimeout(triggerQueue.get(parentArray))
             }
-            triggerQueue.set(parentArray, setTimeout(() => {
-                parentArray && notifyListeners(parentArray)
-            }, 5))
+            triggerQueue.set(parentArray,
+                setTimeout(() =>
+                    notifyListeners(parentArray), 5))
         }
     }
 
