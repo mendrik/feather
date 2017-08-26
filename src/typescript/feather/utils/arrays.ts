@@ -20,12 +20,16 @@ module feather.arrays {
     }
 
     export function removeFromArray(arr: any[], elements: any[]) {
-        let deleteCount = 0
+        let deleteCount = 0,
+            total = elements.length
         for (let i = arr.length; i--;) {
             if (~elements.indexOf(arr[i])) {
                 deleteCount++ // optimize removal of consecutive elements
             } else if (deleteCount) {
                 arr.splice(i + 1, deleteCount)
+                if ((total -= deleteCount) === 0) { // if we removed all already, break early
+                    break
+                }
                 deleteCount = 0
             }
         }

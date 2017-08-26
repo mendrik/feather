@@ -41,8 +41,4 @@ module feather.dom {
         } while (walker.nextNode())
         return nodes
     }
-
-    export function insertBefore(parent: Node, el: Node, first: Node = null) {
-        parent.insertBefore(el, first)
-    }
 }

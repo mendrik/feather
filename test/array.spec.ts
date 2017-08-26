@@ -96,24 +96,37 @@ describe('Arrays', () => {
 
     describe('Arrays.removeFromArray', () => {
         it('should remove elements from array', () => {
-            const r1 = feather.arrays.range(1, 10),
-                  r2 = feather.arrays.range(3, 7)
-            feather.arrays.removeFromArray(r1, r2)
+            const range = feather.arrays.range;
+            const remove = feather.arrays.removeFromArray;
+
+            const a = [1,2,3,4],
+                  b = [1,2,3,4],
+                  c = [1,2,3,4]
+            remove(a, [4])
+            remove(b, [1])
+            remove(c, [1,4])
+            expect(a).to.be.deep.equal([1, 2, 3])
+            expect(b).to.be.deep.equal([2, 3, 4])
+            expect(c).to.be.deep.equal([2, 3])
+
+            const r1 = range(1, 10),
+                  r2 = range(3, 7)
+            remove(r1, r2)
             expect(r1).to.be.deep.equal([1, 2, 8, 9, 10])
 
-            const r3 = feather.arrays.range(1, 10),
+            const r3 = range(1, 10),
                   r4 = [1, 3, 5, 7, 9]
-            feather.arrays.removeFromArray(r3, r4)
+            remove(r3, r4)
             expect(r3).to.be.deep.equal([2, 4, 6, 8, 10])
 
-            const r5 = feather.arrays.range(1, 10),
-                  r6 = feather.arrays.range(1, 5)
-            feather.arrays.removeFromArray(r5, r6)
+            const r5 = range(1, 10),
+                  r6 = range(1, 5)
+            remove(r5, r6)
             expect(r5).to.be.deep.equal([6, 7, 8, 9, 10])
 
-            const r7 = feather.arrays.range(1, 10),
-                  r8 = feather.arrays.range(6, 10)
-            feather.arrays.removeFromArray(r7, r8)
+            const r7 = range(1, 10),
+                  r8 = range(6, 10)
+            remove(r7, r8)
             expect(r7).to.be.deep.equal([1, 2, 3, 4, 5])
         })
     })

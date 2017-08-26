@@ -1,33 +1,32 @@
 module feather.observe {
 
     import Widget              = feather.core.Widget
+    import format              = feather.strings.format
+    import RouteAware          = feather.routing.RouteAware
     import Hook                = feather.annotations.Hook
     import HookType            = feather.annotations.HookType
     import TypedMap            = feather.types.TypedMap
+    import FnOne               = feather.types.FnOne
     import Primitive           = feather.types.Primitive
-    import isObject            = feather.objects.isObject
+    import OldNewCallback      = feather.types.OldNewCallback
     import observeArray        = feather.arrays.observeArray
     import ArrayListener       = feather.arrays.ArrayListener
     import from                = feather.arrays.from
-    import insertBefore        = feather.dom.insertBefore
-    import getInheritedMethods = feather.functions.getInheritedMethods
-    import isFunction          = feather.functions.isFunction
-    import compose             = feather.functions.compose
-    import RouteAware          = feather.routing.RouteAware
     import notifyListeners     = feather.arrays.notifyListeners
     import changeArrayListener = feather.arrays.changeArrayListener
-    import format              = feather.strings.format
     import lis                 = feather.arrays.lis
     import diff                = feather.arrays.diff
     import patch               = feather.arrays.patch
     import removeFromArray     = feather.arrays.removeFromArray
+    import getInheritedMethods = feather.functions.getInheritedMethods
+    import isFunction          = feather.functions.isFunction
+    import compose             = feather.functions.compose
+    import isObject            = feather.objects.isObject
     import deepValue           = feather.objects.deepValue
     import ensure              = feather.objects.ensure
     import collect             = feather.objects.collectAnnotationsFromTypeMap
     import observe             = feather.objects.createObjectPropertyListener
     import getOrCreate         = feather.objects.getOrCreate
-    import FnOne               = feather.types.FnOne
-    import OldNewCallback      = feather.types.OldNewCallback
 
     const boundProperties      = new WeakMap<Observable, TypedMap<Function[]>>()
     const binders              = new WeakMap<Observable, TypedMap<BindProperties>>()
@@ -233,7 +232,7 @@ module feather.observe {
                         item.appendTemplateRoot(frag, conf.templateName)
                     }
                     childWidgets.push(...added)
-                    insertBefore(el, frag, el.children[index])
+                    el.insertBefore(frag, el.children[index])
                 }
             }
         }

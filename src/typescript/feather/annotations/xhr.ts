@@ -111,14 +111,12 @@ module feather.xhr {
                 }
             }
             const newParams = {...paramsCopy, url: format(params.url, this, this)} // resolve url params
-            return sendRequest(newParams, desc.value.original.bind(this), (err, xhr) => {
+            return sendRequest(newParams, desc.value.original.bind(this), (err, xhr: XMLHttpRequest) => {
                 if (xhr && xhr.status) {
                     this.triggerDown('xhr-failure-'+xhr.status, err, xhr)
                 } else if (err) {
                     const type = (err as Event).type
                     this.triggerDown('xhr-failure-' + type)
-                } else {
-                    throw new Error(`${err}`)
                 }
             })
         }
