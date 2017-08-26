@@ -1,6 +1,6 @@
 {
     "name": "Feather",
-    "version": "1.1.92",
+    "version": "1.1.93",
     "description": "A tiny single page and widget framework",
     "repository": "https://github.com/mendrik/feather",
     "main": "feather.min.js",

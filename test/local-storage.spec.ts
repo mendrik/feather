@@ -6,7 +6,6 @@ import * as sinon from 'sinon'
 describe('Local storage', () => {
 
     let window, feather, document, sandbox
-    const clock = sinon.useFakeTimers()
     before(done => featherStart(w => (
         window = w,
         feather = w.feather,
@@ -14,13 +13,13 @@ describe('Local storage', () => {
     ) && done()))
 
     beforeEach(() => this.sinon = sandbox = sinon.sandbox.create())
-    afterEach(() => sandbox.restore() && clock.restore())
+    afterEach(() => sandbox.restore())
 
-/*  todo figure out how to fix timeout
     it('Serializes values', () => {
+        const clock = sinon.useFakeTimers()
         const inh = window.inh as demo.Inheritance,
             spy =  this.sinon.spy(inh, 'write'),
-            test = {name: 'Peter Pan'};
+            test = {name: 'Peter Pan'}
         inh.people.push(test)
         clock.tick(100)
         spy.should.have.been.calledOnce
@@ -28,7 +27,6 @@ describe('Local storage', () => {
         const p = JSON.parse(window.localStorage.getItem('Application.Inheritance.people'))
         expect(p.value).to.be.deep.equal([test])
     })
-*/
 
     // todo: deserialize
 

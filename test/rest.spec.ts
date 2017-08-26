@@ -4,7 +4,6 @@ import * as sinon from 'sinon';
 
 describe('XHR', () => {
 
-    const clock = sinon.useFakeTimers()
     let window, feather, sandbox, document
     before(done => featherStart(w => (
         window = w,
@@ -14,7 +13,6 @@ describe('XHR', () => {
 
     beforeEach(() => this.sinon = sandbox = sinon.sandbox.create())
     afterEach(() => sandbox.restore())
-    after(() => clock.restore())
 
     describe('App loads', () => {
 
@@ -27,6 +25,7 @@ describe('XHR', () => {
     describe('Rest', () => {
 
         it('GET fetches data', () => {
+            const clock = sinon.useFakeTimers()
             const app = window.ef as demo.ExtraFeatures,
                   spy = this.sinon.spy(app.getData, 'original')
             app.getData()
@@ -39,6 +38,7 @@ describe('XHR', () => {
         })
 
         it('POST fetches data', () => {
+            const clock = sinon.useFakeTimers()
             const app = window.ef as demo.ExtraFeatures,
                   spy = this.sinon.spy(app.postData, 'original')
 
