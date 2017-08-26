@@ -239,7 +239,7 @@ module feather.observe {
 
                 const childWidgets = widget.childWidgets
 
-                feather.arrays.removeFromArray(childWidgets, deleted)
+                removeFromArray(childWidgets, deleted)
                 destroyListeners(deleted)
 
                 if (added.length) {
@@ -325,6 +325,7 @@ module feather.observe {
                 // let's remove excess elements from UI and proxy array
                 if (p.remove.length) {
                     removeFromArray(proxy, p.remove)
+                    removeFromArray(parentWidget.childWidgets, p.remove)
                     for (const w of p.remove) {
                         parent.removeChild(w.element)
                     }
