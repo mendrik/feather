@@ -33,6 +33,7 @@ module feather.observe {
     const parentArrays         = new WeakMap<Observable, Observable[]>()
     const attributeMapper      = {} as Map<string, string>
     const storeQueue           =  new WeakMap<any, any>()
+    const triggerQueue         =  new WeakMap<any, any>()
 
     export interface BindProperties {
         templateName?: string   // when pushing new widgets into an array, the template name to render the children with
@@ -61,7 +62,14 @@ module feather.observe {
 
     const triggerParentArray = (obj: Observable) => {
         const parentArray = parentArrays.get(obj)
-        parentArray && notifyListeners(parentArray)
+        if (parentArray) {
+            if (triggerQueue.has(parentArray)) {
+                clearTimeout(triggerQueue.get(parentArray))
+            }
+            triggerQueue.set(parentArray, setTimeout(() => {
+                parentArray && notifyListeners(parentArray)
+            }, 5))
+        }
     }
 
     const getWidgetId = (w: any) => {
