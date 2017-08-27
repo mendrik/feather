@@ -186,7 +186,10 @@ you can assign template hooks via object dot notation: ```<div>{{property.x.y.z}
 object will internally be observed so whenever any of the internal values change the template hook
 will be re-rendered (or the object itself for that matter). This also works in combination with inherited 
 bindings ```(@Bind({bequeath: true})``` from parent widgets and transformers: 
-```<div>{{parentProperty.x.y.z:caculate}}</div>```
+```
+<div>{{parentProperty.x.y.z:calculate}}</div>
+```
+
 
 {{< note title="Note" >}}
 Don't confuse inherited properties as class inherited ones. For a child widget to access parent widget's
