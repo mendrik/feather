@@ -58,19 +58,6 @@ Source maps are embedded.
 
 # Performance
 
-Comparison between feather-ts using [this](https://github.com/Raynos/mercury-perf) 
+Comparison between feather-ts using [this](https://github.com/lhorie/todomvc-perf-comparison) 
 
-- Backbone: 331.75999999999976
-- Feather-ts: 158.2350000000015
-- Knockout: 236.8100000000013
-- Ember: 756.8700000000017
-- Angular: 438.4150000000009
-- React: 374.0599999999995
-- Om: 268.04999999999836
-- Om v: 259.09000000000196
-- Ractive: 943.3650000000007
-- Quiescent: 563.8299999999999
-- Mercury: 108.71500000000015
-- Mercury (thunks): 123.29999999999927
-- Elm: 238.43500000000313
-- Likely.js: 308.16999999999825
+<img src="http://dist.feather-ts.com/performance.jpg" style="width: 100%; max-width: 300px">
