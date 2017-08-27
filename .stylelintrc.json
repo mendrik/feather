@@ -1,7 +1,5 @@
 {
-  "plugins": [
-    "stylelint-scss"
-  ],
+  "plugins": [],
   "rules": {
     "block-closing-brace-newline-after": "always",
     "block-closing-brace-newline-before": "always",

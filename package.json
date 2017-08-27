@@ -1,6 +1,6 @@
 {
     "name": "Feather",
-    "version": "1.2.6",
+    "version": "1.2.7",
     "description": "A tiny single page and widget framework",
     "repository": "https://github.com/mendrik/feather",
     "main": "feather.min.js",
@@ -11,18 +11,14 @@
         "build:css": "postcss --c conf/postcss.config.js -o out/stylesheets/feather.css src/pcss/feather.pcss",
         "build:feather": "tsc -d -p src/typescript/feather/tsconfig.json",
         "build:demo": "tsc -d -p src/typescript/demo/tsconfig.json",
-
         "watch:css": "postcss --c conf/postcss.config.js -w -o out/stylesheets/feather.css src/pcss/feather.pcss",
         "watch:feather": "tsc -w -d -p src/typescript/feather/tsconfig.json",
         "watch:demo": "tsc -d -w -p src/typescript/demo/tsconfig.json",
-
         "min:lib": "node conf/uglify-libs.js",
         "min:feather": "npm-run-all min:lib build:feather uglify",
         "uglify": "node conf/uglify.js",
-
         "tslint": "tslint -c conf/tslint.json src/typescript/**/*.ts",
         "pretest": "npm-run-all build:feather build:demo",
-
         "start": "npm-run-all --parallel min:lib watch:feather watch:demo watch:css",
         "build": "npm run min:feather",
         "test": "mocha"
@@ -30,22 +26,22 @@
     "author": "Andreas Prudzilko",
     "license": "ISC",
     "devDependencies": {
-        "@types/chai": "4.0.1",
-        "@types/es6-shim": "0.31.34",
+        "@types/chai": "4.0.4",
+        "@types/es6-shim": "0.31.35",
         "@types/jsdom": "11.0.1",
-        "@types/mocha": "2.2.41",
-        "@types/node": "8.0.17",
+        "@types/mocha": "2.2.42",
+        "@types/node": "8.0.25",
         "@types/power-assert": "1.4.29",
         "@types/sinon": "2.3.3",
-        "@types/sinon-chai": "2.7.28",
+        "@types/sinon-chai": "2.7.29",
         "autoprefixer": "7.1.2",
         "chai": "4.1.1",
         "chai-sinon": "2.8.1",
-        "jsdom": "11.1.0",
-        "mocha": "3.4.2",
-        "mocha-bamboo-reporter": "1.1.1",
+        "jsdom": "11.2.0",
+        "mocha": "3.5.0",
         "nodemon": "1.11.0",
-        "npm-run-all": "^4.0.2",
+        "npm-run-all": "4.1.0",
+        "parse5": "^3.0.2",
         "postcss-clean": "1.0.3",
         "postcss-cli": "4.1.0",
         "postcss-custom-properties": "6.1.0",
@@ -56,14 +52,15 @@
         "power-assert": "1.4.4",
         "precss": "2.0.0",
         "replace": "0.3.0",
-        "sinon": "2.4.1",
-        "sinon-chai": "2.12.0",
+        "sinon": "3.2.1",
+        "sinon-chai": "2.13.0",
         "stylelint": "8.0.0",
         "ts-node": "3.3.0",
         "tslib": "1.7.1",
-        "tslint": "5.6.0",
+        "tslint": "5.7.0",
         "typescript": "2.4.2",
-        "uglify-js": "3.0.28"
+        "uglify-js": "3.0.28",
+        "whatwg-url": "^6.1.0"
     },
     "typeRoots": [
         "./node_modules/@types"
