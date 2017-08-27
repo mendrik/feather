@@ -188,6 +188,12 @@ will be re-rendered (or the object itself for that matter). This also works in c
 bindings (@Bind({bequeath: true)) from parent widgets and transformers: 
 ```<div>{{parentProperty.x.y.z:caculate}}</div>```
 
+{{< note title="Note" >}}
+Don't confuse inherited properties as class inherited ones. For a child widget to access parent widget's
+properties, the widget must be either added to a parent't widget array or referenced somewhere in the
+template rendering hierarchy.
+{{< /note >}}
+
 ## Imports
 
 Feather doesn't use any module loaders, so the imports are written like this:
