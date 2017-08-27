@@ -13,10 +13,12 @@ describe('Deep property bind', () => {
     describe('Deep properties in objects', () => {
 
         it('Binds arrays correctly', () => {
-            const inh = window.inh as demo.Inheritance
-            const personDiv = document.querySelector('#person')
-            const motherDiv = document.querySelector('#mother')
-            const siblingDiv = document.querySelector('#sibling-names')
+            const inh = window.inh as demo.Inheritance,
+                  app = window.app as demo.Application,
+                  personDiv = document.querySelector('#person'),
+                  motherDiv = document.querySelector('#mother'),
+                  siblingDiv = document.querySelector('#sibling-names'),
+                  inheritedObjDiv = document.querySelector('#inherited-object')
             expect(inh.person.siblings.length).to.be.equal(2)
             expect(inh.person.mother.siblings.length).to.be.equal(1)
             expect(personDiv.getAttribute('siblingsLength')).to.be.equal('2')
@@ -30,6 +32,19 @@ describe('Deep property bind', () => {
             expect(siblingDiv.textContent).to.be.equal('Peter')
             inh.person.siblings[0].name = 'Hans'
             expect(siblingDiv.textContent).to.be.equal('Hans')
+            expect(inheritedObjDiv.getAttribute('fullName')).to.be.equal('Gandalf the Wise')
+            expect(inheritedObjDiv.textContent.trim()).to.be.equal('Gandalf the Wise')
+            app.inheritedObject.fullname.name = 'Dumbledore'
+            expect(inheritedObjDiv.getAttribute('fullName')).to.be.equal('Dumbledore the Wise')
+            expect(inheritedObjDiv.textContent.trim()).to.be.equal('Dumbledore the Wise')
+            app.inheritedObject = {
+                fullname: {
+                    name: 'Merlin',
+                    surname: 'the Cunning'
+                }
+            }
+            expect(inheritedObjDiv.getAttribute('fullName')).to.be.equal('Merlin the Cunning')
+            expect(inheritedObjDiv.textContent.trim()).to.be.equal('Merlin the Cunning')
         })
 
         it('Binds properties correctly', () => {

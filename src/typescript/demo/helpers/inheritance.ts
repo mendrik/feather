@@ -50,6 +50,9 @@ module demo {
                     <div id="person" siblingsLength={{person.siblings:sizeOfArray}} uncles={{person.mother.siblings:sizeOfArray}}>{{person.name}}</div>
                     <div id="mother">{{person.mother.name}}</div>
                     <div id="sibling-names">{{person.siblings:names}}</div>
+                    <div id="inherited-object" fullName="{{inheritedObject:fullname}}">
+                        {{inheritedObject.fullname.name}} {{inheritedObject.fullname.surname}}
+                    </div>
                     <ul {{elements}}></ul>
                 </div>
             `)
@@ -60,5 +63,6 @@ module demo {
 
         sizeOfArray = (arr: any[]) => `${arr.length}`
         names = (arr: Person[]) => `${arr.map(p => p.name).join(', ')}`
+        fullname = (obj: any) => `${obj.fullname.name} ${obj.fullname.surname}`
     }
 }

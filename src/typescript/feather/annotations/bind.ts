@@ -421,11 +421,16 @@ module feather.observe {
                       fm           = context.findMethod.bind(context) as (s) => string ,
                       transform    = compose<any>(transformFns
                                      .map(fm)
-                                     .map(method => context[method].bind(context)))
+                                     .map(method => {
+                                         if (!context[method]) {
+                                             throw Error(`Transformer method '${method}' is not defined on ${context}`)
+                                         }
+                                         return context[method].bind(context)
+                                     }))
                 let   value        = this[property],
                       storedValue
 
-                if (~property.indexOf('.')) {
+                if (~property.indexOf('.') || isObject(value) && transformFns.length) {
                     value = deepValue(this, property)
                     if (typeof value === 'undefined') {
                         tryToBindFromParentWidget(this.parentWidget as Observable, this, hook, property)
@@ -433,7 +438,7 @@ module feather.observe {
                         createDeepObserver.call(this, property, hook, transform)
                     }
                     continue
-                } else if (isObject(value)) {
+                } else if (isObject(value) && !transformFns.length) {
                     console.log('Binding to objects is not supported. Use new widgets or specify inner property: x.y.z')
                     continue
                 } else if (isFunction(value)) {

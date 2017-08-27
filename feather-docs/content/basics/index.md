@@ -184,8 +184,9 @@ new ```Widget``` and add it via template strings or push it to a locally bound a
 There is however to possibility to deep bind properties. If a widget property is a complex object,
 you can assign template hooks via object dot notation: ```<div>{{property.x.y.z}}</div>```. This
 object will internally be observed so whenever any of the internal values change the template hook
-will be re-rendered. Even though still experimental and not fully tested, this should work also
-in combination with inherited bindings from parent widgets and transformers.
+will be re-rendered (or the object itself for that matter). This also works in combination with inherited 
+bindings (@Bind({bequeath: true)) from parent widgets and transformers: 
+```<div>{{parentProperty.x.y.z:caculate}}</div>```
 
 ## Imports
 

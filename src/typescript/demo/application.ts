@@ -27,6 +27,12 @@ module demo {
     export class Application extends Widget {
 
         @Bind({bequeath: true}) inheritedString = 'v1'
+        @Bind({bequeath: true}) inheritedObject = {
+            fullname: {
+                name: 'Gandalf',
+                surname: 'the Wise'
+            }
+        }
 
         data = {
             x: 1
