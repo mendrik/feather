@@ -40,7 +40,13 @@ A boolean marker that can be used with ```this.triggerSingleton()```. See more i
 ## @Bind
 
 Allows to data-bind component properties to DOM, which will update your UI whenever the bound property 
-changes.
+changes. When widget are stored in a parent array the array evaluation is buffered. Even though
+you won't have to care much about this, note that this is the only operation in feather-ts that runs 
+asynchronously.
+What this means in practice is that when you change properties of array children in a loop, the 
+array bindings and their transformers will run only once, instead of every time a change on a child occurs.
+This might be useful to know when you write tests, so make sure the evaluation waits for the buffer,
+which is currently set to 5ms.
 
 ```typescript
   @Bind({
@@ -132,12 +138,16 @@ path (resolved through parent widgets). Each path segment is taken from a proper
 a function named like this. If no are present the widget's class name is taken. Make sure the path segments 
 are unique for widget instance.
 
+Local storage serialization is executed after a timeout to not block the rendering queue. Currently the delay is
+set to 50ms.
+
 ### bequeath
 
-This property means that this property can be also bound in child widget templates. This is an easy
+This property means that it can be also bound in child widget templates. This is an easy
 way to render parent properties in child components, without having to rely on @Subscribe to pass around data
-in your application. Filter functions are currently not supported and neither is sharing text node 
-hooks with other widgets. This means if you bind an inherited variable use it alone in a text binding. 
+in your application. However be careful when sharing text node bindings with local ones, since the 
+scope is different only one property can be rendered. This means if you bind parent variables use it solitary in a 
+text binding. Wrong: ```<div>{{parentProperty}} {{localVariable}}</div>``` 
 
 ### html
 
@@ -186,7 +196,7 @@ Small helper if you want to avoid calling ```ev.preventDefault()``` yourself. Sa
 
 ### bubble
 
-If set to true, it Will bubble the dom event beyond the widget's root element. Feather cancels event propagation
+If set to true, it will bubble the dom event beyond the widget's root element. Feather cancels event propagation
 by default so it is possible to have nested Widgets of the same class and scope their events accordingly.
 
 ## @Media
