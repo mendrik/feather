@@ -58,7 +58,7 @@ Source maps are embedded.
 
 # Performance
 
-Comparison feather-ts using [this](https://github.com/lhorie/todomvc-perf-comparison) 
+Comparing feather-ts using [this](https://github.com/lhorie/todomvc-perf-comparison) 
 
 With 500 items:
 
