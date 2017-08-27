@@ -11,7 +11,7 @@ With friendly support of:
 
 This means you can use it now for private projects.
 
-A feather-light and fast* framework written in typescript with the following features:
+A feather-light and fast framework written in typescript with the following features:
 
 * One-directional binding
 * REST consumption

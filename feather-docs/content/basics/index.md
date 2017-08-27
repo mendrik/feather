@@ -141,8 +141,9 @@ Booleans are bound almost the same way as primitives, but there are a few shortc
 ### Arrays
 
 Array bindings are maybe the most important ones, since they allow you map list structures to dom nodes. 
-They can be also used to render different application pages or with transformer functions different 
-mobile/desktop representations of your components.
+They can be also used to render different application pages or different mobile/desktop representations 
+of your components, when using @Media() decorated methods to push different viewport versions into the
+array.
 
 Array hooks can be placed in only one manner:
 
