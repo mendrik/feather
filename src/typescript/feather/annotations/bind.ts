@@ -44,10 +44,14 @@ module feather.observe {
     }
 
     const setOrRemoveAttribute = (el: HTMLElement, attribute: string, condition: boolean, val: string) => {
-        if (condition) {
-            el.setAttribute(attribute, val)
+        if (attribute === 'value') {
+            (el as HTMLInputElement).value = condition ? val : '';
         } else {
-            el.removeAttribute(attribute)
+            if (condition) {
+                el.setAttribute(attribute, val)
+            } else {
+                el.removeAttribute(attribute)
+            }
         }
     }
 
