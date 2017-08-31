@@ -16,9 +16,6 @@ module demo {
             this.stringA = stringA;
         }
 
-        onoff = (b: boolean) => b ? 'on' : 'off'
-        count = (list: number[]) => list.length
-
         @Template('default')
         protected getBaseTemplate() {
             return (`<li class="ae"><span class="{{booleanA:onoff}}">{{stringA}} listCount:{{listX:count}}</span><div class="widget" name="${this.stringA}"></div></li>`)
@@ -35,5 +32,7 @@ module demo {
         }
 
         toUpperCase = (str: string) => str.toUpperCase()
+        onoff = (b: boolean) => b ? 'on' : 'off'
+        count = (list: number[]) => list.length
     }
 }

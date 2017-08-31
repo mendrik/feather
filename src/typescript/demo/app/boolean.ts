@@ -14,21 +14,8 @@ module demo {
         @Bind()
         booleanB = false
 
-
         init(element: HTMLElement) {
             this.render('default')
-        }
-
-        yesno(bool: boolean) {
-            return bool ? 'yes' : 'no'
-        }
-
-        truefalse(bool: boolean) {
-            return bool ? 'true' : 'false'
-        }
-
-        toSelected(bool: boolean) {
-            return bool ? 'selected' : undefined
         }
 
         @Template('default')
@@ -63,5 +50,9 @@ module demo {
                 </table>
             `)
         }
+
+        yesno = (bool: boolean) => bool ? 'yes' : 'no'
+        truefalse = (bool: boolean) => bool ? 'true' : 'false'
+        toSelected = (bool: boolean) => bool ? 'selected' : undefined
     }
 }

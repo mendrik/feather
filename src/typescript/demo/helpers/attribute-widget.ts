@@ -25,13 +25,13 @@ module demo {
             this.render('default')
         }
 
-        yesOrNo = (bool: boolean) => bool ? 'yes' : 'no'
-
         @Template('default')
-        protected getBaseTemplate() {
+        getBaseTemplate() {
             return (`
                 <span text="{{text}}" bool="{{bool:yesOrNo}}" func={{funcResult}} number={{number}} inherited={{inheritedString}}>{{text}}</span>
             `)
         }
+
+        yesOrNo = (bool: boolean) => bool ? 'yes' : 'no'
     }
 }

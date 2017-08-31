@@ -14,17 +14,8 @@ module demo {
         @Bind()
         stringB = 'second'
 
-
         init(element: HTMLElement) {
             this.render('default')
-        }
-
-        uppercase(str: string) {
-            return str.toUpperCase()
-        }
-
-        reverse(str: string) {
-            return str.split('').reverse().join('');
         }
 
         @Template('default')
@@ -59,5 +50,8 @@ module demo {
                 </table>
             `)
         }
+
+        uppercase = (str: string) => str.toUpperCase()
+        reverse = (str: string) => str.split('').reverse().join('');
     }
 }

@@ -22,22 +22,6 @@ module demo {
             this.render('default')
         }
 
-        count(list: Widget[]) {
-            return list.length
-        }
-
-        notZero(list: Widget[]) {
-            return this.count(list) !== 0
-        }
-
-        yesno(b: boolean) {
-            return b ? 'yes' : 'no'
-        }
-
-        onoff(b: boolean) {
-            return b ? 'on' : 'off'
-        }
-
         @Template('default')
         protected getBaseTemplate() {
             return (`
@@ -76,5 +60,10 @@ module demo {
             console.log('Message received')
             this.triggerUp('message-up', 1, 2, 3)
         }
+
+        count = (list: Widget[]) => list.length
+        notZero = (list: Widget[]) => this.count(list) !== 0
+        yesno = (b: boolean) => b ? 'yes' : 'no'
+        onoff = (b: boolean) => b ? 'on' : 'off'
     }
 }
