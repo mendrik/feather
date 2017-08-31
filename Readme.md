@@ -42,6 +42,10 @@ npm install feather-ts --save
 - set experimentalDecorators=true in your *tsconfig.json*
 - older browsers (IE11-) might require polyfills for *classlist*, *treewalker*, *weakmap* and others
 
+## Optional
+
+- Intellij IDEA [plugin](http://dist.feather-ts.com/feather.jar) for syntax highlighting in templates
+
 # Usage
 
 Check out the official [website](http://www.feather-ts.com)
