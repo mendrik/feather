@@ -277,6 +277,8 @@ per single widget if you need to display them in different ways. If the name par
 is set to 'default'. Then you can use this.render() without any arguments, otherwise call this.render(name)
 with name being set to the match the @Template(name) decorator.
 
+Template methods must be methods, do not use arrow function properties.
+
 
 ## @Rest
 

@@ -33,6 +33,8 @@ The framework offers the following features:
 * Support for modern browsers including IE9
 * The initial component hierarchy is created with a document fragment for maximum bootstrap speed.
   
+Intellij IDEA [plugin](http://dist.feather-ts.com/feather.jar) for syntax highlighting in templates
+  
 You can checkout a todomvc demo [here](http://todo.feather-ts.com).
   
 {{< note title="Note" >}}
