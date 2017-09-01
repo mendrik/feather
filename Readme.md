@@ -7,58 +7,57 @@ With friendly support of:
 <a href="http://www.browserstack.com"><img src="http://www.feather-ts.com/images/browserstack.svg" width="92" height="20"></a>
 
 ---
-**THIS PROJECT IS NOW IN ALPHA STAGE**
-
-This means you can use it now for private projects.
-
 A feather-light and fast framework written in typescript with the following features:
 
-* One-directional binding
-* REST consumption
-* Routing with HTML5 history API or URL hashes.
-* Component and singleton messaging
-* DOM event handling
-* Templates are simple HTML
-* Runs on modern browsers and IE9+
-* Integrated media query evaluation in javascript
-* Clean and simple code
-* Local storage integration
-* No promise clutter
-* Internal properties are stored in hidden WeakMaps
-* Less than 10kb gzipped
-* No virtual dom overhead.
+* Each component is holding logic, view and model in a single file
+* Components automatically build a hierarchical tree
+* Message hub between components and singletons
+* Easy REST consumption
+* Routing via hash or history API 
+* Pure HTML templates without logic and a very simple binding syntax
+* Event delegation out of the box
+* Written in TypeScript
+* No module loaders needed embed directly via NPM
+* With asynchronous decorators no need for _promises_
+* Integrated media query based component views for responsive application design
+* Support for modern browsers including IE9 (with polyfills)
+* Component trees are initialized in off-screen document fragments for maximum performance.
+* Access to up-tree properties without repetitive property clutter
 ---
 
 # Installation
 ```
-npm install feather-ts --save
+npm install feather-ts
 ```
 ---
 
 # Requirements
 
-- nodejs
-- typescript
-- set experimentalDecorators=true in your *tsconfig.json*
-- older browsers (IE11-) might require polyfills for *classlist*, *treewalker*, *weakmap* and others
+- NodeJS
+- TypeScript
+- experimentalDecorators=true in your *tsconfig.json*
+- older browsers (IE11-) require polyfills for *classlist*, *treewalker*, *weakmap* and potentially others
 
 ## Optional
 
-- Intellij IDEA [plugin](http://dist.feather-ts.com/feather.jar) for syntax highlighting in templates
+Intellij IDEA [plugin](http://dist.feather-ts.com/feather.jar) for syntax highlighting in templates. This 
+will help you catch spelling errors or wrongly referenced properties inside string literals. 
 
-# Usage
+# Usage & documentation
 
 Check out the official [website](http://www.feather-ts.com)
 
-# TodoMVC
+# Tests
+
+Feather-ts has a large set of automated tests to make sure each release comes without regressive bugs.
+
+# Code examples
 
 An example implementation of the famous todo application can be be found [here](http://todo.feather-ts.com/). 
 Source maps are embedded.
 
-# Work to be done
-
-- Complete documentation and usage examples
-- Evaluate jsx style templates for better IDE support.
+A library of reusable UI components can be found [here](https://github.com/mendrik/feather-components). 
+This is work in progress so use it with care. 
 
 # Performance
 

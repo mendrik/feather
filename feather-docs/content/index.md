@@ -11,35 +11,34 @@ might be of use. With less than 10kb in size it is suited for mobile apps and de
 
 With this framework you will be able to write natural code without too many dogmatic aspects. 
 There is no hidden mess of global state objects, action constants, no hard to follow data messaging 
-between components, but foremost the framework is so lightweight, that your build times will be instantaneous 
-and no server-side rendering is required because the whole application bootstraps in under 200ms.
-
-Feel free to compare the performance and code readability of our todomvc app (link below) to other frameworks.  
+between components but foremost the framework is so lightweight that your build times will be instantaneous 
+and because of its peed no server-side rendering is required.
 
 The framework offers the following features:
 
 * Each component is holding logic, view and model in a single file
 * Components automatically build a hierarchical tree
-* Message hub between components
+* Message hub between components and singletons
 * Easy REST consumption
 * Routing via hash or history API 
-* Very flat learning curve due
-* Logicless templates in pure HTML with very simple binding syntax
+* Pure HTML templates without logic and a very simple binding syntax
 * Event delegation out of the box
 * Written in TypeScript
-* No module loaders needed, embed directly via NPM
-* With aynchronous decorators no need for _promises_
-* Integrated media query based component views
-* Support for modern browsers including IE9
-* The initial component hierarchy is created with a document fragment for maximum bootstrap speed.
+* No module loaders needed embed directly via NPM
+* With asynchronous decorators no need for _promises_
+* Integrated media query based component views for responsive application design
+* Support for modern browsers including IE9 (with polyfills)
+* Component trees are initialized in off-screen document fragments for maximum performance.
+* Access to up-tree properties without repetitive property clutter
   
-Intellij IDEA [plugin](http://dist.feather-ts.com/feather.jar) for syntax highlighting in templates
+Intellij IDEA [plugin](http://dist.feather-ts.com/feather.jar) for syntax highlighting in templates 
+and decorators.
   
 You can checkout a todomvc demo [here](http://todo.feather-ts.com).
   
 {{< note title="Note" >}}
-This project is in its infancy, so if you want something production ready, you
-should probably check out react, angular or any of the myriad of MVC frameworks out there with way
-better documenation and community support than feather will ever have.
+This project is in now in alpha and you can use it in private projects if you wish. However if you need 
+something more production or enterprise ready, you should probably check out one of the a many javascript 
+frameworks out.
 {{< /note >}}
 

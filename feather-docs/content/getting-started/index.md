@@ -6,16 +6,12 @@ weight: 10
 
 ## Installing Featherₜₛ
 
-Installing [typescript](https://github.com/Microsoft/TypeScript) and [typings](https://github.com/typings/typings) globally is recommended, if not yet present. Then run the following commands to add featherₜₛ as a 
-local dependency. 
-
 ```
 npm install feather-ts --save
 ```
 
-Create a **tsconfig.json** file in your project's root containing the following settings. ES6 output is currently not supported and 
-since decorators are the beef of it all make sure they are enabled. Feather.js embeds the typescript emitted helpers so you can disable 
-them if you wish.
+Create a **tsconfig.json** file in your project's root containing the following settings. Since decorators are the beef of it all 
+make sure they are enabled. Feather.js embeds the typescript emitted [helpers](https://github.com/Microsoft/tslib) so one can disable them.
 
 ```typescript
 {
@@ -40,8 +36,8 @@ them if you wish.
 }
 ```
 
-Then write your widgets and include the output together with feather.min.js (from node_modules) in your page.
-After the DOM and the scripts have been loaded make the following call, it will bootstrap the widgets and route listeners. 
+Then write your widgets and include the output together with feather.min.js (in node_modules) in your page.
+After the DOM and the scripts have been loaded make the following call to bootstrap the widgets and and routes. 
 
 ```
 feather.start();
@@ -49,7 +45,7 @@ feather.start();
 
 ## A widget's anatomy
 
-To get an impression of the code style you will be dealing with, here is a sample widget code. As you can see the code is
+To get an impression of the code style you will be dealing with here is an example. As you can see the code is
 very compact and flat.
 
 ```typescript
@@ -112,7 +108,6 @@ See the full todo app in action [here](http://todo.feather-ts.com/). Take a peek
 
 {{< note title="Note" >}}
 The bindings in the HTML code are very simple. The only extra syntax on top of regular HTML is {{variable:methodA:methodB}}. Methods 
-are optional however they can convert values to other types, ie boolean to "yes" / "no" strings, or filter arrays before rendering.
- 
-The above code is stripped off large parts, so don't expect it to compile or run.
+are optional however they can convert values to other types, i.e. booleans to "yes" / "no" strings or filter arrays before rendering.
+In some cases the variable can also reference deep properties with object dot notation. 
 {{< /note >}}
