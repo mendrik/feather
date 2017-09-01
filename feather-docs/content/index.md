@@ -24,7 +24,7 @@ The framework offers the following features:
 * Pure HTML templates without logic and a very simple binding syntax
 * Event delegation out of the box
 * Written in TypeScript
-* No module loaders needed embed directly via NPM
+* No module loaders, needed embed directly via NPM
 * With asynchronous decorators no need for _promises_
 * Integrated media query based component views for responsive application design
 * Support for modern browsers including IE9 (with polyfills)

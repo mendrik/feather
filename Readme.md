@@ -17,12 +17,14 @@ A feather-light and fast framework written in typescript with the following feat
 * Pure HTML templates without logic and a very simple binding syntax
 * Event delegation out of the box
 * Written in TypeScript
-* No module loaders needed embed directly via NPM
+* No module loaders, needed embed directly via NPM
 * With asynchronous decorators no need for _promises_
 * Integrated media query based component views for responsive application design
 * Support for modern browsers including IE9 (with polyfills)
 * Component trees are initialized in off-screen document fragments for maximum performance.
 * Access to up-tree properties without repetitive property clutter
+* Generates clean HTML markup without any trace of the framework
+* No wrappers required for your data holders
 ---
 
 # Installation
