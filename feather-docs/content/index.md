@@ -30,7 +30,7 @@ The framework offers the following features:
 * Support for modern browsers including IE9 (with polyfills)
 * Component trees are initialized in off-screen document fragments for maximum performance.
 * Access to up-tree properties without repetitive property clutter
-* Generated clean HTML markup without any trace of the framework
+* Generates clean HTML markup without any trace of the framework
 * No wrappers required for your data holders
   
 Intellij IDEA [plugin](http://dist.feather-ts.com/feather.jar) for syntax highlighting in templates 
