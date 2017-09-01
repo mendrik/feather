@@ -135,7 +135,7 @@ module demo {
                 <div class="arrays"/>
                 <ul id="filtered-list" {{filteredList:arrayFilter}} truthy="{{filteredList:countTruthy}}"/>
                 <ul id="sorted-list" {{sortTestArray:sortFilter}}/>
-                <AttributeWidget id="aw1" text="{'a'+'b'}" bool="{true}" func="{this.printStuff}" number="{3+1}"/>
+                <AttributeWidget id="aw1" text={'a'+'b'} bool={true} func="{this.printStuff}" number="{3+1}"/>
                 <AttributeWidget id="aw2" text={this.printStuff()} bool={false} func={this.printStuff} number={5}/>
                 <Inheritance/>
             `)
