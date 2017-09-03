@@ -60,7 +60,11 @@ module feather.objects {
             const ak = a[k],
                   bk = b[k]
             if (Array.isArray(ak)) {
-                ak.push(...bk)
+                try {
+                    ak.push(...bk)
+                } catch (e) {
+                    console.log(e);
+                }
             } else if (isObject(ak)) {
                 merge(ak, bk)
             } else {
@@ -77,7 +81,7 @@ module feather.objects {
             return {}
         }
         const proto = Object.getPrototypeOf(start)
-        const handlers = map.get(proto) || {}
+        const handlers = {...map.get(proto)}
         if (proto) {
             merge(handlers, collectAnnotationsFromTypeMap(map, proto))
         }
