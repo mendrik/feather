@@ -60,11 +60,7 @@ module feather.objects {
             const ak = a[k],
                   bk = b[k]
             if (Array.isArray(ak)) {
-                try {
-                    ak.push(...bk)
-                } catch (e) {
-                    console.log(e);
-                }
+                ak.push(...bk)
             } else if (isObject(ak)) {
                 merge(ak, bk)
             } else {
