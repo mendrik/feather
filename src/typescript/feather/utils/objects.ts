@@ -77,7 +77,7 @@ module feather.objects {
             return {}
         }
         const proto = Object.getPrototypeOf(start)
-        const handlers = {...map.get(proto)}
+        const handlers = {...(map.get(proto)|| {})}
         if (proto) {
             merge(handlers, collectAnnotationsFromTypeMap(map, proto))
         }
