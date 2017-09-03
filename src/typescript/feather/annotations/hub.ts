@@ -40,7 +40,7 @@ module feather.hub {
         }
 
         private static trigger(event: string, context: Subscribable, ...data: any[]) {
-            const subs = collect(subscribers, context) as TypedMap<Subscriber[]>
+            const subs = collect(subscribers, context)
             if (subs[event]) {
                 for (const sub of subs[event]) {
                     context[sub.method].apply(context, ...data)

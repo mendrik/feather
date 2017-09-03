@@ -18,10 +18,10 @@ module feather.core {
     export type StringGenerator = () => string
 
     export abstract class Widget extends Observable implements Initializable {
-        element: HTMLElement
+        element: Element
         id?: string|StringGenerator
 
-        bindToElement(element: HTMLElement) {
+        bindToElement(element: Element) {
             this.element = element
             this.init(element)
             this.attachEvents()
@@ -45,7 +45,7 @@ module feather.core {
         }
 
         // noinspection JSUnusedLocalSymbols
-        init(element: HTMLElement) {
+        init(element: Element) {
             // override this with this.render('templatename') in sub classes of Widget
         }
 

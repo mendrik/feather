@@ -2,10 +2,10 @@ module feather.objects {
 
     import TypedMap       = feather.types.TypedMap
     import observeArray   = feather.arrays.observeArray
-    import TypeOrArray    = feather.types.TypeOrArray
     import ObjectChange   = feather.types.ObjectChange
     import Callback       = feather.types.Callback
     import Factory        = feather.types.Factory
+    import isUndef        = feather.functions.isUndef
 
     export const isObject = (obj: any): boolean =>
         (obj !== null && typeof(obj) === 'object' && Object.prototype.toString.call(obj) === '[object Object]')
@@ -22,7 +22,7 @@ module feather.objects {
         let i, len, pathArr
         for (i = 0, pathArr = path.split('.'), len = pathArr.length; i < len; i++) {
             obj = obj[pathArr[i]]
-            if (typeof obj === 'undefined') {
+            if (isUndef(obj)) {
                 return
             }
         }
@@ -38,7 +38,7 @@ module feather.objects {
     }
 
     export function collectAnnotationsFromArray<T, P extends Object>(map: WeakMap<P, T[]>, start: P): T[] {
-        if (typeof start === 'undefined') {
+        if (isUndef(start)) {
             return []
         }
         const proto    = Object.getPrototypeOf(start),
@@ -70,12 +70,14 @@ module feather.objects {
         return a
     }
 
-    export function collectAnnotationsFromTypeMap<T, P extends Object>(map: WeakMap<P, TypedMap<TypeOrArray<T>>>, start: P): TypedMap<TypeOrArray<T>> {
-        if (typeof start === 'undefined') {
+    export function collectAnnotationsFromTypeMap<T, P extends Object>(
+        map: WeakMap<P, TypedMap<T>>,
+        start: P): TypedMap<T> {
+        if (isUndef(start)) {
             return {}
         }
         const proto = Object.getPrototypeOf(start)
-        const handlers: TypedMap<TypeOrArray<T>> = map.get(proto) || {}
+        const handlers = map.get(proto) || {}
         if (proto) {
             merge(handlers, collectAnnotationsFromTypeMap(map, proto))
         }
@@ -90,8 +92,7 @@ module feather.objects {
     const addPropertyListener = (obj: {}, property: string, callback: Callback) => {
         const callbacks = ensureListeners(obj, property, callback),
               desc = Object.getOwnPropertyDescriptor(obj, property)
-        if (typeof desc === 'undefined' ||
-           (typeof desc.set === 'undefined' && desc.writable)) {
+        if (isUndef(desc) || isUndef(desc.set) && desc.writable) {
             let val = obj[property]
             const call = () => callbacks.forEach(cb => cb(val))
             Object.defineProperty(obj, property, {
@@ -148,6 +149,6 @@ module feather.objects {
         return lookup
     }
 
-    export const getOrCreate = <T>(store: Map<any, T>, property: string, factory: Factory<T>) =>
+    export const getOrCreate = <T>(store: TypedMap<T>, property: string, factory: Factory<T>) =>
         store[property] || (store[property] = factory())
 }

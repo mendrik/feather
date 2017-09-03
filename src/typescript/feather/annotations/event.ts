@@ -5,6 +5,7 @@ module feather.event {
     import MediaQueryAware             = feather.media.MediaQueryAware
     import ensure                      = feather.objects.ensure
     import merge                       = feather.objects.merge
+    import isUndef                     = feather.functions.isUndef
 
     export enum Scope {
         Direct,
@@ -36,16 +37,16 @@ module feather.event {
         fn:    EventListenerOrEventListenerObject
     }
 
-    const listenerDeregistry = new WeakMap<HTMLElement, Listener[]>()
+    const listenerDeregistry = new WeakMap<Element, Listener[]>()
 
-    export let addListener = (el: HTMLElement, event: string, listener: EventListenerOrEventListenerObject) => {
+    export let addListener = (el: Element, event: string, listener: EventListenerOrEventListenerObject) => {
         el.addEventListener(event, listener)
         ensure(listenerDeregistry, el, [{event: event, fn: listener}])
     }
 
     function attachDelegatedEvent(context: EventAware, event: string, handlers: Handler[]) {
         const root = context.element
-        addListener(root as HTMLElement, event, (ev: Event) => {
+        addListener(root, event, (ev: Event) => {
             let el: HTMLElement = ev.target as HTMLElement
             do {
                 for (const handler of handlers) {
@@ -82,7 +83,7 @@ module feather.event {
                 for(const handler of handlers) {
                     const el = handler.selector ? root.querySelector(handler.selector) : root
                     if (el) {
-                        addListener(el as HTMLElement, event, (ev) => {
+                        addListener(el, event, (ev) => {
                             if (handler.preventDefault) {
                                 ev.preventDefault()
                             }
@@ -113,18 +114,18 @@ module feather.event {
 
         cleanUp() {
             super.cleanUp()
-            const listeners = listenerDeregistry.get(this.element as HTMLElement)
+            const listeners = listenerDeregistry.get(this.element)
             if (listeners) {
                 for (const l of listeners) {
                     this.element.removeEventListener(l.event, l.fn)
                 }
-                listenerDeregistry.delete(this.element as HTMLElement)
+                listenerDeregistry.delete(this.element)
             }
         }
     }
 
     export let On = (ec: EventConfig) => (proto: EventAware, method: string) => {
-        const scope = typeof ec.scope === 'undefined' ? Scope.Delegate : ec.scope
+        const scope = isUndef(ec.scope) ? Scope.Delegate : ec.scope
         const handlers = ensure(eventHandlers[scope], proto, [])
         ec.event.split(/\s+/).forEach(e =>
             handlers.push({

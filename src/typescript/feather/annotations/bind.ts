@@ -20,20 +20,23 @@ module feather.observe {
     import getInheritedMethods = feather.functions.getInheritedMethods
     import isFunction          = feather.functions.isFunction
     import compose             = feather.functions.compose
+    import isDef               = feather.functions.isDef
+    import isUndef             = feather.functions.isUndef
     import isObject            = feather.objects.isObject
     import deepValue           = feather.objects.deepValue
     import ensure              = feather.objects.ensure
     import collect             = feather.objects.collectAnnotationsFromTypeMap
     import observe             = feather.objects.createObjectPropertyListener
     import getOrCreate         = feather.objects.getOrCreate
+    import Subscribable        = feather.hub.Subscribable
 
-    const boundProperties      = new WeakMap<Observable, TypedMap<Function[]>>()
+    const boundProperties      = new WeakMap<Subscribable, TypedMap<Function[]>>()
     const binders              = new WeakMap<Observable, TypedMap<BindProperties>>()
     const serializers          = new WeakMap<Observable, TypedMap<Serializer>>()
-    const parentArrays         = new WeakMap<Observable, Observable[]>()
-    const attributeMapper      = {} as Map<string, string>
-    const storeQueue           =  new WeakMap<any, any>()
-    const triggerQueue         =  new WeakMap<any, any>()
+    const parentArrays         = new WeakMap<Subscribable, Subscribable[]>()
+    const attributeMapper      = {} as TypedMap<string>
+    const storeQueue           = new WeakMap<any, any>()
+    const triggerQueue         = new WeakMap<any, any>()
 
     export interface BindProperties {
         templateName?: string   // when pushing new widgets into an array, the template name to render the children with
@@ -43,7 +46,7 @@ module feather.observe {
         html?:         boolean  // string contains html, do not bind to template root. experimental.
     }
 
-    const setOrRemoveAttribute = (el: HTMLElement, attribute: string, condition: boolean, val: string) => {
+    const setOrRemoveAttribute = (el: Element, attribute: string, condition: boolean, val: string) => {
         if (attribute === 'value') {
             (el as HTMLInputElement).value = condition ? val : '';
         } else if (condition) {
@@ -53,11 +56,11 @@ module feather.observe {
         }
     }
 
-    const setParentArray = (arr: any[], widgets: Observable[]) => {
+    const setParentArray = (arr: any[], widgets: Subscribable[]) => {
         for (const w of widgets) {
             parentArrays.set(w, arr)
             if (w.childWidgets) {
-                setParentArray(arr, w.childWidgets as Observable[])
+                setParentArray(arr, w.childWidgets)
             }
         }
     }
@@ -79,21 +82,21 @@ module feather.observe {
         return isFunction(name) ? name() : name
     }
 
-    const getPath = (obj: Observable, property: string) => {
+    const getPath = (obj: Subscribable, property: string) => {
         const segments = [property]
         let parent = obj
         do {
             segments.unshift(getWidgetId(parent))
-        } while (parent = parent.parentWidget as Widget)
+        } while (parent = parent.parentWidget)
         return segments.join('.')
     }
 
-    const destroyListeners = (widgets: Observable[]) => {
+    const destroyListeners = (widgets: Subscribable[]) => {
         for (const w of widgets) {
             w.cleanUp()
             boundProperties.delete(w)
             parentArrays.delete(w)
-            destroyListeners(w.childWidgets as Observable[])
+            destroyListeners(w.childWidgets)
         }
     }
 
@@ -107,7 +110,7 @@ module feather.observe {
                     clearTimeout(storeQueue.get(value))
                 }
                 storeQueue.set(value, setTimeout(() => {
-                    const serializer = collect(serializers, parent)[property] as Serializer
+                    const serializer = collect(serializers, parent)[property]
                     value = value.map(parent[serializer.write])
                     store(parent, property, value)
                 }, 50))
@@ -196,7 +199,7 @@ module feather.observe {
                                 conf: BindProperties,
                                 createListener: Function) {
         const widget = this,
-              el     = hook.node as HTMLElement
+              el     = hook.node
 
         if (hook.type === HookType.TEXT) { // <p>some text {{myVar}} goes here</p>
             const updateDom = () => {
@@ -211,7 +214,7 @@ module feather.observe {
             createListener(this, conf, property, updateDom())
         } else if (hook.type === HookType.CLASS) { // <p class="red {{myVar}}">text goes here</p>
             const classList = (val: any, fn: Function) => {
-                if (typeof val !== 'undefined') {
+                if (isDef(val)) {
                     const nVal = transform(val)
                     nVal && fn(nVal)
                 }
@@ -227,7 +230,7 @@ module feather.observe {
             const attributeName = hook.text || property,
                   updateDom = (val) => {
                       const formatted: string = transform(val)
-                      setOrRemoveAttribute(el, attributeName, typeof formatted !== 'undefined', formatted)
+                      setOrRemoveAttribute(el, attributeName, isDef(formatted), formatted)
                       return updateDom
                   }
             createListener(this, conf, property, updateDom(value))
@@ -238,7 +241,7 @@ module feather.observe {
     }
 
     function defaultArrayListener(hook: Hook, conf: BindProperties, widget: Widget): ArrayListener<Widget> {
-        const el = hook.node as HTMLElement
+        const el = hook.node
         return {
             sort(indices: any[]) {
                 const children = from<HTMLElement>(el.children)
@@ -286,7 +289,7 @@ module feather.observe {
               rootProperty = path.split('.').shift(),
               initialValue = deepValue(this, path),
               typeOfValue = (typeof transform(initialValue)).toLowerCase(),
-              conf = (collect(binders, this) as TypedMap<BindProperties>)[rootProperty],
+              conf = collect(binders, this)[rootProperty],
               update = (val) => {
                   if (/boolean/.test(typeOfValue)) {
                       bindBoolean.call(this, null, val, hook, transform, conf, dummyCreate)
@@ -327,7 +330,7 @@ module feather.observe {
         const parentWidget       = this as Widget,
               proxy: Widget[]    = [],
               original: Widget[] = this[property],
-              parent             = hook.node as HTMLElement
+              parent             = hook.node
 
         const syncProxy = (sort: boolean) => {
 
@@ -403,7 +406,7 @@ module feather.observe {
             return
         }
         property = current.findProperty(property)
-        const conf = (collect(binders, current) as TypedMap<BindProperties>)[property]
+        const conf = collect(binders, current)[property]
         if (conf && conf.bequeath) {
             current.attachHooks.call(current, [hook], context)
         } else {
@@ -419,7 +422,7 @@ module feather.observe {
 
                 const transformFns = hook.curly.split(/:/),
                       property     = this.findProperty(transformFns.shift()),
-                      conf         = (collect(binders, this) as TypedMap<BindProperties>)[property],
+                      conf         = collect(binders, this)[property],
                       fm           = context.findMethod.bind(context) as (s) => string ,
                       transform    = compose<any>(transformFns
                                      .map(fm)
@@ -434,7 +437,7 @@ module feather.observe {
 
                 if (~property.indexOf('.') || isObject(value) && transformFns.length) {
                     value = deepValue(this, property)
-                    if (typeof value === 'undefined') {
+                    if (isUndef(value)) {
                         tryToBindFromParentWidget(this.parentWidget as Observable, this, hook, property)
                     } else {
                         createDeepObserver.call(this, property, hook, transform)
@@ -447,7 +450,7 @@ module feather.observe {
                     console.log('Binding to functions is not supported. Use new filters.')
                     continue
                 }
-                if (typeof conf === 'undefined') {
+                if (isUndef(conf)) {
                     tryToBindFromParentWidget(this.parentWidget as Observable, this, hook, property)
                     continue
                 } else if (!parent && conf.localStorage) {
@@ -459,7 +462,7 @@ module feather.observe {
                     } catch (e) {
                         console.warn(e)
                     }
-                    if (typeof storedValue !== 'undefined' && !Array.isArray(storedValue)) {
+                    if (isDef(storedValue) && !Array.isArray(storedValue)) {
                         this[property] = value = storedValue
                     }
                 }
@@ -468,8 +471,8 @@ module feather.observe {
                 // special case: we need to create an array proxy
                 if (Array.isArray(this[property]) && isFunction(value)) {
                     createFilteredArrayProxy.call(this, property, hook, conf, transform)
-                    if (typeof storedValue !== 'undefined') {
-                        const serializer = collect(serializers, this)[property] as Serializer
+                    if (isDef(storedValue)) {
+                        const serializer = collect(serializers, this)[property]
                         this[property].push(...storedValue.map(this[serializer.read]))
                     }
                 } else {

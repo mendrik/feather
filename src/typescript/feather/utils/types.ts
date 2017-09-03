@@ -1,7 +1,7 @@
 module feather.types {
 
     export type Primitive = string | number | boolean | Array<SimpleMap>
-    export type ValidRoot = HTMLElement | HTMLDocument | DocumentFragment
+    export type ValidRoot = Element | DocumentFragment
 
     export type SimpleMap = { [key: string]: any }
     export type TypedMap<T> = { [key: string]: T }
@@ -15,4 +15,5 @@ module feather.types {
     export type Factory<T> = () => T
     export type FnOne = <A1, R>(arg: A1) => R
 
+    export type StringFactory = () => string
 }

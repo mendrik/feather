@@ -4,6 +4,7 @@ module feather.boot {
     import Constructable         = feather.core.Constructable
     import ValidRoot             = feather.types.ValidRoot
     import Widget                = feather.core.Widget
+    import isDef                 = feather.functions.isDef
 
     export interface Blueprint {
         selector: string
@@ -28,7 +29,7 @@ module feather.boot {
             value = context[js] || (function(str) {
                 return eval(str)
             }).bind(context)(js)
-            if (typeof value !== 'undefined') {
+            if (isDef(value)) {
                 node.removeAttribute(key)
             }
         }

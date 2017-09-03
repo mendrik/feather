@@ -2,6 +2,7 @@ module feather.strings {
 
     import deepValue  = feather.objects.deepValue
     import isFunction = feather.functions.isFunction
+    import isUndef    = feather.functions.isUndef
 
     export function format(str: string, obj: any, filterLib?: any): string {
         const splits = str.split(/{{|}}/),
@@ -17,7 +18,7 @@ module feather.strings {
                 for (const f of filters) {
                     resolved = filterLib[f].call(obj, resolved)
                 }
-                if (typeof resolved === 'undefined') {
+                if (isUndef(resolved)) {
                     return res[i] = `{{${current}}}`
                 }
                 res[i] = isFunction(resolved) ? resolved.call(obj) : resolved

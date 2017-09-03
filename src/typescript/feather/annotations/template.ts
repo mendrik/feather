@@ -40,8 +40,8 @@ module feather.annotations {
     }
 
     export interface ParsedTemplate {
-        doc: DocumentFragment,
-        first: HTMLElement,
+        doc: Node,
+        first: Element,
         hooks: Hook[]
     }
 
@@ -55,10 +55,10 @@ module feather.annotations {
                   nodeList = allChildNodes(doc),
                   hooks = this.hookInfos.map(i => new Hook(nodeList[i.nodePosition], i.type, i.curly, i.text))
             return {
-                doc: doc,
+                doc,
                 first: nodeList[1],
-                hooks: hooks
-            } as ParsedTemplate
+                hooks
+            }
         }
     }
 
@@ -117,7 +117,7 @@ module feather.annotations {
     export class TemplateFactory {
 
         static getTemplate(widget: Widget, name: string): ParsedTemplate {
-            const method = (collect(templates, widget) as TypedMap<Function>)[name],
+            const method = collect(templates, widget)[name],
                   templateString: string = method.call(widget)
             let preparsedTemplate = parsedTemplateCache[templateString]
             if (!preparsedTemplate) {

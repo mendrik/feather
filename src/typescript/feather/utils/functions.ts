@@ -1,6 +1,7 @@
 module feather.functions {
 
-    import FnOne = feather.types.FnOne
+    import FnOne         = feather.types.FnOne
+    import StringFactory = feather.types.StringFactory
 
     const getType = {}.toString
 
@@ -10,6 +11,11 @@ module feather.functions {
     export function isFunction(functionToCheck) {
         return functionToCheck && getType.call(functionToCheck) === '[object Function]'
     }
+
+    export const isDef = (x) => typeof x !== 'undefined'
+    export const isUndef = (x) => !isDef(x)
+
+    export const strFactory = (x: StringFactory|string): string => isFunction(x) ? (x as any)() : x;
 
     const inheritedMethodCache = new WeakMap<any, string[]>()
 

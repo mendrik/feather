@@ -4,7 +4,9 @@ module feather.xhr {
     import Widget           = feather.core.Widget
     import format           = feather.strings.format
     import deepValue        = feather.objects.deepValue
-    import isFunction       = feather.functions.isFunction
+    import merge            = feather.objects.merge
+    import strFactory       = feather.functions.strFactory
+    import StringFactory    = feather.types.StringFactory
 
     export type MethodValue = 'GET' | 'POST' | 'DELETE' | 'PUT'
 
@@ -14,8 +16,6 @@ module feather.xhr {
         DELETE: 'DELETE' as MethodValue,
         PUT:    'PUT'    as MethodValue
     }
-
-    export type StringFactory = () => string
 
     export interface RestConfig {
         url:              string
@@ -30,7 +30,7 @@ module feather.xhr {
         headers?:         TypedMap<string|StringFactory>
     }
 
-    const defaultRestConfig = {
+    const defaultRestConfig: RestConfig = {
         url:             null,
         method:          Method.GET,
         timeout:         5000,
@@ -42,12 +42,12 @@ module feather.xhr {
             'Accept': 'application/json',
             'Content-Type': 'application/json;charset=utf-8'
         }
-    } as RestConfig
+    }
 
     export let sendRequest = (conf: RestConfig, success: (data) => void, error: (err: string|Event, xhr?: XMLHttpRequest) => void) => {
         const xhr = new XMLHttpRequest()
 
-        conf = {...defaultRestConfig, ...conf}
+        conf = merge({...defaultRestConfig}, conf)
 
         xhr.open(conf.method, conf.url, conf.async)
 
@@ -89,29 +89,17 @@ module feather.xhr {
         const original = desc.value
 
         desc.value = function() {
-            let paramsCopy = {
+            const paramsCopy = {
                 ...params,
-                progress: (ev) => this.triggerDown('xhr-progress', ev)
+                progress: (ev) => this.triggerDown('xhr-progress', ev),
+                body: params.body &&
+                    deepValue(this, params.body),
+                headers: (params.headers &&
+                    Object.keys(params.headers)
+                        .reduce((p, c) => ({...p, [c]: strFactory(params.headers[c])}), {})) || {},
+                url: format(params.url, this, this)
             }
-            if (paramsCopy.body) {
-                paramsCopy = {
-                    ...paramsCopy,
-                    body: deepValue(this, params.body),
-                }
-            }
-            if (params.headers) {
-                const headers = Object.keys(params.headers).reduce((p, c) => {
-                    const old = params.headers[c]
-                    p[c] = isFunction(old) ? (old as StringFactory)() : old as string
-                    return p
-                }, {})
-                paramsCopy = {
-                    ...paramsCopy,
-                    headers
-                }
-            }
-            const newParams = {...paramsCopy, url: format(params.url, this, this)} // resolve url params
-            return sendRequest(newParams, desc.value.original.bind(this), (err, xhr: XMLHttpRequest) => {
+            return sendRequest(paramsCopy, desc.value.original.bind(this), (err, xhr: XMLHttpRequest) => {
                 if (xhr && xhr.status) {
                     this.triggerDown('xhr-failure-'+xhr.status, err, xhr)
                 } else if (err) {
