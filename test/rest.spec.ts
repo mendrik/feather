@@ -42,13 +42,16 @@ describe('XHR', () => {
             const app = window.ef as demo.ExtraFeatures,
                   spy = this.sinon.spy(app.postData, 'original')
 
-            app.postData()
+            var xhr = app.postData() as any
             clock.tick(2)
             spy.should.have.been.calledOnce
             spy.should.have.been.calledWith({
                 response: true,
                 method: 'POST'
             })
+            expect(xhr.requestBody).to.be.equal('{"test":1}')
+            expect(xhr.requestHeaders).to.be.deep.equal(feather.xhr.defaultRestConfig.headers)
+            expect(xhr.url).to.be.equal('/post/1')
         })
     })
 })

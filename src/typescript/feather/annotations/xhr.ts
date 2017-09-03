@@ -30,7 +30,7 @@ module feather.xhr {
         headers?:         TypedMap<string|StringFactory>
     }
 
-    const defaultRestConfig: RestConfig = {
+    export const defaultRestConfig: RestConfig = {
         url:             null,
         method:          Method.GET,
         timeout:         5000,
