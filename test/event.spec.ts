@@ -1,5 +1,4 @@
 import {featherStart} from './test-head'
-import {expect} from 'chai'
 import * as sinon from 'sinon';
 
 describe('Events', () => {
@@ -16,21 +15,38 @@ describe('Events', () => {
 
     describe('click', () => {
 
-        it('is received with selector', () => {
-            const app = window.ef as demo.ExtraFeatures,
-                  child = app.childWidgets[0] as feather.core.Widget,
-                  i = child.element.querySelector('i'),
-                  event = document.createEvent('HTMLEvents'),
-                  spy = this.sinon.spy(child, 'click')
+        it('is received correctly', () => {
+            const parent = window['event-test'] as demo.EventListener,
+                  child = parent.childWidgets[0] as demo.EventListener,
+                  childIcon = child.element.querySelector('div > span > i'),
+                  parentButton = parent.element.querySelector('div > button'),
+                  childSpan = child.element.querySelector('div > span'),
+                  parentButtonClick = this.sinon.spy(parent, 'buttonClick'),
+                  parentRootClick = this.sinon.spy(parent, 'rootClick'),
+                  parentIconClick = this.sinon.spy(parent, 'iconClick'),
+                  parentSpanClick = this.sinon.spy(parent, 'spanClick'),
+                  childButtonClick = this.sinon.spy(child, 'buttonClick'),
+                  childRootClick = this.sinon.spy(child, 'rootClick'),
+                  childIconClick = this.sinon.spy(child, 'iconClick'),
+                  childSpanClick = this.sinon.spy(child, 'spanClick');
+
+            const event = document.createEvent('HTMLEvents')
             event.initEvent('click', true, true)
-            i.dispatchEvent(event)
-            spy.should.have.been.calledOnce
-            spy.should.have.been.calledOn(child)
-            expect(spy.args[0][1]).to.be.equal(i)
-
-            spy.restore()
+            childIcon.dispatchEvent(event)
+            childIconClick.should.have.been.calledOnce
+            parentIconClick.should.have.not.been.called
+            parentRootClick.should.have.not.been.called
+            childSpan.dispatchEvent(event)
+            childSpanClick.should.have.been.calledOnce
+            childRootClick.should.have.been.calledOnce
+            parentRootClick.should.have.not.been.calledOnce
+            parentButton.dispatchEvent(event)
+            parentButtonClick.should.have.been.calledOnce
+            parentRootClick.should.have.been.calledOnce
+            // reset
+            ;[parentButtonClick, parentRootClick, parentIconClick, parentSpanClick,
+             childButtonClick, childRootClick, childIconClick, childSpanClick]
+                .forEach(s => s.restore())
         })
-
-        // todo add tests for direct scope
     })
 })

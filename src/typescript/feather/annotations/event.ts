@@ -50,9 +50,12 @@ module feather.event {
             let el: HTMLElement = ev.target as HTMLElement
             do {
                 for (const handler of handlers) {
-                    if (el.nodeType === Node.ELEMENT_NODE && (!handler.selector || selectorMatches(el, handler.selector))) {
+                    if (el.nodeType === Node.ELEMENT_NODE && (!handler.selector && el === root || selectorMatches(el, handler.selector))) {
                         if (handler.preventDefault) {
                             ev.preventDefault()
+                        }
+                        if (!handler.bubble) {
+                            ev.stopImmediatePropagation()
                         }
                         context[handler.method].call(context, ev, el)
                     }

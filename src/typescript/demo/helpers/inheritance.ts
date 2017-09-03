@@ -54,6 +54,7 @@ module demo {
                         {{inheritedObject.fullname.name}} {{inheritedObject.fullname.surname}}
                     </div>
                     <ul {{elements}}></ul>
+                    <EventListener children="{2}"/>
                 </div>
             `)
         }

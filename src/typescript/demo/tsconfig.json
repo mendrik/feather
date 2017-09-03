@@ -18,6 +18,7 @@
   },
   "include": [],
   "files": [
+    "helpers/eventlistener.ts",
     "helpers/array-element.ts",
     "helpers/widget.ts",
     "helpers/inheritance.ts",

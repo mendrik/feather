@@ -28,7 +28,7 @@ inheritance {
     display: block;
     max-width: 300px;
 
-    span:after {
+    span[uncles]:after {
         content: ', uncles: ' attr(uncles);
     }
 
@@ -54,4 +54,13 @@ div.extra-features {
     padding: 5px;
     display: block;
     max-width: 300px;
+}
+
+eventlistener {
+    display: block;
+    padding: 10px;
+
+    ul {
+        margin: 10px;
+    }
 }
