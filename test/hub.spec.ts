@@ -47,8 +47,20 @@ describe('Hub', () => {
             spy3.should.have.been.calledOnce
             spy3.should.have.been.calledOn(app)
             spy3.should.have.been.calledWith('up');
-
             [spy, spy2, spy3].forEach(s => s.restore())
+
+        })
+
+        it('listener count stays stable', () => {
+            const app = window.ef,
+                  collect = feather.objects.collectAnnotationsFromTypeMap,
+                  subs = collect(feather.hub.subscribers, app);
+            let runs = 10
+            expect(subs['message-down'].length).to.be.equal(1)
+            expect(Object.keys(subs).length).to.be.equal(4)
+            while(runs--) app.sendMessage()
+            expect(subs['message-down'].length).to.be.equal(1)
+            expect(Object.keys(subs).length).to.be.equal(4)
         })
     })
 })
