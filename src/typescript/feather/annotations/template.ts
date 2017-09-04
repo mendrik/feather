@@ -7,12 +7,11 @@ module feather.annotations {
     import collect               = feather.objects.collectAnnotationsFromTypeMap
     import ensure                = feather.objects.ensure
 
-    const supportsTemplate       = 'content' in document.createElement('template') && 'firstElementChild' in document.createDocumentFragment()
     const CURLIES                = /{{(.*?)}}/
     const ALL_CURLIES            = /{{(.*?)}}/g
     const templates              = new WeakMap<Widget, TypedMap<Function>>()
     const parsedTemplateCache    = {} as Map<string, PreparsedTemplate>
-    const template               = supportsTemplate ? document.createElement('template') : document.createElement('div')
+    const template               = document.createElement('template')
     export const selfClosingTags = /<(\w+)((\s+([^=\s\/<>]+|\w+=('[^']*'|"[^"]*"|[^"']\S*)))*)\s*\/>/gi
     export const openTags        = '<$1$2></$1>'
 
@@ -61,7 +60,7 @@ module feather.annotations {
 
     export class PreparsedTemplate {
 
-        constructor(public node: DocumentFragment,
+        constructor(public node: Node,
                     public hookInfos: feather.annotations.HookInfo[]) {}
 
         asParsedTemplate(): ParsedTemplate {
@@ -86,18 +85,17 @@ module feather.annotations {
         }
     }
 
-    export function getPreparsedTemplate(templateStr: string): PreparsedTemplate {
-        let frag
-        template.innerHTML = templateStr.replace(selfClosingTags, openTags)
-        if (supportsTemplate) {
-            frag = document.importNode((template as HTMLTemplateElement).content, true)
-        } else {
-            frag = document.createDocumentFragment()
-            while (template.firstChild) {
-                frag.appendChild(template.firstChild)
-            }
+    const range = document.createRange ? document.createRange(): {
+        createContextualFragment: (source) => {
+            template.innerHTML = source.replace(selfClosingTags, openTags)
+            return document.importNode((template as HTMLTemplateElement).content, true)
         }
-        const allNodes = allChildNodes(frag)
+    }
+
+    export function getPreparsedTemplate(templateStr: string): PreparsedTemplate {
+        const source = templateStr.replace(selfClosingTags, openTags),
+            frag = range.createContextualFragment(source),
+            allNodes = allChildNodes(frag)
         return new PreparsedTemplate(frag, parseHooks(allNodes))
     }
 
@@ -159,7 +157,7 @@ module feather.annotations {
                 const str = proto[method].call({})
                 parsedTemplateCache[str] = getPreparsedTemplate(str)
             } catch (e) {
-                console.warn(`Template method ${method} in ${proto.constructor} is not a pure function.`)
+                console.warn(`Template method ${method} in ${proto.constructor['name']} is not a pure function.`, e)
             }
         }
     }
