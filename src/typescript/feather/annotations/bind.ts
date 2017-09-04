@@ -497,7 +497,6 @@ module feather.observe {
         cleanUp() {
             super.cleanUp();
             boundProperties.delete(this)
-            serializers.delete(this)
             parentArrays.delete(this)
         }
     }
