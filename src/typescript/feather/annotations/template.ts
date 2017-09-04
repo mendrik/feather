@@ -75,7 +75,7 @@ module feather.annotations {
                           i.attribute,
                           i.text,
                           i.property,
-                          from(i.transformFns)
+                          i.transformFns
                       )
                   )
             return {

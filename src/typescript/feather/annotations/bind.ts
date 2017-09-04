@@ -411,6 +411,8 @@ module feather.observe {
         }
     }
 
+    const identity = (x) => x
+
     export class Observable extends RouteAware {
 
         attachHooks(hooks: Hook[], parent?: any) {
@@ -419,14 +421,12 @@ module feather.observe {
 
                 const property     = this.findProperty(hook.property),
                       conf         = collect(binders, this)[property],
-                      transform    = compose<any>(hook.transformFns.map(method => {
-                                         const func = this.findMethod(method)
-                                         if (!func) {
-                                             throw Error(`Transformer method '${method}' is not defined on ${context}`)
-                                         }
-                                         return func
-                                     }))
-                let   value        = this[property],
+                      transform    = compose<any>(hook.transformFns
+                                        .map(method =>
+                                            context[context.findMethod(method)]
+                                                .bind(context)))
+
+                let   value = this[property],
                       storedValue
 
                 if (~property.indexOf('.') || isObject(value) && hook.hasMethods()) {
@@ -484,12 +484,11 @@ module feather.observe {
             })
         }
 
-        findMethod(ci: string): FnOne {
+        findMethod(ci: string): string {
             return getOrCreate(attributeMapper, ci, () => {
                 const lc = ci.toLowerCase();
-                const method = getInheritedMethods(this)
+                return getInheritedMethods(this)
                     .find(p => p.toLowerCase() === lc) || ci;
-                return this[method].bind(this)
             })
         }
 
