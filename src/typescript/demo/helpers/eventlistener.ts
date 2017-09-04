@@ -31,22 +31,22 @@ module demo {
 
         @On({event: 'click', selector: 'button'})
         buttonClick() {
-            console.log('button');
+            // console.log('button');
         }
 
         @On({event: 'click'})
         rootClick() {
-            console.log('root click');
+            // console.log('root click');
         }
 
         @On({event: 'click', selector: 'span'})
         spanClick() {
-            console.log('span click');
+            // console.log('span click');
         }
 
         @On({event: 'click', selector: 'i', scope: feather.event.Scope.Direct})
         iconClick() {
-            console.log('icon click');
+            // console.log('icon click');
         }
 
         @Template()

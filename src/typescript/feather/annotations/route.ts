@@ -6,6 +6,7 @@ module feather.routing {
     import namedRegexMatch = feather.strings.namedRegexMatch
     import collect         = feather.objects.collectAnnotationsFromArray
     import ensure          = feather.objects.ensure
+    import removeFromArray = feather.arrays.removeFromArray;
 
     interface RouteConfig {
         route:   string,
@@ -82,6 +83,11 @@ module feather.routing {
         }
 
         route = (path: string) => navigateRoute(path)
+
+        cleanUp() {
+            super.cleanUp()
+            removeFromArray(routeAwares, [this])
+        }
     }
 
     export const runRoutes = () => {

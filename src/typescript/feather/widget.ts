@@ -64,6 +64,9 @@ module feather.core {
 
         cleanUp() {
             super.cleanUp()
+            for (const cw of this.childWidgets) {
+                cw.cleanUp()
+            }
             removeFromArray(WidgetFactory.singletonRegistry, [this])
         }
     }

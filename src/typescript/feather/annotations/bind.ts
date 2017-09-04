@@ -94,9 +94,6 @@ module feather.observe {
     const destroyListeners = (widgets: Subscribable[]) => {
         for (const w of widgets) {
             w.cleanUp()
-            boundProperties.delete(w)
-            parentArrays.delete(w)
-            destroyListeners(w.childWidgets)
         }
     }
 
@@ -494,6 +491,14 @@ module feather.observe {
                     .find(p => p.toLowerCase() === lc) || ci;
                 return this[method].bind(this)
             })
+        }
+
+
+        cleanUp() {
+            super.cleanUp();
+            boundProperties.delete(this)
+            serializers.delete(this)
+            parentArrays.delete(this)
         }
     }
 
