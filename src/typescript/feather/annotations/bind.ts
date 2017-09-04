@@ -170,7 +170,7 @@ module feather.observe {
         if (hook.type === HookType.ATTRIBUTE || hook.type === HookType.PROPERTY) {
 
             const el = (hook.node as HTMLElement),
-                  attributeName = hook.text || property,
+                  attributeName = hook.attribute || property,
                   updateDom = (val) => {
                       if (typeof el[attributeName] === 'boolean') {
                           el[attributeName] = !!transform(val)
@@ -180,10 +180,10 @@ module feather.observe {
                       return updateDom
                   }
 
-            if (!hook.text) {
+            if (!hook.attribute) {
                 el.removeAttribute(`{{${hook.curly}}}`)
             } else {
-                el.setAttribute(hook.text, '')
+                el.setAttribute(hook.attribute, '')
             }
             createListener(this, conf, property, updateDom(value))
         } else {
@@ -227,14 +227,14 @@ module feather.observe {
             createListener(this, conf, property, updateDom(value))
             el.classList.remove(`{{${hook.curly}}}`)
         } else if (hook.type === HookType.ATTRIBUTE || hook.type === HookType.PROPERTY) { // <p style="{{myvar}}" {{hidden}}>text goes here</p>
-            const attributeName = hook.text || property,
+            const attributeName = hook.attribute || property,
                   updateDom = (val) => {
                       const formatted: string = transform(val)
                       setOrRemoveAttribute(el, attributeName, isDef(formatted), formatted)
                       return updateDom
                   }
             createListener(this, conf, property, updateDom(value))
-            if (!hook.text) {
+            if (!hook.attribute) {
                 el.removeAttribute(`{{${hook.curly}}}`)
             }
         }
@@ -420,22 +420,19 @@ module feather.observe {
             const context: Widget = parent || this
             for (const hook of hooks) {
 
-                const transformFns = hook.curly.split(/:/),
-                      property     = this.findProperty(transformFns.shift()),
+                const property     = this.findProperty(hook.property),
                       conf         = collect(binders, this)[property],
-                      fm           = context.findMethod.bind(context) as (s) => string ,
-                      transform    = compose<any>(transformFns
-                                     .map(fm)
-                                     .map(method => {
-                                         if (!context[method]) {
+                      transform    = compose<any>(hook.transformFns.map(method => {
+                                         const func = this.findMethod(method)
+                                         if (!func) {
                                              throw Error(`Transformer method '${method}' is not defined on ${context}`)
                                          }
-                                         return context[method].bind(context)
+                                         return func
                                      }))
                 let   value        = this[property],
                       storedValue
 
-                if (~property.indexOf('.') || isObject(value) && transformFns.length) {
+                if (~property.indexOf('.') || isObject(value) && hook.hasMethods()) {
                     value = deepValue(this, property)
                     if (isUndef(value)) {
                         tryToBindFromParentWidget(this.parentWidget as Observable, this, hook, property)
@@ -443,7 +440,7 @@ module feather.observe {
                         createDeepObserver.call(this, property, hook, transform)
                     }
                     continue
-                } else if (isObject(value) && !transformFns.length) {
+                } else if (isObject(value) && !hook.hasMethods()) {
                     console.log('Binding to objects is not supported. Use new widgets or specify inner property: x.y.z')
                     continue
                 } else if (isFunction(value)) {
@@ -490,11 +487,12 @@ module feather.observe {
             })
         }
 
-        findMethod(ci: string): string {
+        findMethod(ci: string): FnOne {
             return getOrCreate(attributeMapper, ci, () => {
                 const lc = ci.toLowerCase();
-                return getInheritedMethods(this)
-                    .find(p => p.toLowerCase() === lc) || ci
+                const method = getInheritedMethods(this)
+                    .find(p => p.toLowerCase() === lc) || ci;
+                return this[method].bind(this)
             })
         }
     }

@@ -38,29 +38,33 @@ describe('Templates', () => {
         })
 
         it('Template parses hooks', () => {
-            const str = `<AttributeWidget {{hook1}} bla="{{hook2}}" class="bub {{hook3}}">in {{hook4}} text</AttributeWidget>`,
+            const str = '<AttributeWidget {{hook1}} bla="{{hook2}}" class="bub {{hook3}}">in {{hook4}} text</AttributeWidget>',
                 pt = featherTs.annotations.getPreparsedTemplate,
                 parsed = pt(str)
             expect(parsed.hookInfos.length).to.be.equal(4);
             expect(parsed.hookInfos[0].curly).to.be.equal('hook1')
             expect(parsed.hookInfos[0].text).to.be.undefined
+            expect(parsed.hookInfos[0].attribute).to.be.undefined
             expect(parsed.hookInfos[0].type).to.be.equal(feather.annotations.HookType.PROPERTY)
 
             expect(parsed.hookInfos[1].curly).to.be.equal('hook2')
-            expect(parsed.hookInfos[1].text).to.be.equal('bla')
+            expect(parsed.hookInfos[1].attribute).to.be.equal('bla')
+            expect(parsed.hookInfos[1].text).to.be.undefined
             expect(parsed.hookInfos[1].type).to.be.equal(feather.annotations.HookType.ATTRIBUTE)
 
             expect(parsed.hookInfos[2].curly).to.be.equal('hook3')
+            expect(parsed.hookInfos[2].attribute).to.be.undefined
             expect(parsed.hookInfos[2].text).to.be.undefined
             expect(parsed.hookInfos[2].type).to.be.equal(feather.annotations.HookType.CLASS)
 
             expect(parsed.hookInfos[3].curly).to.be.equal('hook4')
             expect(parsed.hookInfos[3].text).to.be.equal('in {{hook4}} text')
+            expect(parsed.hookInfos[3].attribute).to.be.undefined
             expect(parsed.hookInfos[3].type).to.be.equal(feather.annotations.HookType.TEXT)
         })
 
         it('Template clones', () => {
-            const str = `<span {{bla}} /><span {{bla}} /><span {{bla}} />`,
+            const str = '<span {{bla}} /><span {{bla}} /><span {{bla}} />',
                 pt = featherTs.annotations.getPreparsedTemplate,
                 parsed = pt(str),
                 cloned = parsed.asParsedTemplate()

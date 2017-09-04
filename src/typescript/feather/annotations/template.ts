@@ -28,15 +28,29 @@ module feather.annotations {
         constructor(public node: Element,
                     public type: HookType,
                     public curly: string,
-                    public text?: string) {}
+                    public attribute: string,
+                    public text: string,
+                    public property: string,
+                    public transformFns: string[]) {
+        }
+
+        hasMethods = () => this.transformFns.length > 0
     }
 
     export class HookInfo {
 
+        property: string;
+        transformFns: string[] = [];
+
         constructor(public nodePosition: number,
                     public type: HookType,
                     public curly: string,
-                    public text?: string) {}
+                    public attribute?: string,
+                    public text?: string) {
+
+            this.transformFns = curly.split(/:/)
+            this.property     = this.transformFns.shift()
+        }
     }
 
     export interface ParsedTemplate {
@@ -53,7 +67,17 @@ module feather.annotations {
         asParsedTemplate(): ParsedTemplate {
             const doc = this.node.cloneNode(true),
                   nodeList = allChildNodes(doc),
-                  hooks = this.hookInfos.map(i => new Hook(nodeList[i.nodePosition], i.type, i.curly, i.text))
+                  hooks = this.hookInfos.map(i =>
+                      new Hook(
+                          nodeList[i.nodePosition],
+                          i.type,
+                          i.curly,
+                          i.attribute,
+                          i.text,
+                          i.property,
+                          from(i.transformFns)
+                      )
+                  )
             return {
                 doc,
                 first: nodeList[1],
@@ -85,15 +109,15 @@ module feather.annotations {
                 const text = node.textContent
                 // <div id="2">some text {{myProperty}}</div>
                 while ((match = ALL_CURLIES.exec(text)) !== null) {
-                    hooks.push(new HookInfo(pos, HookType.TEXT, match[1], text))
+                    hooks.push(new HookInfo(pos, HookType.TEXT, match[1], undefined, text))
                 }
             } else if (node.nodeType === Node.ELEMENT_NODE) {
                 for (const attribute of from<Attr>(node.attributes)) {
-                    const name = attribute.nodeName
-                    if (match = name.match(CURLIES)) {
+                    const attributeName = attribute.nodeName
+                    if (match = attributeName.match(CURLIES)) {
                         // <div id="2" {{myProperty}}>
                         hooks.push(new HookInfo(pos, HookType.PROPERTY, match[1]))
-                    } else if (name === 'class') {
+                    } else if (attributeName === 'class') {
                         // <div id="2" class="red {{myClass}} blue">
                         const classes = from<string>((node as HTMLElement).classList)
                         for (const cls of classes) {
@@ -105,7 +129,7 @@ module feather.annotations {
                         // <div id="2" myProperty="{{myProperty}}">
                         const value = attribute.value
                         if (match = value.match(CURLIES)) {
-                            hooks.push(new HookInfo(pos, HookType.ATTRIBUTE, match[1], name))
+                            hooks.push(new HookInfo(pos, HookType.ATTRIBUTE, match[1], attributeName))
                         }
                     }
                 }
