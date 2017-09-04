@@ -411,8 +411,6 @@ module feather.observe {
         }
     }
 
-    const identity = (x) => x
-
     export class Observable extends RouteAware {
 
         attachHooks(hooks: Hook[], parent?: any) {
@@ -484,6 +482,7 @@ module feather.observe {
             })
         }
 
+        // same applies for methods
         findMethod(ci: string): string {
             return getOrCreate(attributeMapper, ci, () => {
                 const lc = ci.toLowerCase();
