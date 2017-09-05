@@ -231,14 +231,9 @@ module feather.observe {
         }
     }
 
-    interface ElementStatus {
-        visible: boolean;
-    }
-
-    function defaultArrayListener(arr: Widget[], hook: Hook, conf: BindProperties, widget: Widget, filter: Function): ArrayListener<Widget> {
-        const el = hook.node,
-              nodeStatus: ElementStatus[] = arr.map(w => ({visible: false}))
-        console.log(arr)
+    function defaultArrayListener(widget: Widget, hook: Hook, conf: BindProperties, filterFactory: Function): ArrayListener<Widget> {
+        const el = hook.node
+        let nodeVisible: boolean[] = []
         return {
             sort(indices: any[]) {
                 const children = from<HTMLElement>(el.children)
@@ -247,41 +242,54 @@ module feather.observe {
                 }
             },
             splice(index: number, deleteCount: number, added: Widget[], deleted: Widget[] = []) {
-                if (index === 0 && deleteCount === 0 && added.length === 0) {
-                    return
-                }
-                const patch = nodeStatus.map(ns => ({visible: ns.visible})),
-                      childWidgets = widget.childWidgets
-                for (let i = 0; i < deleteCount; i++) {
-                    patch[i + index].visible = false
-                }
+                const patch = from<boolean>(nodeVisible),
+                      childWidgets = widget.childWidgets,
+                      filter = filterFactory()
+                // handle deleted items
+                nodeVisible.splice(index, deleteCount, ...added.map(v => false));
 
-                removeFromArray(childWidgets, deleted)
-                destroyListeners(deleted)
+                if (deleteCount > 0) {
+                    deleted.forEach(del => el.removeChild(del.element))
+                    removeFromArray(childWidgets, deleted)
+                    destroyListeners(deleted)
+                }
 
                 if (added.length) {
                     childWidgets.push(...added)
-                    for (let i = 0; i < deleteCount; i++) {
+                    for (let i = 0; i < added.length; i++) {
                         const item = added[i];
                         item.parentWidget = widget
                         const parsed = item.getParsed(conf.templateName)
                         item.bindToElement(parsed.first)
-                        patch[i + index + deleteCount].visible = true;
                     }
                     setParentArray(this, added)
                 }
-
-                console.log(nodeStatus, patch)
+                patch.splice(index, deleteCount, ...added.map(v => true))
+                for (let i = 0, n = this.length; i < n; i++) {
+                    patch[i] = filter(this[i])
+                    if (patch[i] && !nodeVisible[i]) {
+                        const nextVisible = nodeVisible.indexOf(true, i),
+                              refNode = ~nextVisible ? this[nextVisible].element : null
+                        el.insertBefore(this[i].element, refNode)
+                    }
+                    else if (!patch[i] && nodeVisible[i]) {
+                        el.removeChild(this[i].element)
+                    }
+                }
+                nodeVisible = patch
             }
         }
     }
 
     function bindArray(arr: Widget[], hook: Hook, conf: BindProperties, transform: Function) {
-        const removed = arr.splice(0, arr.length),
-              el = hook.node
-        observeArray(arr, defaultArrayListener(arr, hook, conf, this, transform))
-        el.removeAttribute(`{{${hook.curly}}}`)
+        const el = hook.node,
+              removed = arr.splice(0, arr.length)
+        observeArray(arr, defaultArrayListener(this, hook, conf, transform))
         arr.push(...removed)
+        for (const prop of conf.changeOn) {
+            createListener(this, null, prop, () => notifyListeners(arr))
+        }
+        el.removeAttribute(`{{${hook.curly}}}`)
     }
 
     function createDeepObserver(path: string, hook: Hook, transform: FnOne) {
@@ -316,7 +324,7 @@ module feather.observe {
         } else if (/string|number|undefined/.test(typeOfValue)) {
             bindStringOrNumber.call(this, property, initialValue, hook, transform, conf, createListener)
         } else if (/array/.test(typeOfValue) || isFunction(value)) {
-            if (Array.isArray(value)) {
+            if (!isFunction(value)) {
                 transform = identity.bind(this)
             }
             bindArray.call(this, initialValue, hook, conf, transform)
@@ -383,7 +391,7 @@ module feather.observe {
                     if (isDef(storedValue)) {
                         if (Array.isArray(storedValue)) {
                             const serializer = collect(serializers, this)[property]
-                            this[property] = storedValue.map(this[serializer.read])
+                            this[property] = value = storedValue.map(this[serializer.read])
                         } else {
                             this[property] = value = storedValue
                         }
