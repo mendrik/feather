@@ -13,9 +13,6 @@ module feather.observe {
     import ArrayListener       = feather.arrays.ArrayListener
     import from                = feather.arrays.from
     import notifyListeners     = feather.arrays.notifyListeners
-    import lis                 = feather.arrays.lis
-    import diff                = feather.arrays.diff
-    import patch               = feather.arrays.patch
     import removeFromArray     = feather.arrays.removeFromArray
     import isFunction          = feather.functions.isFunction
     import compose             = feather.functions.compose
@@ -106,7 +103,7 @@ module feather.observe {
                 storeQueue.set(value, setTimeout(() => {
                     const serializer = collect(serializers, parent)[property]
                     value = value.map(parent[serializer.write])
-                    store(parent, property, value)
+               //     store(parent, property, value)
                 }, 50))
             } else {
                 store(parent, property, value)
@@ -234,8 +231,14 @@ module feather.observe {
         }
     }
 
-    function defaultArrayListener(hook: Hook, conf: BindProperties, widget: Widget): ArrayListener<Widget> {
-        const el = hook.node
+    interface ElementStatus {
+        visible: boolean;
+    }
+
+    function defaultArrayListener(arr: Widget[], hook: Hook, conf: BindProperties, widget: Widget, filter: Function): ArrayListener<Widget> {
+        const el = hook.node,
+              nodeStatus: ElementStatus[] = arr.map(w => ({visible: false}))
+        console.log(arr)
         return {
             sort(indices: any[]) {
                 const children = from<HTMLElement>(el.children)
@@ -247,33 +250,36 @@ module feather.observe {
                 if (index === 0 && deleteCount === 0 && added.length === 0) {
                     return
                 }
-                from<HTMLElement>(el.children)
-                    .slice(index, index + deleteCount)
-                    .forEach(del => el.removeChild(del))
-
-                const childWidgets = widget.childWidgets
+                const patch = nodeStatus.map(ns => ({visible: ns.visible})),
+                      childWidgets = widget.childWidgets
+                for (let i = 0; i < deleteCount; i++) {
+                    patch[i + index].visible = false
+                }
 
                 removeFromArray(childWidgets, deleted)
                 destroyListeners(deleted)
 
                 if (added.length) {
-                    const frag = document.createDocumentFragment()
                     childWidgets.push(...added)
-                    for (const item of added) {
+                    for (let i = 0; i < deleteCount; i++) {
+                        const item = added[i];
                         item.parentWidget = widget
-                        item.appendTemplateRoot(frag, conf.templateName)
+                        const parsed = item.getParsed(conf.templateName)
+                        item.bindToElement(parsed.first)
+                        patch[i + index + deleteCount].visible = true;
                     }
                     setParentArray(this, added)
-                    el.insertBefore(frag, el.children[index])
                 }
+
+                console.log(nodeStatus, patch)
             }
         }
     }
 
-    function bindArray(arr: Widget[], hook: Hook, conf: BindProperties) {
+    function bindArray(arr: Widget[], hook: Hook, conf: BindProperties, transform: Function) {
         const removed = arr.splice(0, arr.length),
-            el = hook.node
-        observeArray(arr, defaultArrayListener(hook, conf, this))
+              el = hook.node
+        observeArray(arr, defaultArrayListener(arr, hook, conf, this, transform))
         el.removeAttribute(`{{${hook.curly}}}`)
         arr.push(...removed)
     }
@@ -300,97 +306,23 @@ module feather.observe {
         observe(this, path, update(initialValue))
     }
 
-    function createObserver(property: string, value: Primitive, hook: Hook, conf: BindProperties, transform: FnOne) {
+    const identity = (el) => true
+
+    function createObserver(property: string, value: Primitive, hook: Hook, conf: BindProperties, transform: Function) {
         const typeOfValue = Array.isArray(value) ? 'array' : (typeof value).toLowerCase(),
               initialValue = this[property]
         if (/boolean/.test(typeOfValue)) {
             bindBoolean.call(this, property, initialValue, hook, transform, conf, createListener)
         } else if (/string|number|undefined/.test(typeOfValue)) {
             bindStringOrNumber.call(this, property, initialValue, hook, transform, conf, createListener)
-        } else if (/array/.test(typeOfValue)) {
-            bindArray.call(this, initialValue, hook, conf)
+        } else if (/array/.test(typeOfValue) || isFunction(value)) {
+            if (Array.isArray(value)) {
+                transform = identity.bind(this)
+            }
+            bindArray.call(this, initialValue, hook, conf, transform)
         } else {
             console.log('Bindings are only supported on arrays, booleans, strings and numbers')
         }
-    }
-
-    type FilterFactory = () => (widget: Widget) => boolean
-
-    function createFilteredArrayProxy(property: string,
-                                      hook: Hook,
-                                      conf: BindProperties,
-                                      filterFactory: FilterFactory) {
-
-        const parentWidget       = this as Widget,
-              proxy: Widget[]    = [],
-              original: Widget[] = this[property],
-              parent             = hook.node
-
-        const syncProxy = (sort: boolean) => {
-
-                const target = original.filter(filterFactory()),
-                      p      = patch(target, proxy)
-                let   outOfPlace,
-                      place,
-                      proxyIndices,
-                      needSorting,
-                      addLength,
-                      delLength
-
-                delLength = p.remove.length
-                // let's remove excess elements from UI and proxy array
-                if (delLength) {
-                    removeFromArray(proxy, p.remove)
-                    removeFromArray(parentWidget.childWidgets, p.remove)
-                    for (const w of p.remove) {
-                        parent.removeChild(w.element)
-                    }
-                }
-                addLength = p.add.length
-
-                if (addLength) {
-                    const doc = addLength !== 1 ? document.createDocumentFragment() : parent
-                    parentWidget.childWidgets.push(...p.add)
-                    for (const w of p.add) {
-                        w.parentWidget = parentWidget
-                        w.appendTemplateRoot(doc, conf.templateName)
-                    }
-                    setParentArray(original, p.add)
-                    // let's add missing elements to UI and array in one go to the end of the list
-                    if (addLength !== 1) {
-                        parent.appendChild(doc)
-                    }
-                    proxy.push(...p.add)
-                }
-
-                // now let's check if some of the elements need repositioning
-                // we use longest increasing sequence to reduce the amount of repositioning
-                if (addLength || delLength || sort) {
-                    proxyIndices = proxy.map(x => target.indexOf(x))
-                    needSorting = diff(proxyIndices, lis(proxyIndices)).sort((a, b) => b - a)
-                    for (let i = 0, n = needSorting.length; i < n; i++) {
-                        outOfPlace = target[needSorting[i]]
-                        place = target[needSorting[i] + 1]
-                        parent.insertBefore(outOfPlace.element, place ? place.element : null)
-                    }
-                    proxy.splice(0, proxy.length, ...target)
-                }
-            }
-        syncProxy(true)
-        observeArray(original, {
-            sort: () => syncProxy(true),
-            splice: (i, d, added, deleted) => {
-                destroyListeners(deleted)
-                syncProxy(false)
-            }
-        })
-
-        // add extra listeners for properties that should trigger fake array change
-        for (const prop of conf.changeOn) {
-            createListener(this, conf, prop, () => notifyListeners(original))
-        }
-
-        parent.removeAttribute(`{{${hook.curly}}}`)
     }
 
     function tryToBindFromParentWidget(current: Observable, context: Observable, hook: Hook, property: string) {
@@ -448,22 +380,16 @@ module feather.observe {
                     } catch (e) {
                         console.warn(e)
                     }
-                    if (isDef(storedValue) && !Array.isArray(storedValue)) {
-                        this[property] = value = storedValue
-                    }
-                }
-                value = transform(value)
-
-                // special case: we need to create an array proxy
-                if (Array.isArray(this[property]) && isFunction(value)) {
-                    createFilteredArrayProxy.call(this, property, hook, conf, transform)
                     if (isDef(storedValue)) {
-                        const serializer = collect(serializers, this)[property]
-                        this[property].push(...storedValue.map(this[serializer.read]))
+                        if (Array.isArray(storedValue)) {
+                            const serializer = collect(serializers, this)[property]
+                            this[property] = storedValue.map(this[serializer.read])
+                        } else {
+                            this[property] = value = storedValue
+                        }
                     }
-                } else {
-                    createObserver.call(this, property, value, hook, conf, transform)
                 }
+                createObserver.call(this, property, transform(value), hook, conf, transform)
             }
         }
 

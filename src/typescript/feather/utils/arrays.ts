@@ -74,20 +74,6 @@ module feather.arrays {
         }
     }
 
-    export function diff<T>(arr1: T[], arr2: T[]): T[] {
-        return arr1.filter(x => !~arr2.indexOf(x))
-    }
-
-    export interface Patch<T> {
-        add: T[],
-        remove: T[]
-    }
-
-    export const patch = <T>(target: T[], current: T[]): Patch<T> => ({
-        add: diff(target, current),
-        remove: diff(current, target)
-    })
-
     export const range = (start: number, end: number): number[] => {
         const len = end - start + 1,
               arr = new Array<number>(len)
@@ -129,35 +115,5 @@ module feather.arrays {
         } else {
             listeners.push(listener)
         }
-    }
-
-    export const lis = (x: number[]): number[] => {
-        const n = x.length,
-              len = new Array(n),
-              pred = new Array(n)
-        for (let i = 0, nn = n + 1; i < nn; i++) {
-            len[i] = 1
-            pred[i] = -1
-        }
-        for (let i = 1; i < n; i++) {
-            for (let j = 0; j < i; j++) {
-                if (x[j] < x[i] && len[i] < len[j] + 1) {
-                    len[i] = len[j] + 1
-                    pred[i] = j
-                }
-            }
-        }
-        let bi = 0
-        for (let i = 1; i < n; i++) {
-            if (len[bi] < len[i]) {
-                bi = i
-            }
-        }
-        let cnt = len[bi]
-        const res = new Array(cnt)
-        for (let i = bi; i !== -1; i = pred[i]) {
-            res[--cnt] = x[i]
-        }
-        return res
     }
 }
