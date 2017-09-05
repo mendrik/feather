@@ -59,6 +59,15 @@ module feather.observe {
         }
     }
 
+    const delParentArray = (widgets: Subscribable[]) => {
+        for (const w of widgets) {
+            parentArrays.delete(w)
+            if (w.childWidgets) {
+                delParentArray(w.childWidgets)
+            }
+        }
+    }
+
     const triggerParentArray = (obj: Observable) => {
         const parentArray = parentArrays.get(obj)
         if (parentArray) {
@@ -103,7 +112,7 @@ module feather.observe {
                 storeQueue.set(value, setTimeout(() => {
                     const serializer = collect(serializers, parent)[property]
                     value = value.map(parent[serializer.write])
-               //     store(parent, property, value)
+                    store(parent, property, value)
                 }, 50))
             } else {
                 store(parent, property, value)
@@ -126,11 +135,7 @@ module feather.observe {
             }
             observeArray(value, {
                 sort: proxyCallback,
-                splice: (i, dc, added, deleted) => {
-                    setParentArray(value, added)
-                    destroyListeners(deleted)
-                    proxyCallback()
-                }
+                splice: proxyCallback
             })
         } else {
             const listeners = ensure(boundProperties, obj, {[property]: [cb]})
@@ -144,6 +149,7 @@ module feather.observe {
                         for (const cb of listeners[property]) {
                             cb(newValue, old)
                         }
+                        console.log(obj, parentArrays.get(obj))
                         triggerParentArray(obj)
                     }
                     return newValue
@@ -231,14 +237,19 @@ module feather.observe {
         }
     }
 
-    function defaultArrayListener(widget: Widget, hook: Hook, conf: BindProperties, filterFactory: Function): ArrayListener<Widget> {
+    function defaultArrayListener(widget: Widget,
+                                  arr: Widget[],
+                                  hook: Hook,
+                                  conf: BindProperties,
+                                  filterFactory: Function): ArrayListener<Widget> {
         const el = hook.node
         let nodeVisible: boolean[] = []
         return {
             sort(indices: any[]) {
-                const children = from<HTMLElement>(el.children)
                 for (const i of indices) {
-                    el.appendChild(children[i])
+                    if (nodeVisible[i]) {
+                        el.appendChild(arr[i].element)
+                    }
                 }
             },
             splice(index: number, deleteCount: number, added: Widget[], deleted: Widget[] = []) {
@@ -252,28 +263,27 @@ module feather.observe {
                     deleted.forEach(del => el.removeChild(del.element))
                     removeFromArray(childWidgets, deleted)
                     destroyListeners(deleted)
+                    delParentArray(deleted)
                 }
-
                 if (added.length) {
                     childWidgets.push(...added)
-                    for (let i = 0; i < added.length; i++) {
-                        const item = added[i];
+                    for (const item of added) {
                         item.parentWidget = widget
                         const parsed = item.getParsed(conf.templateName)
                         item.bindToElement(parsed.first)
                     }
-                    setParentArray(this, added)
+                    setParentArray(arr, added)
                 }
                 patch.splice(index, deleteCount, ...added.map(v => true))
-                for (let i = 0, n = this.length; i < n; i++) {
-                    patch[i] = filter(this[i])
+                for (let i = 0, n = arr.length; i < n; i++) {
+                    patch[i] = filter(arr[i])
                     if (patch[i] && !nodeVisible[i]) {
                         const nextVisible = nodeVisible.indexOf(true, i),
-                              refNode = ~nextVisible ? this[nextVisible].element : null
-                        el.insertBefore(this[i].element, refNode)
+                              refNode     = ~nextVisible ? arr[nextVisible].element : null
+                        el.insertBefore(arr[i].element, refNode)
                     }
                     else if (!patch[i] && nodeVisible[i]) {
-                        el.removeChild(this[i].element)
+                        el.removeChild(arr[i].element)
                     }
                 }
                 nodeVisible = patch
@@ -284,10 +294,10 @@ module feather.observe {
     function bindArray(arr: Widget[], hook: Hook, conf: BindProperties, transform: Function) {
         const el = hook.node,
               removed = arr.splice(0, arr.length)
-        observeArray(arr, defaultArrayListener(this, hook, conf, transform))
+        observeArray(arr, defaultArrayListener(this, arr, hook, conf, transform))
         arr.push(...removed)
         for (const prop of conf.changeOn) {
-            createListener(this, null, prop, () => notifyListeners(arr))
+            createListener(this, conf, prop, () => notifyListeners(arr))
         }
         el.removeAttribute(`{{${hook.curly}}}`)
     }
@@ -314,18 +324,18 @@ module feather.observe {
         observe(this, path, update(initialValue))
     }
 
-    const identity = (el) => true
+    const identity = (el) => () => true
 
-    function createObserver(property: string, value: Primitive, hook: Hook, conf: BindProperties, transform: Function) {
-        const typeOfValue = Array.isArray(value) ? 'array' : (typeof value).toLowerCase(),
+    function createObserver(property: string, transformedValue: Primitive|Function, hook: Hook, conf: BindProperties, transform: Function) {
+        const typeOfValue = Array.isArray(transformedValue) ? 'array' : (typeof transformedValue).toLowerCase(),
               initialValue = this[property]
         if (/boolean/.test(typeOfValue)) {
             bindBoolean.call(this, property, initialValue, hook, transform, conf, createListener)
         } else if (/string|number|undefined/.test(typeOfValue)) {
             bindStringOrNumber.call(this, property, initialValue, hook, transform, conf, createListener)
-        } else if (/array/.test(typeOfValue) || isFunction(value)) {
-            if (!isFunction(value)) {
-                transform = identity.bind(this)
+        } else if (/array/.test(typeOfValue) || isFunction(transformedValue)) {
+            if (!isFunction(transformedValue)) {
+                transform = identity
             }
             bindArray.call(this, initialValue, hook, conf, transform)
         } else {
