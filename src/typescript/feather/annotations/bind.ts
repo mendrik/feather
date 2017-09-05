@@ -307,9 +307,9 @@ module feather.observe {
               conf = collect(binders, this)[rootProperty],
               update = (val) => {
                   if (/boolean/.test(typeOfValue)) {
-                      bindBoolean.call(this, null, val, hook, transform, conf, dummyCreate)
+                      bindBoolean.call(this, val, hook, transform, conf, dummyCreate)
                   } else if (/string|number|undefined/.test(typeOfValue)) {
-                      bindStringOrNumber.call(this, null, val, hook, transform, conf, dummyCreate)
+                      bindStringOrNumber.call(this, val, hook, transform, conf, dummyCreate)
                   } else {
                       console.log(
                           'Deeply bound properties work only with strings, numbers or booleans. ' +
@@ -385,8 +385,7 @@ module feather.observe {
                                         .map(method =>
                                             context[method].bind(context)))
 
-                let   value = this[property],
-                      storedValue
+                let value = this[property]
 
                 if (~property.indexOf('.') || isObject(value) && hook.hasMethods()) {
                     value = deepValue(this, property)
