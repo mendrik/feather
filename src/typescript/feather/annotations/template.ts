@@ -42,7 +42,9 @@ module feather.annotations {
                     public type: HookType,
                     public curly: string,
                     public attribute?: string,
-                    public text?: string) {
+                    public text?: string,
+                    public property?: string,
+                    public transformFns?: string[]) {
         }
     }
 
@@ -57,23 +59,27 @@ module feather.annotations {
         constructor(public node: Node,
                     public hookInfos: feather.annotations.HookInfo[],
                     public hookMap: SimpleMap) {
+
+            hookInfos.forEach(i => {
+                const originalCurly = this.hookMap[i.curly.toLowerCase()],
+                      transformFns = originalCurly.split(/:/)
+                i.property = transformFns.shift()
+                i.transformFns = transformFns
+            });
         }
 
         asParsedTemplate(): ParsedTemplate {
             const doc = this.node.cloneNode(true),
                   nodeList = allChildNodes(doc),
                   hooks = this.hookInfos.map(i => {
-                      const originalCurly = this.hookMap[i.curly.toLowerCase()],
-                            transformFns  = originalCurly.split(/:/),
-                            property      = transformFns.shift()
                       return new Hook(
                           nodeList[i.nodePosition],
                           i.type,
                           i.curly,
                           i.attribute,
                           i.text,
-                          property,
-                          transformFns
+                          i.property,
+                          i.transformFns
                       )
                   })
             return {
@@ -146,6 +152,10 @@ module feather.annotations {
                 parsedTemplateCache[templateString] = preparsedTemplate
             }
             return preparsedTemplate.asParsedTemplate()
+        }
+
+        static clearTemplates(widget: Widget) {
+            templates.delete(widget)
         }
     }
 
