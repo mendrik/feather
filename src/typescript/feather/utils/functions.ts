@@ -16,21 +16,4 @@ module feather.functions {
     export const isUndef = (x) => !isDef(x)
 
     export const strFactory = (x: StringFactory|string): string => isFunction(x) ? (x as any)() : x;
-
-    const inheritedMethodCache = new WeakMap<any, string[]>()
-
-    export function getInheritedMethods(obj: Object): string[] {
-        if (inheritedMethodCache.has(obj)) {
-            return inheritedMethodCache.get(obj)
-        }
-        let props: string[] = []
-        const orig = obj
-        do {
-            props = props.concat(Object.getOwnPropertyNames(obj))
-        } while (obj = Object.getPrototypeOf(obj))
-
-        const res = props.filter(p => isFunction(orig[p]))
-        inheritedMethodCache.set(orig, res)
-        return res
-    }
 }

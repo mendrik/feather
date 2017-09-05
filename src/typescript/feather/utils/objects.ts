@@ -4,7 +4,6 @@ module feather.objects {
     import observeArray   = feather.arrays.observeArray
     import ObjectChange   = feather.types.ObjectChange
     import Callback       = feather.types.Callback
-    import Factory        = feather.types.Factory
     import isUndef        = feather.functions.isUndef
 
     export const isObject = (obj: any): boolean =>
@@ -148,7 +147,4 @@ module feather.objects {
         }
         return lookup
     }
-
-    export const getOrCreate = <T>(store: TypedMap<T>, property: string, factory: Factory<T>) =>
-        store[property] || (store[property] = factory())
 }

@@ -51,6 +51,15 @@ const loadPage = (callback: Function) => {
         addListener: () => 0
     })
 
+    window.document.createRange = () => ({
+        createContextualFragment: (source) => {
+            const doc = window.document,
+                  template = doc.createElement('template')
+            template.innerHTML = source
+            return doc.importNode((template as HTMLTemplateElement).content, true)
+        }
+    })
+
     const server = module.exports.server = sinon.fakeServer.create({
         autoRespond: true,
         autoRespondAfter: 1

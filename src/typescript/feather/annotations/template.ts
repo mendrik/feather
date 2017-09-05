@@ -6,12 +6,12 @@ module feather.annotations {
     import allChildNodes         = feather.dom.allChildNodes
     import collect               = feather.objects.collectAnnotationsFromTypeMap
     import ensure                = feather.objects.ensure
+    import SimpleMap             = feather.types.SimpleMap
 
     const CURLIES                = /{{(.*?)}}/
     const ALL_CURLIES            = /{{(.*?)}}/g
     const templates              = new WeakMap<Widget, TypedMap<Function>>()
     const parsedTemplateCache    = {} as Map<string, PreparsedTemplate>
-    const template               = document.createElement('template')
     export const selfClosingTags = /<(\w+)((\s+([^=\s\/<>]+|\w+=('[^']*'|"[^"]*"|[^"']\S*)))*)\s*\/>/gi
     export const openTags        = '<$1$2></$1>'
 
@@ -38,17 +38,11 @@ module feather.annotations {
 
     export class HookInfo {
 
-        property: string;
-        transformFns: string[] = [];
-
         constructor(public nodePosition: number,
                     public type: HookType,
                     public curly: string,
                     public attribute?: string,
                     public text?: string) {
-
-            this.transformFns = curly.split(/:/)
-            this.property     = this.transformFns.shift()
         }
     }
 
@@ -61,22 +55,27 @@ module feather.annotations {
     export class PreparsedTemplate {
 
         constructor(public node: Node,
-                    public hookInfos: feather.annotations.HookInfo[]) {}
+                    public hookInfos: feather.annotations.HookInfo[],
+                    public hookMap: SimpleMap) {
+        }
 
         asParsedTemplate(): ParsedTemplate {
             const doc = this.node.cloneNode(true),
                   nodeList = allChildNodes(doc),
-                  hooks = this.hookInfos.map(i =>
-                      new Hook(
+                  hooks = this.hookInfos.map(i => {
+                      const originalCurly = this.hookMap[i.curly.toLowerCase()],
+                            transformFns  = originalCurly.split(/:/),
+                            property      = transformFns.shift()
+                      return new Hook(
                           nodeList[i.nodePosition],
                           i.type,
                           i.curly,
                           i.attribute,
                           i.text,
-                          i.property,
-                          i.transformFns
+                          property,
+                          transformFns
                       )
-                  )
+                  })
             return {
                 doc,
                 first: nodeList[1],
@@ -85,18 +84,18 @@ module feather.annotations {
         }
     }
 
-    const range = document.createRange ? document.createRange(): {
-        createContextualFragment: (source) => {
-            template.innerHTML = source.replace(selfClosingTags, openTags)
-            return document.importNode((template as HTMLTemplateElement).content, true)
-        }
-    }
+    const range = document.createRange()
 
     export function getPreparsedTemplate(templateStr: string): PreparsedTemplate {
         const source = templateStr.replace(selfClosingTags, openTags),
             frag = range.createContextualFragment(source),
-            allNodes = allChildNodes(frag)
-        return new PreparsedTemplate(frag, parseHooks(allNodes))
+            allNodes = allChildNodes(frag),
+            hookMap = {} // we need to remember case sensitive hooks, b/c attributes turn lowercase
+        let m
+        while (m = ALL_CURLIES.exec(templateStr)) {
+            hookMap[m[1].toLowerCase()] = m[1]
+        }
+        return new PreparsedTemplate(frag, parseHooks(allNodes), hookMap)
     }
 
     function parseHooks(nodes: Node[]): HookInfo[] {

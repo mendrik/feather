@@ -17,7 +17,6 @@ module feather.observe {
     import diff                = feather.arrays.diff
     import patch               = feather.arrays.patch
     import removeFromArray     = feather.arrays.removeFromArray
-    import getInheritedMethods = feather.functions.getInheritedMethods
     import isFunction          = feather.functions.isFunction
     import compose             = feather.functions.compose
     import isDef               = feather.functions.isDef
@@ -27,14 +26,12 @@ module feather.observe {
     import ensure              = feather.objects.ensure
     import collect             = feather.objects.collectAnnotationsFromTypeMap
     import observe             = feather.objects.createObjectPropertyListener
-    import getOrCreate         = feather.objects.getOrCreate
     import Subscribable        = feather.hub.Subscribable
 
     const boundProperties      = new WeakMap<Subscribable, TypedMap<Function[]>>()
     const binders              = new WeakMap<Observable, TypedMap<BindProperties>>()
     const serializers          = new WeakMap<Observable, TypedMap<Serializer>>()
     const parentArrays         = new WeakMap<Subscribable, Subscribable[]>()
-    const attributeMapper      = {} as TypedMap<string>
     const storeQueue           = new WeakMap<any, any>()
     const triggerQueue         = new WeakMap<any, any>()
 
@@ -402,7 +399,6 @@ module feather.observe {
             console.log(`@Bind() ${property} annotation missing or 'bequeath' not set?`, hook, property, binders)
             return
         }
-        property = current.findProperty(property)
         const conf = collect(binders, current)[property]
         if (conf && conf.bequeath) {
             current.attachHooks.call(current, [hook], context)
@@ -416,13 +412,11 @@ module feather.observe {
         attachHooks(hooks: Hook[], parent?: any) {
             const context: Widget = parent || this
             for (const hook of hooks) {
-
-                const property     = this.findProperty(hook.property),
+                const property     = hook.property,
                       conf         = collect(binders, this)[property],
                       transform    = compose<any>(hook.transformFns
                                         .map(method =>
-                                            context[context.findMethod(method)]
-                                                .bind(context)))
+                                            context[method].bind(context)))
 
                 let   value = this[property],
                       storedValue
@@ -472,25 +466,6 @@ module feather.observe {
                 }
             }
         }
-
-        // attributes are case insensitive, so let's try to find the matching property like this
-        findProperty(ci: string): string {
-            return getOrCreate(attributeMapper, ci, () => {
-                const lc = ci.toLowerCase();
-                return Object.getOwnPropertyNames(this)
-                    .find(p => p.toLowerCase() === lc) || ci
-            })
-        }
-
-        // same applies for methods
-        findMethod(ci: string): string {
-            return getOrCreate(attributeMapper, ci, () => {
-                const lc = ci.toLowerCase();
-                return getInheritedMethods(this)
-                    .find(p => p.toLowerCase() === lc) || ci;
-            })
-        }
-
 
         cleanUp() {
             super.cleanUp();
