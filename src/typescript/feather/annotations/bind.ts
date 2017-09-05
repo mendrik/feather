@@ -149,7 +149,6 @@ module feather.observe {
                         for (const cb of listeners[property]) {
                             cb(newValue, old)
                         }
-                        console.log(obj, parentArrays.get(obj))
                         triggerParentArray(obj)
                     }
                     return newValue
@@ -158,8 +157,7 @@ module feather.observe {
         }
     }
 
-    function bindBoolean(property: string,
-                         value: any,
+    function bindBoolean(value: any,
                          hook: Hook,
                          transform: FnOne,
                          conf: BindProperties,
@@ -167,7 +165,7 @@ module feather.observe {
         if (hook.type === HookType.ATTRIBUTE || hook.type === HookType.PROPERTY) {
 
             const el = (hook.node as HTMLElement),
-                  attributeName = hook.attribute || property,
+                  attributeName = hook.attribute || hook.property,
                   updateDom = (val) => {
                       if (typeof el[attributeName] === 'boolean') {
                           el[attributeName] = !!transform(val)
@@ -182,15 +180,14 @@ module feather.observe {
             } else {
                 el.setAttribute(hook.attribute, '')
             }
-            createListener(this, conf, property, updateDom(value))
+            createListener(this, conf, hook.property, updateDom(value))
         } else {
             throw Error('Bool value can only be bound to attributes ie. hidden="{{myBool}}. ' +
                 'Consider using filters to convert them to strings (true|false|yes|no etc)"')
         }
     }
 
-    function bindStringOrNumber(property: string,
-                                value: string|number,
+    function bindStringOrNumber(value: string|number,
                                 hook: Hook,
                                 transform: FnOne,
                                 conf: BindProperties,
@@ -208,7 +205,7 @@ module feather.observe {
                 }
                 return updateDom
             }
-            createListener(this, conf, property, updateDom())
+            createListener(this, conf, hook.property, updateDom())
         } else if (hook.type === HookType.CLASS) { // <p class="red {{myVar}}">text goes here</p>
             const classList = (val: any, fn: Function) => {
                 if (isDef(val)) {
@@ -221,16 +218,16 @@ module feather.observe {
                 classList(val, (v) => el.classList.add(v))
                 return updateDom
             }
-            createListener(this, conf, property, updateDom(value))
+            createListener(this, conf, hook.property, updateDom(value))
             el.classList.remove(`{{${hook.curly}}}`)
         } else if (hook.type === HookType.ATTRIBUTE || hook.type === HookType.PROPERTY) { // <p style="{{myvar}}" {{hidden}}>text goes here</p>
-            const attributeName = hook.attribute || property,
+            const attributeName = hook.attribute || hook.property,
                   updateDom = (val) => {
                       const formatted: string = transform(val)
                       setOrRemoveAttribute(el, attributeName, isDef(formatted), formatted)
                       return updateDom
                   }
-            createListener(this, conf, property, updateDom(value))
+            createListener(this, conf, hook.property, updateDom(value))
             if (!hook.attribute) {
                 el.removeAttribute(`{{${hook.curly}}}`)
             }
@@ -326,13 +323,13 @@ module feather.observe {
 
     const identity = (el) => () => true
 
-    function createObserver(property: string, transformedValue: Primitive|Function, hook: Hook, conf: BindProperties, transform: Function) {
+    function createObserver(transformedValue: Primitive|Function, hook: Hook, conf: BindProperties, transform: Function) {
         const typeOfValue = Array.isArray(transformedValue) ? 'array' : (typeof transformedValue).toLowerCase(),
-              initialValue = this[property]
+              initialValue = this[hook.property]
         if (/boolean/.test(typeOfValue)) {
-            bindBoolean.call(this, property, initialValue, hook, transform, conf, createListener)
+            bindBoolean.call(this, initialValue, hook, transform, conf, createListener)
         } else if (/string|number|undefined/.test(typeOfValue)) {
-            bindStringOrNumber.call(this, property, initialValue, hook, transform, conf, createListener)
+            bindStringOrNumber.call(this, initialValue, hook, transform, conf, createListener)
         } else if (/array/.test(typeOfValue) || isFunction(transformedValue)) {
             if (!isFunction(transformedValue)) {
                 transform = identity
@@ -360,7 +357,27 @@ module feather.observe {
     export class Observable extends RouteAware {
 
         attachHooks(hooks: Hook[], parent?: any) {
-            const context: Widget = parent || this
+            const context: Widget = parent || this,
+                  boundProperties = binders.get(Object.getPrototypeOf(context))
+            if (!parent && boundProperties) {
+                Object.keys(boundProperties).forEach(property => {
+                    try {
+                        const json = localStorage.getItem(getPath(this, property))
+                        if (json) {
+                            const storedValue = JSON.parse(json).value
+                            if (Array.isArray(storedValue)) {
+                                const serializer = collect(serializers, this)[property]
+                                this[property] = storedValue.map(this[serializer.read])
+                            } else {
+                                this[property] = storedValue
+                            }
+                        }
+                    } catch (e) {
+                        console.warn(e)
+                    }
+                })
+            }
+
             for (const hook of hooks) {
                 const property     = hook.property,
                       conf         = collect(binders, this)[property],
@@ -389,25 +406,8 @@ module feather.observe {
                 if (isUndef(conf)) {
                     tryToBindFromParentWidget(this.parentWidget as Observable, this, hook, property)
                     continue
-                } else if (!parent && conf.localStorage) {
-                    try {
-                        const json = localStorage.getItem(getPath(this, property))
-                        if (json) {
-                            storedValue = JSON.parse(json).value
-                        }
-                    } catch (e) {
-                        console.warn(e)
-                    }
-                    if (isDef(storedValue)) {
-                        if (Array.isArray(storedValue)) {
-                            const serializer = collect(serializers, this)[property]
-                            this[property] = value = storedValue.map(this[serializer.read])
-                        } else {
-                            this[property] = value = storedValue
-                        }
-                    }
                 }
-                createObserver.call(this, property, transform(value), hook, conf, transform)
+                createObserver.call(this, transform(value), hook, conf, transform)
             }
         }
 
