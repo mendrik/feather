@@ -63,12 +63,14 @@ module feather.core {
         }
 
         cleanUp() {
-            super.cleanUp()
-            for (const cw of this.childWidgets) {
-                cw.cleanUp()
-            }
-            TemplateFactory.clearTemplates(this)
-            removeFromArray(WidgetFactory.singletonRegistry, [this])
+            setTimeout(() => {
+                super.cleanUp()
+                for (const cw of this.childWidgets) {
+                    cw.cleanUp()
+                }
+                TemplateFactory.clearTemplates(this)
+                removeFromArray(WidgetFactory.singletonRegistry, [this])
+            }, 10)
         }
     }
 }
