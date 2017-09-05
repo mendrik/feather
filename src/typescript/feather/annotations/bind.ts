@@ -59,15 +59,6 @@ module feather.observe {
         }
     }
 
-    const delParentArray = (widgets: Subscribable[]) => {
-        for (const w of widgets) {
-            parentArrays.delete(w)
-            if (w.childWidgets) {
-                delParentArray(w.childWidgets)
-            }
-        }
-    }
-
     const triggerParentArray = (obj: Observable) => {
         const parentArray = parentArrays.get(obj)
         if (parentArray) {
@@ -260,14 +251,15 @@ module feather.observe {
                     deleted.forEach(del => el.removeChild(del.element))
                     removeFromArray(childWidgets, deleted)
                     destroyListeners(deleted)
-                    delParentArray(deleted)
                 }
                 if (added.length) {
                     childWidgets.push(...added)
                     for (const item of added) {
                         item.parentWidget = widget
-                        const parsed = item.getParsed(conf.templateName)
-                        item.bindToElement(parsed.first)
+                        if (!item.element) {
+                            const parsed = item.getParsed(conf.templateName)
+                            item.bindToElement(parsed.first)
+                        }
                     }
                     setParentArray(arr, added)
                 }
