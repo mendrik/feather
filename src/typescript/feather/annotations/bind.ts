@@ -234,11 +234,14 @@ module feather.observe {
         let nodeVisible: boolean[] = []
         return {
             sort(indices: any[]) {
-                for (const i of indices) {
-                    if (nodeVisible[i]) {
+                const copy: boolean[] = []
+                for (let i = 0; i < indices.length; i++) {
+                    if (nodeVisible[indices[i]]) {
                         el.appendChild(arr[i].element)
                     }
+                    copy[i] = nodeVisible[indices[i]]
                 }
+                nodeVisible = copy
             },
             splice(index: number, deleteCount: number, added: Widget[], deleted: Widget[] = []) {
                 const patch = from<boolean>(nodeVisible),
