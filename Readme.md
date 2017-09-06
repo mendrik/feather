@@ -1,6 +1,6 @@
 # Featherₜₛ
 
-<img src="http://cd.feather-ts.com/mendrik/feather/badge/?branch=master" height="20">&nbsp;<img src="http://dist.feather-ts.com/size.svg" height="20">&nbsp;<img src="http://www.feather-ts.com/images/licence.svg" height="20">
+<img src="http://cd.feather-ts.com/mendrik/feather/badge/?branch=master" height="20">&nbsp;<img src="http://dist.feather-ts.com/size.svg?v=1" height="20">&nbsp;<img src="http://www.feather-ts.com/images/licence.svg" height="20">
 
 With friendly support of:
 
