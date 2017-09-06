@@ -61,17 +61,6 @@ Source maps are embedded.
 A library of reusable UI components can be found [here](https://github.com/mendrik/feather-components). 
 This is work in progress so use it only as in inspiration for your own implementations. 
 
-# Javascript fatigue
-
-Not another framework. You're right. There is no excuse and feather-ts was originally meant 
-as a learning experience for myself. I have used React, CanJs and Angular previously and got tired of 
-setting up those behemoths, adding complexity like server-side rendering or webpack configs that 
-launch slower than my java backends. I wanted to have a library that is fast, small and allows for 
-clean code, without adding any new semantics like directives, action creators or some theoretically
-great functional programming paradigms that make the code hard to write and harder to read. For what 
-it's worth, you can just ignore this library and move on, for anyone else feel free to try it out and 
-leave some feedback.
-
 # Performance
 
 Comparing feather-ts using [this](https://github.com/lhorie/todomvc-perf-comparison) 
