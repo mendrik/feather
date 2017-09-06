@@ -349,30 +349,37 @@ module feather.observe {
         }
     }
 
-    export class Observable extends RouteAware {
-
-        attachHooks(hooks: Hook[], parent?: any) {
-            const context: Widget = parent || this,
-                  boundProperties = binders.get(Object.getPrototypeOf(context))
-            if (!parent && boundProperties) {
-                Object.keys(boundProperties).forEach(property => {
+    const loadLocalStorageValue = (context: Observable) => {
+        const boundProperties = collect(binders, context)
+        if (boundProperties) {
+            Object.keys(boundProperties).forEach(property => {
+                if (boundProperties[property].localStorage) {
                     try {
-                        const json = localStorage.getItem(getPath(this, property))
+                        const json = localStorage.getItem(getPath(context, property))
                         if (json) {
                             const storedValue = JSON.parse(json).value
                             if (Array.isArray(storedValue)) {
-                                const serializer = collect(serializers, this)[property]
-                                this[property] = storedValue.map(this[serializer.read])
+                                const serializer = collect(serializers, context)[property]
+                                context[property] = storedValue.map(context[serializer.read])
                             } else {
-                                this[property] = storedValue
+                                context[property] = storedValue
                             }
                         }
                     } catch (e) {
                         console.warn(e)
                     }
-                })
-            }
+                }
+            })
+        }
+    }
 
+    export class Observable extends RouteAware {
+
+        attachHooks(hooks: Hook[], parent?: any) {
+            const context: Widget = parent || this
+            if (isUndef(parent)) {
+                loadLocalStorageValue(this)
+            }
             for (const hook of hooks) {
                 const property     = hook.property,
                       conf         = collect(binders, this)[property],
