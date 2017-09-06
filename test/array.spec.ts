@@ -59,34 +59,6 @@ describe('Arrays', () => {
         })
     })
 
-    describe('Arrays.diff', () => {
-        it('should diff correctly', () => {
-            const r1 = feather.arrays.range(2, 10),
-                r2 = feather.arrays.range(4, 8),
-                diff = feather.arrays.diff(r1, r2)
-            expect(diff).to.be.deep.equal([2, 3, 9, 10])
-        })
-    })
-
-    describe('Arrays.lis', () => {
-        it('should find longest increasing sequence', () => {
-            const r1 = [1, 4, 8, -7, 2, 5, 3, 7, 9, 6, 10, 0, 13, 8]
-            expect(feather.arrays.lis(r1)).to.be.deep.equal([1, 4, 5, 7, 9, 10, 13])
-            const r2 = [0,3,1,2]
-            expect(feather.arrays.lis(r2)).to.be.deep.equal([0, 1, 2])
-        })
-    })
-
-    describe('Arrays.patch', () => {
-        it('should find a patch', () => {
-            const current = ['a', 'b', 'e', 'f'],
-                  target = ['a', 'c', 'd', 'f'],
-                  patch = feather.arrays.patch(target, current);
-            expect(patch.add).to.be.deep.equal(['c', 'd'])
-            expect(patch.remove).to.be.deep.equal(['b', 'e'])
-        })
-    })
-
     describe('Arrays.removeFromArray', () => {
         it('should remove elements from array', () => {
             const range = feather.arrays.range;

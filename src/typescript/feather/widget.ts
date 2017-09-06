@@ -35,7 +35,7 @@ module feather.core {
             this.element.appendChild(parsed.doc)
         }
 
-        private getParsed(templateName: string): ParsedTemplate {
+        getParsed(templateName: string): ParsedTemplate {
             const template = TemplateFactory.getTemplate(this, templateName)
             from<HTMLElement>(template.doc.childNodes)
                 .filter(n => n.nodeType === Node.ELEMENT_NODE)
@@ -47,19 +47,6 @@ module feather.core {
         // noinspection JSUnusedLocalSymbols
         init(element: Element) {
             // override this with this.render('templatename') in sub classes of Widget
-        }
-
-        appendTemplateRoot(parent: ValidRoot, templateName: string) {
-            if (!templateName) {
-                throw Error('Bound lists must specify template name in @Bind()')
-            }
-            if (!this.element) {
-                const parsed = this.getParsed(templateName)
-                this.bindToElement(parsed.first)
-                parent.appendChild(parsed.first)
-            } else { // already created, let's swap parents
-                parent.appendChild(this.element)
-            }
         }
 
         cleanUp() {
