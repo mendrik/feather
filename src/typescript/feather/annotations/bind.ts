@@ -221,7 +221,7 @@ module feather.observe {
                                   conf: BindProperties,
                                   filterFactory: Function): ArrayListener<Widget> {
         const el = hook.node,
-              firstChild = el.firstElementChild // usually null
+              firstChild = el.firstElementChild // usually null, lists that share a parent with other nodes are prepended.
         let nodeVisible: boolean[] = []
         return {
             sort(indices: any[]) {
