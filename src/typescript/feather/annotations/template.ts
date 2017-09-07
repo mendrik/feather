@@ -7,6 +7,9 @@ module feather.annotations {
     import collect               = feather.objects.collectAnnotationsFromTypeMap
     import ensure                = feather.objects.ensure
     import SimpleMap             = feather.types.SimpleMap
+    import ComponentInfo         = feather.boot.ComponentInfo
+    import WidgetFactory         = feather.boot.WidgetFactory
+    import selectorMatches = feather.dom.selectorMatches;
 
     const CURLIES                = /{{(.*?)}}/
     const ALL_CURLIES            = /{{(.*?)}}/g
@@ -51,14 +54,26 @@ module feather.annotations {
     export interface ParsedTemplate {
         doc: Node,
         first: Element,
-        hooks: Hook[]
+        hooks: Hook[],
+        components: Component[]
+    }
+
+    export interface Component {
+        info: ComponentInfo,
+        nodes: HTMLElement[]
+    }
+
+    export interface PreComponent {
+        info: ComponentInfo,
+        nodes: number[]
     }
 
     export class PreparsedTemplate {
 
         constructor(public node: Node,
                     public hookInfos: feather.annotations.HookInfo[],
-                    public hookMap: SimpleMap) {
+                    public hookMap: SimpleMap,
+                    public preComponents: PreComponent[]) {
 
             hookInfos.forEach(i => {
                 const originalCurly = this.hookMap[i.curly.toLowerCase()],
@@ -82,10 +97,14 @@ module feather.annotations {
                           i.transformFns
                       )
                   })
+            const components: Component[] = this.preComponents
+                .map(c => ({info:c.info, nodes: c.nodes.map(i => nodeList[i] as HTMLElement)}))
+                .filter(c => c.nodes.length)
             return {
                 doc,
                 first: nodeList[1],
-                hooks
+                hooks,
+                components
             }
         }
     }
@@ -101,7 +120,14 @@ module feather.annotations {
         while (m = ALL_CURLIES.exec(templateStr)) {
             hookMap[m[1].toLowerCase()] = m[1]
         }
-        return new PreparsedTemplate(frag, parseHooks(allNodes), hookMap)
+        const registry = WidgetFactory.widgetRegistry,
+            components = registry.map(info => ({
+                nodes: allNodes
+                    .map((n, idx) => n.nodeType === Node.ELEMENT_NODE && selectorMatches(n, info.selector) ? idx : -1)
+                    .filter(n => n !== -1).reverse(),
+                info: info
+            }))
+        return new PreparsedTemplate(frag, parseHooks(allNodes), hookMap, components)
     }
 
     function parseHooks(nodes: Node[]): HookInfo[] {

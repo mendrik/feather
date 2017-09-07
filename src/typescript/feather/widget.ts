@@ -1,11 +1,9 @@
 module feather.core {
 
     import TemplateFactory = feather.annotations.TemplateFactory
-    import ValidRoot       = feather.types.ValidRoot
     import Observable      = feather.observe.Observable
     import ParsedTemplate  = feather.annotations.ParsedTemplate
     import WidgetFactory   = feather.boot.WidgetFactory
-    import from            = feather.arrays.from
     import removeFromArray = feather.arrays.removeFromArray
 
     export interface Initializable {
@@ -37,12 +35,7 @@ module feather.core {
 
         getParsed(templateName: string): ParsedTemplate {
             const template = TemplateFactory.getTemplate(this, templateName)
-            from<HTMLElement>(template.doc.childNodes)
-                .forEach(n => {
-                    if (n.nodeType === Node.ELEMENT_NODE) {
-                        WidgetFactory.start(n, this)
-                    }
-                })
+            template.components.forEach(c => WidgetFactory.initComponents(c.nodes, c.info, this))
             this.attachHooks(template.hooks)
             return template
         }

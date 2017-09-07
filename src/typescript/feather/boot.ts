@@ -37,7 +37,7 @@ module feather.boot {
     }
 
     export class WidgetFactory {
-        private static widgetRegistry: ComponentInfo[] = []
+        public static widgetRegistry: ComponentInfo[] = []
         public static singletonRegistry: Widget[] = []
 
 
@@ -46,7 +46,7 @@ module feather.boot {
             for (let i = 0, n = reg.length; i < n; i++) {
                 const info = reg[i],
                       nodes = querySelectorWithRoot(scope, info.selector)
-                WidgetFactory.initComponents(nodes, reg[i], parentWidget)    
+                WidgetFactory.initComponents(nodes, reg[i], parentWidget)
             }
             if (scope === document) {
                 feather.routing.runRoutes()

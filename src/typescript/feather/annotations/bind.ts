@@ -220,7 +220,8 @@ module feather.observe {
                                   hook: Hook,
                                   conf: BindProperties,
                                   filterFactory: Function): ArrayListener<Widget> {
-        const el = hook.node
+        const el = hook.node,
+              firstChild = el.firstElementChild // usually null
         let nodeVisible: boolean[] = []
         return {
             sort(indices: any[]) {
@@ -261,7 +262,7 @@ module feather.observe {
                     patch[i] = filter(arr[i])
                     if (patch[i] && !nodeVisible[i]) {
                         const nextVisible = nodeVisible.indexOf(true, i),
-                              refNode     = ~nextVisible ? arr[nextVisible].element : null
+                              refNode     = ~nextVisible ? arr[nextVisible].element : firstChild
                         el.insertBefore(arr[i].element, refNode)
                     }
                     else if (!patch[i] && nodeVisible[i]) {

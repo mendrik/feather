@@ -13,8 +13,8 @@ describe('Pass objects via attributes {}', () => {
         const aw1 = document.querySelector('#aw1 span'),
               aw2 = document.querySelector('#aw2 span'),
               app = window.app as demo.Application,
-              w1 = app.childWidgets[3] as demo.AttributeWidget,
-              w2 = app.childWidgets[4] as demo.AttributeWidget
+              w1 = app.childWidgets[2] as demo.AttributeWidget,
+              w2 = app.childWidgets[1] as demo.AttributeWidget
 
         expect(aw1.getAttribute('bool')).to.be.equal('yes')
         expect(aw2.getAttribute('bool')).to.be.equal('no')
