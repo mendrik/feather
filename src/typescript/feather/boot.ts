@@ -46,22 +46,26 @@ module feather.boot {
             for (let i = 0, n = reg.length; i < n; i++) {
                 const info = reg[i],
                       nodes = querySelectorWithRoot(scope, info.selector)
-                for (let j = 0, m = nodes.length; j < m; j++) {
-                    const node = nodes[j],
-                          args = info.attributes.map(attributeParser(node, parentWidget || window)),
-                          widget: Widget = new (Function.prototype.bind.apply(info.component, [null, ...args]))
-                    if (info.singleton) {
-                        WidgetFactory.singletonRegistry.push(widget)
-                    }
-                    if (parentWidget) {
-                        widget.parentWidget = parentWidget
-                        parentWidget.childWidgets.push(widget)
-                    }
-                    widget.bindToElement(node)
-                }
+                WidgetFactory.initComponents(nodes, reg[i], parentWidget)    
             }
             if (scope === document) {
                 feather.routing.runRoutes()
+            }
+        }
+
+        static initComponents(nodes: HTMLElement[], info: ComponentInfo, parentWidget?: Widget) {
+            for (let j = 0, m = nodes.length; j < m; j++) {
+                const node = nodes[j],
+                      args = info.attributes.map(attributeParser(node, parentWidget || window)),
+                      widget: Widget = new (Function.prototype.bind.apply(info.component, [null, ...args]))
+                if (info.singleton) {
+                    WidgetFactory.singletonRegistry.push(widget)
+                }
+                if (parentWidget) {
+                    widget.parentWidget = parentWidget
+                    parentWidget.childWidgets.push(widget)
+                }
+                widget.bindToElement(node)
             }
         }
 

@@ -38,8 +38,11 @@ module feather.core {
         getParsed(templateName: string): ParsedTemplate {
             const template = TemplateFactory.getTemplate(this, templateName)
             from<HTMLElement>(template.doc.childNodes)
-                .filter(n => n.nodeType === Node.ELEMENT_NODE)
-                .forEach(x => WidgetFactory.start(x, this))
+                .forEach(n => {
+                    if (n.nodeType === Node.ELEMENT_NODE) {
+                        WidgetFactory.start(n, this)
+                    }
+                })
             this.attachHooks(template.hooks)
             return template
         }
