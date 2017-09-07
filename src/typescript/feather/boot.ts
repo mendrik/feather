@@ -1,10 +1,10 @@
 module feather.boot {
 
-    import querySelectorWithRoot = feather.dom.querySelectorWithRoot
-    import Constructable         = feather.core.Constructable
-    import ValidRoot             = feather.types.ValidRoot
-    import Widget                = feather.core.Widget
-    import isDef                 = feather.functions.isDef
+    import Constructable = feather.core.Constructable
+    import ValidRoot     = feather.types.ValidRoot
+    import Widget        = feather.core.Widget
+    import isDef         = feather.functions.isDef
+    import from          = feather.arrays.from
 
     export interface Blueprint {
         selector: string
@@ -46,7 +46,7 @@ module feather.boot {
             const reg = WidgetFactory.widgetRegistry
             for (let i = 0, n = reg.length; i < n; i++) {
                 const info = reg[i],
-                      nodes = querySelectorWithRoot(scope, info.selector)
+                      nodes = from<HTMLElement>(scope.querySelectorAll(info.selector))
                 WidgetFactory.initComponents(nodes, reg[i], parentWidget)
             }
             if (scope === document) {

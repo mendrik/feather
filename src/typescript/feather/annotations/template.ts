@@ -78,7 +78,7 @@ module feather.annotations {
                       transformFns = originalCurly.split(/:/)
                 i.property = transformFns.shift()
                 i.transformFns = transformFns
-            });
+            })
         }
 
         asParsedTemplate(): ParsedTemplate {
@@ -94,9 +94,16 @@ module feather.annotations {
                           i.transformFns
                       )
                   })
-            const components: Component[] = this.preComponents
-                .filter(c => c.nodes.length)
-                .map(c => ({info:c.info, nodes: c.nodes.map(i => nodeList[i] as HTMLElement)}))
+            const components: Component[] = [],
+                  preComponents = this.preComponents
+            for (let i = 0, n = preComponents.length; i < n; i++) {
+                const nodes = [],
+                      pre = preComponents[i]
+                for (let j = 0, m = pre.nodes.length; j < m; j++) {
+                    nodes.push(nodeList[pre.nodes[j]])
+                }
+                components.push({info: pre.info, nodes: nodes})
+            }
             return {
                 doc,
                 first: nodeList[1],
@@ -118,12 +125,20 @@ module feather.annotations {
             hookMap[m[1].toLowerCase()] = m[1]
         }
         const registry = feather.boot.WidgetFactory.widgetRegistry,
-            components = registry.map(info => ({
-                nodes: allNodes
-                    .map((n, idx) => n.nodeType === Node.ELEMENT_NODE && selectorMatches(n, info.selector) ? idx : -1)
-                    .filter(n => n !== -1),
-                info: info
-            }))
+              components = []
+        for (let i = 0, r = registry.length, m = allNodes.length; i < r; i++) {
+            const nodes = [],
+                  info = registry[i]
+            for (let n = 0; n < m; n++) {
+                const node = allNodes[n]
+                if (node.nodeType === Node.ELEMENT_NODE && selectorMatches(node, registry[i].selector)) {
+                    nodes.push(n)
+                }
+            }
+            if (nodes.length > 0) {
+                components.push({info, nodes})
+            }
+        }
         return new PreparsedTemplate(frag, parseHooks(allNodes), hookMap, components)
     }
 
@@ -180,7 +195,7 @@ module feather.annotations {
             return preparsedTemplate.asParsedTemplate()
         }
 
-        static warmUp = () =>
+        static warmUp = () => {
             templates.forEach((map, proto) => Object.keys(map).forEach(template => {
                 const method = map[template]
                 try {
@@ -190,6 +205,7 @@ module feather.annotations {
                     console.warn(`Template method ${method} in ${proto.constructor.name} is not a pure function.`, e)
                 }
             }))
+        }
     }
 
     export let Template = (name: string = 'default') => (proto: Widget, method: string) => {

@@ -34,8 +34,12 @@ module feather.core {
         }
 
         getParsed(templateName: string): ParsedTemplate {
-            const template = TemplateFactory.getTemplate(this, templateName)
-            template.components.forEach(c => WidgetFactory.initComponents(c.nodes, c.info, this))
+            const template = TemplateFactory.getTemplate(this, templateName),
+                  components = template.components
+            for (let i = 0, n = components.length; i < n; i++) {
+                const component = components[i]
+                WidgetFactory.initComponents(component.nodes, component.info, this)
+            }
             this.attachHooks(template.hooks)
             return template
         }

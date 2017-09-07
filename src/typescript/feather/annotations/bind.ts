@@ -42,7 +42,7 @@ module feather.observe {
 
     const setOrRemoveAttribute = (el: Element, attribute: string, condition: boolean, val: string) => {
         if (attribute === 'value') {
-            (el as HTMLInputElement).value = condition ? val : '';
+            (el as HTMLInputElement).value = condition ? val : ''
         } else if (condition) {
             el.setAttribute(attribute, val)
         } else {
@@ -67,7 +67,7 @@ module feather.observe {
             }
             triggerQueue.set(parentArray,
                 setTimeout(() =>
-                    notifyListeners(parentArray), 5))
+                    notifyListeners(parentArray), 10))
         }
     }
 
@@ -239,7 +239,7 @@ module feather.observe {
                       childWidgets = widget.childWidgets,
                       filter = filterFactory()
                 // handle deleted items
-                nodeVisible.splice(index, deleteCount, ...added.map(v => false));
+                nodeVisible.splice(index, deleteCount, ...added.map(v => false))
 
                 if (deleteCount > 0) {
                     deleted.forEach(del => el.removeChild(del.element))
@@ -275,8 +275,7 @@ module feather.observe {
     }
 
     function bindArray(arr: Widget[], hook: Hook, conf: BindProperties, transform: Function) {
-        const el = hook.node,
-              removed = arr.splice(0, arr.length)
+        const removed = arr.splice(0, arr.length)
         observeArray(arr, defaultArrayListener(this, arr, hook, conf, transform))
         arr.push(...removed)
         for (const prop of conf.changeOn) {
@@ -311,11 +310,11 @@ module feather.observe {
     function createObserver(transformedValue: Primitive|Function, hook: Hook, conf: BindProperties, transform: Function) {
         const typeOfValue = Array.isArray(transformedValue) ? 'array' : (typeof transformedValue).toLowerCase(),
               initialValue = this[hook.property]
-        if (/boolean/.test(typeOfValue)) {
+        if ('boolean' === typeOfValue) {
             bindBoolean.call(this, initialValue, hook, transform, conf, createListener)
         } else if (/string|number|undefined/.test(typeOfValue)) {
             bindStringOrNumber.call(this, initialValue, hook, transform, conf, createListener)
-        } else if (/array/.test(typeOfValue) || isFunction(transformedValue)) {
+        } else if ('array' === typeOfValue || isFunction(transformedValue)) {
             if (!isFunction(transformedValue)) {
                 transform = identity
             }
@@ -376,10 +375,10 @@ module feather.observe {
                       transform    = compose<any>(hook.transformFns
                                         .map(method =>
                                             context[method].bind(context)))
+                let value = this[property],
+                    isObj = isObject(value)
 
-                let value = this[property]
-
-                if (~property.indexOf('.') || isObject(value) && hook.hasMethods()) {
+                if (~property.indexOf('.') || isObj && hook.hasMethods()) {
                     value = deepValue(this, property)
                     if (isUndef(value)) {
                         tryToBindFromParentWidget(this.parentWidget as Observable, this, hook, property)
@@ -387,7 +386,7 @@ module feather.observe {
                         createDeepObserver.call(this, property, hook, transform)
                     }
                     continue
-                } else if (isObject(value) && !hook.hasMethods()) {
+                } else if (isObj && !hook.hasMethods()) {
                     console.log('Binding to objects is not supported. Use new widgets or specify inner property: x.y.z')
                     continue
                 } else if (isFunction(value)) {
@@ -403,7 +402,7 @@ module feather.observe {
         }
 
         cleanUp() {
-            super.cleanUp();
+            super.cleanUp()
             boundProperties.delete(this)
             parentArrays.delete(this)
         }

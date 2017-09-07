@@ -15,5 +15,5 @@ module feather.functions {
     export const isDef = (x) => typeof x !== 'undefined'
     export const isUndef = (x) => !isDef(x)
 
-    export const strFactory = (x: StringFactory|string): string => isFunction(x) ? (x as any)() : x;
+    export const strFactory = (x: StringFactory|string): string => isFunction(x) ? (x as any)() : x
 }
