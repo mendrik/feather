@@ -290,7 +290,7 @@ module feather.observe {
               typeOfValue = (typeof transform(initialValue)).toLowerCase(),
               conf = collect(binders, this)[rootProperty],
               update = (val) => {
-                  if (/boolean/.test(typeOfValue)) {
+                  if ('boolean' === typeOfValue) {
                       bindBoolean.call(this, val, hook, transform, conf, dummyCreate)
                   } else if (/string|number|undefined/.test(typeOfValue)) {
                       bindStringOrNumber.call(this, val, hook, transform, conf, dummyCreate)
@@ -410,7 +410,7 @@ module feather.observe {
 
     export const Bind = (props?: BindProperties) => (proto: Observable, property: string) => {
         const defProps: BindProperties = {templateName: 'default', localStorage: false, changeOn: [], html: false},
-              finalProps               = props ? {...defProps, ...props} : {...defProps}
+              finalProps               = {...defProps, ...(props || {})}
         ensure(binders, proto, {[property]: finalProps})
     }
 
