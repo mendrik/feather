@@ -124,7 +124,7 @@ module feather.annotations {
             components = registry.map(info => ({
                 nodes: allNodes
                     .map((n, idx) => n.nodeType === Node.ELEMENT_NODE && selectorMatches(n, info.selector) ? idx : -1)
-                    .filter(n => n !== -1).reverse(),
+                    .filter(n => n !== -1),
                 info: info
             }))
         return new PreparsedTemplate(frag, parseHooks(allNodes), hookMap, components)
