@@ -165,12 +165,6 @@ module feather.observe {
                       }
                       return updateDom
                   }
-
-            if (!hook.attribute) {
-                el.removeAttribute(`{{${hook.curly}}}`)
-            } else {
-                el.setAttribute(hook.attribute, '')
-            }
             createListener(this, conf, hook.property, updateDom(value))
         } else {
             throw Error('Bool value can only be bound to attributes ie. hidden="{{myBool}}. ' +
@@ -210,7 +204,6 @@ module feather.observe {
                 return updateDom
             }
             createListener(this, conf, hook.property, updateDom(value))
-            el.classList.remove(`{{${hook.curly}}}`)
         } else if (hook.type === HookType.ATTRIBUTE || hook.type === HookType.PROPERTY) { // <p style="{{myvar}}" {{hidden}}>text goes here</p>
             const attributeName = hook.attribute || hook.property,
                   updateDom = (val) => {
@@ -219,9 +212,6 @@ module feather.observe {
                       return updateDom
                   }
             createListener(this, conf, hook.property, updateDom(value))
-            if (!hook.attribute) {
-                el.removeAttribute(`{{${hook.curly}}}`)
-            }
         }
     }
 
@@ -291,7 +281,6 @@ module feather.observe {
         for (const prop of conf.changeOn) {
             createListener(this, conf, prop, () => notifyListeners(arr))
         }
-        el.removeAttribute(`{{${hook.curly}}}`)
     }
 
     function createDeepObserver(path: string, hook: Hook, transform: FnOne) {
