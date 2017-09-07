@@ -22,12 +22,6 @@ module feather.dom {
             'matchesSelector'
         ].reduce((p, c) => Element.prototype[c] || p) as any
 
-    export function querySelectorWithRoot(root: ValidRoot, selector: string): HTMLElement[] {
-        const result: any[] = root.nodeType === Node.ELEMENT_NODE && selectorMatches(root, selector) ? [root] : []
-        result.push.apply(result, root.querySelectorAll(selector))
-        return result
-    }
-
     export function selectorMatches(el: ValidRoot, selector: string): boolean {
         return _selectorMatches.call(el, selector)
     }
