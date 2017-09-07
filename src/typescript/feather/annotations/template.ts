@@ -98,8 +98,8 @@ module feather.annotations {
                       )
                   })
             const components: Component[] = this.preComponents
-                .map(c => ({info:c.info, nodes: c.nodes.map(i => nodeList[i] as HTMLElement)}))
                 .filter(c => c.nodes.length)
+                .map(c => ({info:c.info, nodes: c.nodes.map(i => nodeList[i] as HTMLElement)}))
             return {
                 doc,
                 first: nodeList[1],
