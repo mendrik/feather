@@ -8,12 +8,11 @@ module feather.annotations {
     import ensure                = feather.objects.ensure
     import SimpleMap             = feather.types.SimpleMap
     import ComponentInfo         = feather.boot.ComponentInfo
-    import WidgetFactory         = feather.boot.WidgetFactory
-    import selectorMatches = feather.dom.selectorMatches;
+    import selectorMatches       = feather.dom.selectorMatches
 
     const CURLIES                = /{{(.*?)}}/
     const ALL_CURLIES            = /{{(.*?)}}/g
-    const templates              = new WeakMap<Widget, TypedMap<Function>>()
+    const templates              = new Map<any, TypedMap<Function>>()
     const parsedTemplateCache    = {} as Map<string, PreparsedTemplate>
     export const selfClosingTags = /<(\w+)((\s+([^=\s\/<>]+|\w+=('[^']*'|"[^"]*"|[^"']\S*)))*)\s*\/>/gi
     export const openTags        = '<$1$2></$1>'
@@ -29,7 +28,6 @@ module feather.annotations {
 
         constructor(public node: Element,
                     public type: HookType,
-                    public curly: string,
                     public attribute: string,
                     public text: string,
                     public property: string,
@@ -90,7 +88,6 @@ module feather.annotations {
                       return new Hook(
                           nodeList[i.nodePosition],
                           i.type,
-                          i.curly,
                           i.attribute,
                           i.text,
                           i.property,
@@ -120,7 +117,7 @@ module feather.annotations {
         while (m = ALL_CURLIES.exec(templateStr)) {
             hookMap[m[1].toLowerCase()] = m[1]
         }
-        const registry = WidgetFactory.widgetRegistry,
+        const registry = feather.boot.WidgetFactory.widgetRegistry,
             components = registry.map(info => ({
                 nodes: allNodes
                     .map((n, idx) => n.nodeType === Node.ELEMENT_NODE && selectorMatches(n, info.selector) ? idx : -1)
@@ -183,20 +180,20 @@ module feather.annotations {
             return preparsedTemplate.asParsedTemplate()
         }
 
-        static clearTemplates(widget: Widget) {
-            templates.delete(widget)
-        }
+        static warmUp = () =>
+            templates.forEach((map, proto) => Object.keys(map).forEach(template => {
+                const method = map[template]
+                try {
+                    const str = method.call({})
+                    parsedTemplateCache[str] = getPreparsedTemplate(str)
+                } catch (e) {
+                    console.warn(`Template method ${method} in ${proto.constructor.name} is not a pure function.`, e)
+                }
+            }))
     }
 
-    export let Template = (name: string = 'default', warmUp = true) => (proto: Widget, method: string) => {
+    export let Template = (name: string = 'default') => (proto: Widget, method: string) => {
         ensure(templates, proto, {[name]: proto[method]})
-        if (warmUp) { // preparse template for better performance
-            try {
-                const str = proto[method].call({})
-                parsedTemplateCache[str] = getPreparsedTemplate(str)
-            } catch (e) {
-                console.warn(`Template method ${method} in ${proto.constructor['name']} is not a pure function.`, e)
-            }
-        }
     }
+
 }

@@ -42,6 +42,7 @@ module feather.boot {
 
 
         static start(scope: ValidRoot = document, parentWidget?: Widget) {
+            feather.annotations.TemplateFactory.warmUp()
             const reg = WidgetFactory.widgetRegistry
             for (let i = 0, n = reg.length; i < n; i++) {
                 const info = reg[i],

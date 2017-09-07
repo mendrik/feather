@@ -69,9 +69,7 @@ module feather.objects {
         return a
     }
 
-    export function collectAnnotationsFromTypeMap<T, P extends Object>(
-        map: WeakMap<P, TypedMap<T>>,
-        start: P): TypedMap<T> {
+    export function collectAnnotationsFromTypeMap<T, P extends Object>(map: WeakMap<ObjectConstructor, TypedMap<T>>, start: P): TypedMap<T> {
         if (isUndef(start)) {
             return {}
         }

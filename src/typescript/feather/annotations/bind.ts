@@ -25,10 +25,10 @@ module feather.observe {
     import observe             = feather.objects.createObjectPropertyListener
     import Subscribable        = feather.hub.Subscribable
 
-    const boundProperties      = new WeakMap<Subscribable, TypedMap<Function[]>>()
-    const binders              = new WeakMap<Observable, TypedMap<BindProperties>>()
-    const serializers          = new WeakMap<Observable, TypedMap<Serializer>>()
-    const parentArrays         = new WeakMap<Subscribable, Subscribable[]>()
+    const boundProperties      = new WeakMap<any, TypedMap<Function[]>>()
+    const binders              = new WeakMap<any, TypedMap<BindProperties>>()
+    const serializers          = new WeakMap<any, TypedMap<Serializer>>()
+    const parentArrays         = new WeakMap<any, Subscribable[]>()
     const storeQueue           = new WeakMap<any, any>()
     const triggerQueue         = new WeakMap<any, any>()
 
