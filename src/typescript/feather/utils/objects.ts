@@ -86,8 +86,9 @@ module feather.objects {
     const ensureListeners = (obj: {}, property: string, callback: ObjectChange) =>
         ensure(objectCallbacks, obj, {[property]: [callback]})[property]
 
-    const addPropertyListener = (obj: {}, property: string, callback: Callback) => {
-        const callbacks = ensureListeners(obj, property, callback),
+    const addPropertyListener = (obj: {}, segments: string[], callback: Callback) => {
+        const property = segments[0],
+              callbacks = ensureListeners(obj, property, callback),
               desc = Object.getOwnPropertyDescriptor(obj, property)
         if (isUndef(desc) || isUndef(desc.set) && desc.writable) {
             let val = obj[property]
@@ -99,32 +100,35 @@ module feather.objects {
                         objectCallbacks.delete(val)
                     }
                     val = newVal
-                    listenToObjectOrArray(val, call)
+                    listenToObjectOrArray(val, segments, call)
                     call()
                     return val
                 }
             })
-            listenToObjectOrArray(val, call)
+            listenToObjectOrArray(val, segments, call)
         }
     }
 
     export const createObjectPropertyListener = (obj: {}, path: string, callback: ObjectChange) => {
-        addPropertyListener(obj, path.split('.').shift(), () => callback(deepValue(obj, path)))
+        const segments = path.split('.');
+        addPropertyListener(obj, segments, () => callback(deepValue(obj, path)))
     }
 
-    const listenToObjectOrArray = (obj: any, callback: Callback) => {
+    const listenToObjectOrArray = (obj: any, segments: string[], callback: Callback) => {
         if (isObject(obj)) {
-            Object.keys(obj).forEach(k =>
-                addPropertyListener(obj, k, callback)
-            )
+            Object.keys(obj).forEach(k => {
+                if (~segments.indexOf(k)) {
+                    addPropertyListener(obj, segments.slice(1), callback)
+                }
+            })
         } else if (Array.isArray(obj)) {
-            obj.forEach(i => listenToObjectOrArray(i, callback))
+            obj.forEach(i => listenToObjectOrArray(i, segments, callback))
             observeArray(obj, {
                 sort: callback,
                 splice: (s, d, addedItems: any[], deletedItems: any[]) => {
                     callback()
                     addedItems.forEach(i =>
-                       listenToObjectOrArray(i, callback)
+                       listenToObjectOrArray(i, segments, callback)
                     )
                     deletedItems.forEach(i => objectCallbacks.delete(i))
                 }
