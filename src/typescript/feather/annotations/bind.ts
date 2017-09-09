@@ -24,6 +24,7 @@ module feather.observe {
     import collect             = feather.objects.collectAnnotationsFromTypeMap
     import observe             = feather.objects.createObjectPropertyListener
     import Subscribable        = feather.hub.Subscribable
+    import WidgetFactory = feather.boot.WidgetFactory;
 
     const boundProperties      = new WeakMap<any, TypedMap<Function[]>>()
     const binders              = new WeakMap<any, TypedMap<BindProperties>>()
@@ -362,14 +363,14 @@ module feather.observe {
         }
     }
 
-    const findBequeath = (start: Observable, method: string) => {
-        let parentWidget = start.parentWidget
-        do {
-            const func = parentWidget.getBequeathMethod(method);
-            if (isDef(func)) {
-                return func
+    const findFromSingletons = (start: Observable, method: string) => {
+        const widgets = WidgetFactory.singletonRegistry;
+        for (let i = 0; i < widgets.length; i++) {
+            const func = widgets[i][method]
+            if (func) {
+               return func.bind(start)
             }
-        } while (isDef(parentWidget = parentWidget.parentWidget))
+        }
         throw Error(`Couldn't resolve transformer function ${method}`)
     }
 
@@ -386,7 +387,7 @@ module feather.observe {
                       transform    = compose<any>(hook.transformFns
                                      .map(method => {
                                          const func = context[method]
-                                         return func ? func.bind(this) : findBequeath(this, method)
+                                         return func ? func.bind(this) : findFromSingletons(this, method)
                                      }))
                 let value = this[property],
                     isObj = isObject(value)
