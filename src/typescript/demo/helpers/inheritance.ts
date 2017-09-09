@@ -9,6 +9,7 @@ module demo {
 
     export interface Person {
         name: string,
+        noChange?: string,
         siblings?: Person[],
         mother?: Person
     }
@@ -36,6 +37,7 @@ module demo {
             }
             this.person = {
                 name: 'Andreas',
+                noChange: 'don\'t change',
                 siblings: [{name: 'Peter', mother: mother}, {name: 'Ella', mother: mother}],
                 mother: mother
             }

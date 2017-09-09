@@ -5,6 +5,7 @@ module feather.objects {
     import ObjectChange   = feather.types.ObjectChange
     import Callback       = feather.types.Callback
     import isUndef        = feather.functions.isUndef
+    import flatten        = feather.arrays.flatten
 
     export const isObject = (obj: any): boolean =>
         (obj !== null && typeof(obj) === 'object' && Object.prototype.toString.call(obj) === '[object Object]')
@@ -81,53 +82,61 @@ module feather.objects {
         return handlers
     }
 
-    const objectCallbacks = new WeakMap<any, TypedMap<Array<ObjectChange>>>()
+    const pathCallbacks = new WeakMap<any, TypedMap<Array<ObjectChange>>>()
 
-    const ensureListeners = (obj: {}, property: string, callback: ObjectChange) =>
-        ensure(objectCallbacks, obj, {[property]: [callback]})[property]
-
-    const addPropertyListener = (obj: {}, property: string, callback: Callback) => {
-        const callbacks = ensureListeners(obj, property, callback),
-              desc = Object.getOwnPropertyDescriptor(obj, property)
-        if (isUndef(desc) || isUndef(desc.set) && desc.writable) {
-            let val = obj[property]
-            const call = () => callbacks.forEach(cb => cb(val))
-            Object.defineProperty(obj, property, {
-                get: () => val,
-                set: (newVal) => {
-                    if (val instanceof Object) {
-                        objectCallbacks.delete(val)
-                    }
-                    val = newVal
-                    listenToObjectOrArray(val, call)
-                    call()
-                    return val
-                }
-            })
-            listenToObjectOrArray(val, call)
-        }
+    const addPropertyListener = (obj: {}, root: {}, path: string, callback: Callback) => {
+        const property = path.split('.').pop()
+        let val = obj[property]
+        Object.defineProperty(obj, property, {
+            get: () => val,
+            set: (newVal) => {
+                val = newVal
+                listenToObjectOrArray(val, root, path, callback)
+                callback(path)
+                return val
+            }
+        })
+        listenToObjectOrArray(val, root, path, callback)
     }
 
     export const createObjectPropertyListener = (obj: {}, path: string, callback: ObjectChange) => {
-        const segments = path.split('.');
-        addPropertyListener(obj, segments[0], () => callback(deepValue(obj, path)))
+        const isObserved = pathCallbacks.get(obj),
+              property   = path.split('.').shift(),
+              callbacks  = ensure(pathCallbacks, obj, {[path]: [callback]})
+        if (!isObserved) {
+            addPropertyListener(obj, obj, property, (path: string) => {
+                const arrIndex = path.indexOf('.['),
+                      pathStr  = ~arrIndex  ? path.substring(0, arrIndex) : path,
+                      pathKeys = Object.keys(callbacks).filter(p => pathStr.startsWith(p) || p.startsWith(pathStr))
+                pathKeys.forEach(pathKey => {
+                    callbacks[pathKey].forEach(listener => {
+                        listener(deepValue(obj, pathKey))
+                    })
+                })
+            })
+        }
     }
 
-    const listenToObjectOrArray = (obj: any, callback: Callback) => {
+    const listenToObjectOrArray = (obj: {}, root: {}, path, callback: Callback) => {
         if (isObject(obj)) {
+            const rootListeners = Object.keys(pathCallbacks.get(root))
             Object.keys(obj).forEach(k => {
-                addPropertyListener(obj, k, callback)
+                const arrIndex = path.indexOf('.['),
+                      pathStr  = ~arrIndex  ? path.substring(0, arrIndex) : path,
+                      pathKeys = rootListeners.filter(p => ~arrIndex || pathStr.startsWith(p) || p.startsWith(pathStr))
+                if (pathKeys.length > 0) {
+                    addPropertyListener(obj, root, path + '.' + k, callback)
+                }
             })
         } else if (Array.isArray(obj)) {
-            obj.forEach(i => listenToObjectOrArray(i, callback))
+            obj.forEach((i, idx) => listenToObjectOrArray(i, root, path + `.[${idx}]`, callback))
             observeArray(obj, {
-                sort: callback,
-                splice: (s, d, addedItems: any[], deletedItems: any[]) => {
-                    callback()
-                    addedItems.forEach(i =>
-                       listenToObjectOrArray(i, callback)
+                sort: () => callback(path),
+                splice: (s, d, addedItems: any[]) => {
+                    callback(path)
+                    addedItems.forEach((i, idx) =>
+                       listenToObjectOrArray(i, root, path + `.[${idx}]`, callback)
                     )
-                    deletedItems.forEach(i => objectCallbacks.delete(i))
                 }
             })
         }

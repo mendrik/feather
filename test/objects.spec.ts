@@ -132,6 +132,12 @@ describe('Objects', () => {
             callback () {
                 // ignore
             }
+            callback2 () {
+                // ignore
+            }
+            callback3 () {
+                // ignore
+            }
         }
 
         it('Should trigger callback', () => {
@@ -139,7 +145,11 @@ describe('Objects', () => {
             const observe = feather.objects.createObjectPropertyListener;
             expect(test.user).to.be.undefined
             const spy = this.sinon.spy(test, 'callback')
-            observe(test, 'user', test.callback)
+            const spy2 = this.sinon.spy(test, 'callback2')
+            const spy3 = this.sinon.spy(test, 'callback3')
+            observe(test, 'user.name', test.callback)
+            observe(test, 'user.mainAddress.city.plc', test.callback2)
+            observe(test, 'user.additional', test.callback3)
 
             test.user = user;
             expect(test.user).to.not.be.undefined
@@ -153,36 +163,36 @@ describe('Objects', () => {
             spy.reset()
 
             test.user.mainAddress.city.plc = 600
-            spy.should.have.been.calledOnce
-            spy.reset()
-
-            test.user.additional.push(address1)
-            spy.should.have.been.calledOnce
-            spy.reset()
-
-            test.user.additional = []
-            spy.should.have.been.calledOnce
-            spy.reset()
-
-            test.user.additional.push(address2)
-            spy.should.have.been.calledOnce
-            spy.reset()
+            spy2.should.have.been.calledTwice
+            spy2.reset()
 
             test.user.mainAddress.city = city2
-            spy.should.have.been.calledTwice
-            spy.reset()
+            spy2.should.have.been.calledOnce
+            spy2.reset()
 
             test.user.mainAddress.city.plc = 700
-            spy.should.have.been.calledThrice
-            spy.reset()
+            spy2.should.have.been.calledOnce
+            spy2.reset()
+
+            test.user.additional.push(address1)
+            spy3.should.have.been.calledTwice
+            spy3.reset()
+
+            test.user.additional = []
+            spy3.should.have.been.calledOnce
+            spy3.reset()
+
+            test.user.additional.push(address2)
+            spy3.should.have.been.calledOnce
+            spy3.reset()
 
             test.user.additional[0].city = city1
-            spy.should.have.been.calledOnce
-            spy.reset()
+            spy3.should.have.been.calledOnce
+            spy3.reset()
 
             test.user.additional[0].city.plc = 900
-            spy.should.have.been.calledThrice
-            spy.reset()
+            spy3.should.have.been.calledOnce
+            spy3.reset()
         })
 
         it('Can have multiple listeners', () => {
