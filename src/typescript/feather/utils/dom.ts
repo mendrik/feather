@@ -35,4 +35,12 @@ module feather.dom {
         } while (walker.nextNode())
         return nodes
     }
+
+    export function allTextNodes(doc: Node): Node[] {
+        const a = [],
+              walk = document.createTreeWalker(doc, NodeFilter.SHOW_TEXT, null, false);
+        let n;
+        while (n = walk.nextNode()) a.push(n);
+        return a;
+    }
 }
