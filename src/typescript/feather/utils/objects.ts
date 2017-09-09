@@ -5,7 +5,6 @@ module feather.objects {
     import ObjectChange   = feather.types.ObjectChange
     import Callback       = feather.types.Callback
     import isUndef        = feather.functions.isUndef
-    import flatten        = feather.arrays.flatten
 
     export const isObject = (obj: any): boolean =>
         (obj !== null && typeof(obj) === 'object' && Object.prototype.toString.call(obj) === '[object Object]')
