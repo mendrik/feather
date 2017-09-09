@@ -24,7 +24,8 @@ module feather.observe {
     import collect             = feather.objects.collectAnnotationsFromTypeMap
     import observe             = feather.objects.createObjectPropertyListener
     import Subscribable        = feather.hub.Subscribable
-    import WidgetFactory = feather.boot.WidgetFactory;
+    import WidgetFactory       = feather.boot.WidgetFactory
+    import getFragment         = feather.annotations.getFragment
 
     const boundProperties      = new WeakMap<any, TypedMap<Function[]>>()
     const binders              = new WeakMap<any, TypedMap<BindProperties>>()
@@ -181,8 +182,12 @@ module feather.observe {
         const el = hook.node
 
         if (hook.type === HookType.TEXT) { // <p>some text {{myVar}} goes here</p>
+            const parent = el.parentNode,
+                  index = Array.prototype.indexOf.call(parent.childNodes, el);
             const updateDom = (value) => {
                 if (conf.html) {
+                    const html = getFragment(transform(value)).firstElementChild
+                    parent.replaceChild(parent.childNodes[index], html)
                     el.innerHTML = transform(value)
                 } else {
                     el.textContent = transform(value)

@@ -115,8 +115,6 @@ module feather.annotations {
         }
     }
 
-    const range = document.createRange()
-
     const breakApartTextNodes = (root: DocumentFragment) => {
         allTextNodes(root).forEach(node => {
             const split = node.textContent.split(/({{.*?}})/mg)
@@ -134,9 +132,12 @@ module feather.annotations {
         return root;
     }
 
+    const range = document.createRange()
+    export const getFragment = (html: string) => range.createContextualFragment(html)
+
     export function getPreparsedTemplate(templateStr: string): PreparsedTemplate {
         const source   = templateStr.replace(selfClosingTags, openTags),
-              frag     = breakApartTextNodes(range.createContextualFragment(source)),
+              frag     = breakApartTextNodes(getFragment(source)),
               allNodes = allChildNodes(frag),
               hookMap  = {} // we need to remember case sensitive hooks, b/c attributes turn lowercase
         let m
