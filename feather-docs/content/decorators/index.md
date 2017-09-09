@@ -35,7 +35,10 @@ order matches the constructor's arguments.
 
 ### singleton
 
-A boolean marker that can be used with ```this.triggerSingleton()```. See more in @Subscribe()
+A boolean marker that can be used with ```this.triggerSingleton()```. See more in @Subscribe(). 
+Singletons are additionally in so far special that transformer methods can reference those. This is useful
+if you want to define a "global" localization method in a high-up singleton component, that serves translated keys
+to other components. 
 
 ## @Bind
 
@@ -145,13 +148,12 @@ set to 50ms.
 
 This property means that it can be also bound in child widget templates. This is an easy
 way to render parent properties in child components without having to rely on @Subscribe to pass around data
-in your application. However be careful when sharing text node bindings with local ones, since the 
-scope is different and only one property can be rendered. This means bind parent variables solitary in a 
-text binding.  ```<div>{{parentProperty}} {{localVariable}}</div>``` will render only one property. 
+in your application.  
 
 ### html
 
-With string bindings you might sometimes want to inject unescaped html fragments into the dom tree.
+With string bindings you might sometimes want to inject unescaped html fragments into the dom tree. Set html 
+to true to do this and make sure the injected html has only one root element.
 
 ## @On
 
