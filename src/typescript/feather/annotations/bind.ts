@@ -362,7 +362,7 @@ module feather.observe {
         }
     }
 
-    const findBequeath = (start: Widget, method: string) => {
+    const findBequeath = (start: Observable, method: string) => {
         let parentWidget = start.parentWidget
         do {
             const func = parentWidget.getBequeathMethod(method);
@@ -386,7 +386,7 @@ module feather.observe {
                       transform    = compose<any>(hook.transformFns
                                      .map(method => {
                                          const func = context[method]
-                                         return func ? func.bind(this) : findBequeath(method)
+                                         return func ? func.bind(this) : findBequeath(this, method)
                                      }))
                 let value = this[property],
                     isObj = isObject(value)
