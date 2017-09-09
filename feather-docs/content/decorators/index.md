@@ -151,8 +151,7 @@ text binding.  ```<div>{{parentProperty}} {{localVariable}}</div>``` will render
 
 ### html
 
-With string bindings you might sometimes want to inject unescaped html fragments into the dom tree. The only
-restriction is that you cannot inject it at a root node of template. This is experimental, so use it with care.
+With string bindings you might sometimes want to inject unescaped html fragments into the dom tree.
 
 ## @On
 

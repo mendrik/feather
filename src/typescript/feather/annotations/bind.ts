@@ -178,20 +178,18 @@ module feather.observe {
                                 transform: FnOne,
                                 conf: BindProperties,
                                 createListener: Function) {
-        const widget = this,
-              el     = hook.node
+        const el = hook.node
 
         if (hook.type === HookType.TEXT) { // <p>some text {{myVar}} goes here</p>
-            const updateDom = () => {
-                const formatted = format(hook.text, widget, widget)
+            const updateDom = (value) => {
                 if (conf.html) {
-                    el.parentElement.innerHTML = formatted
+                    el.innerHTML = transform(value)
                 } else {
-                    el.textContent = formatted
+                    el.textContent = transform(value)
                 }
                 return updateDom
             }
-            createListener(this, conf, hook.property, updateDom())
+            createListener(this, conf, hook.property, updateDom(value))
         } else if (hook.type === HookType.CLASS) { // <p class="red {{myVar}}">text goes here</p>
             const classList = (val: any, fn: Function) => {
                 if (isDef(val)) {

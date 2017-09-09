@@ -9,9 +9,11 @@ module feather.annotations {
     import SimpleMap             = feather.types.SimpleMap
     import ComponentInfo         = feather.boot.ComponentInfo
     import selectorMatches       = feather.dom.selectorMatches
+    import allTextNodes          = feather.dom.allTextNodes
 
     const CURLIES                = /{{(.*?)}}/
     const ALL_CURLIES            = /{{(.*?)}}/g
+    export const TEXT_CURLIES    = /(.*?){{(.*?)}}/gmi
     const templates              = new Map<any, TypedMap<Function>>()
     const parsedTemplateCache    = {} as Map<string, PreparsedTemplate>
     export const selfClosingTags = /<(\w+)((\s+([^=\s\/<>]+|\w+=('[^']*'|"[^"]*"|[^"']\S*)))*)\s*\/>/gi
@@ -115,17 +117,35 @@ module feather.annotations {
 
     const range = document.createRange()
 
+    const breakApartTextNodes = (root: DocumentFragment) => {
+        allTextNodes(root).forEach(node => {
+            const split = node.textContent.split(/({{.*?}})/mg)
+            if (split.length > 1) {
+                const parent = node.parentNode,
+                      doc = document.createDocumentFragment()
+                split.forEach(text => {
+                    if (text !== '') {
+                        doc.appendChild(document.createTextNode(text))
+                    }
+                })
+                parent.replaceChild(doc, node)
+            }
+        })
+        return root;
+    }
+
     export function getPreparsedTemplate(templateStr: string): PreparsedTemplate {
         const source = templateStr.replace(selfClosingTags, openTags),
-            frag = range.createContextualFragment(source),
-            allNodes = allChildNodes(frag),
-            hookMap = {} // we need to remember case sensitive hooks, b/c attributes turn lowercase
+              frag = breakApartTextNodes(range.createContextualFragment(source)),
+              allNodes = allChildNodes(frag),
+              hookMap = {} // we need to remember case sensitive hooks, b/c attributes turn lowercase
         let m
         while (m = ALL_CURLIES.exec(templateStr)) {
             hookMap[m[1].toLowerCase()] = m[1]
         }
         const registry = feather.boot.WidgetFactory.widgetRegistry,
               components = []
+        // find components in this template
         for (let i = 0, r = registry.length, m = allNodes.length; i < r; i++) {
             const nodes = [],
                   info = registry[i]
@@ -147,9 +167,10 @@ module feather.annotations {
         let match
         nodes.forEach((node, pos) => {
             if (node.nodeType === Node.TEXT_NODE) {
-                const text = node.textContent
+                const text = node.textContent,
+                      match = CURLIES.exec(text)
                 // <div id="2">some text {{myProperty}}</div>
-                while ((match = ALL_CURLIES.exec(text)) !== null) {
+                if (match !== null) {
                     hooks.push(new HookInfo(pos, HookType.TEXT, match[1], undefined, text))
                 }
             } else if (node.nodeType === Node.ELEMENT_NODE) {

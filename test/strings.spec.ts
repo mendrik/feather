@@ -29,27 +29,5 @@ describe('String Utils', () => {
             expect(s.format(str, {test: {me: 'world'}})).to.be.equal('hello world')
         })
 
-        it('should use filters on simple tokens', () => {
-            const s = feather.strings,
-                str = 'hello {{test:filter}}';
-            expect(s.format(str, {test: 'world'}, {filter: (str) => str.toUpperCase()})).to.be.equal('hello WORLD')
-        })
-
-        it('should use filters on deep value tokens', () => {
-            const s = feather.strings,
-                str = '{{hello}} {{test.me:filter}}';
-            expect(s.format(str,
-                {hello: 'hello', test: {me: 'world'}},
-                {filter: (str) => str.toUpperCase()})).to.be.equal('hello WORLD')
-        })
-
-        it('should use multple filters', () => {
-            const s = feather.strings,
-                str = 'hello {{test:filter:yay}}';
-            expect(s.format(str, {test: 'world'}, {
-                filter: (str) => str.toUpperCase(),
-                yay: (str) => str + '!'
-            })).to.be.equal('hello WORLD!')
-        })
     })
 })
