@@ -24,6 +24,7 @@ module feather.core {
             this.init(element)
             this.attachEvents()
             this.initRoutes()
+            this.initBequeath()
             this.attachMediaListeners()
         }
 

@@ -24,6 +24,7 @@
         "utils/types.ts",
         "utils/strings.ts",
         "boot.ts",
+        "annotations/bequeath.ts",
         "annotations/media-query.ts",
         "annotations/template.ts",
         "annotations/event.ts",

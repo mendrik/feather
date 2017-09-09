@@ -362,6 +362,17 @@ module feather.observe {
         }
     }
 
+    const findBequeath = (start: Widget, method: string) => {
+        let parentWidget = start.parentWidget
+        do {
+            const func = parentWidget.getBequeathMethod(method);
+            if (isDef(func)) {
+                return func
+            }
+        } while (isDef(parentWidget = parentWidget.parentWidget))
+        throw Error(`Couldn't resolve transformer function ${method}`)
+    }
+
     export class Observable extends RouteAware {
 
         attachHooks(hooks: Hook[], parent?: any) {
@@ -373,8 +384,10 @@ module feather.observe {
                 const property     = hook.property,
                       conf         = collect(binders, this)[property],
                       transform    = compose<any>(hook.transformFns
-                                        .map(method =>
-                                            context[method].bind(context)))
+                                     .map(method => {
+                                         const func = context[method]
+                                         return func ? func.bind(this) : findBequeath(method)
+                                     }))
                 let value = this[property],
                     isObj = isObject(value)
 

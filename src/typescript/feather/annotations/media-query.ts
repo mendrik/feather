@@ -1,7 +1,8 @@
 module feather.media {
 
-    import collect = feather.objects.collectAnnotationsFromArray
-    import ensure  = feather.objects.ensure
+    import collect       = feather.objects.collectAnnotationsFromArray
+    import ensure        = feather.objects.ensure
+    import Bequeath      = feather.bequeath.BequeathAware
 
     export interface MediaConfig {
         query:  string,
@@ -16,7 +17,7 @@ module feather.media {
     const mediaHandlers       = new WeakMap<MediaQueryAware, MediaConfig[]>()
     const mediaQueryListeners = new WeakMap<MediaQueryAware, MediaListener[]>()
 
-    export class MediaQueryAware {
+    export class MediaQueryAware extends Bequeath {
 
         attachMediaListeners() {
             collect(mediaHandlers, this).forEach(h => {
@@ -38,6 +39,7 @@ module feather.media {
         }
 
         cleanUp() {
+            super.cleanUp()
             const listeners = mediaQueryListeners.get(this)
             if (listeners) {
                 for (const l of listeners) {
