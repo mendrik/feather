@@ -135,10 +135,10 @@ module feather.annotations {
     }
 
     export function getPreparsedTemplate(templateStr: string): PreparsedTemplate {
-        const source = templateStr.replace(selfClosingTags, openTags),
-              frag = breakApartTextNodes(range.createContextualFragment(source)),
+        const source   = templateStr.replace(selfClosingTags, openTags),
+              frag     = breakApartTextNodes(range.createContextualFragment(source)),
               allNodes = allChildNodes(frag),
-              hookMap = {} // we need to remember case sensitive hooks, b/c attributes turn lowercase
+              hookMap  = {} // we need to remember case sensitive hooks, b/c attributes turn lowercase
         let m
         while (m = ALL_CURLIES.exec(templateStr)) {
             hookMap[m[1].toLowerCase()] = m[1]

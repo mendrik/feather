@@ -97,7 +97,7 @@ module feather.xhr {
                 headers: (params.headers &&
                     Object.keys(params.headers)
                         .reduce((p, c) => ({...p, [c]: strFactory(params.headers[c])}), {})) || {},
-                url: format(params.url, this, this)
+                url: format(params.url, this)
             }
             return sendRequest(paramsCopy, desc.value.original.bind(this), (err, xhr: XMLHttpRequest) => {
                 if (xhr && xhr.status) {
