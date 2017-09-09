@@ -164,8 +164,7 @@ module feather.annotations {
 
     function parseHooks(nodes: Node[]): HookInfo[] {
         const hooks: HookInfo[] = []
-        let match,
-            posOffset = 0 // we might need to spit text nodes
+        let match
         nodes.forEach((node, pos) => {
             if (node.nodeType === Node.TEXT_NODE) {
                 const text = node.textContent,
@@ -180,14 +179,14 @@ module feather.annotations {
                     if (match = attributeName.match(CURLIES)) {
                         // <div id="2" {{myProperty}}>
                         (node as HTMLElement).removeAttribute(match[0])
-                        hooks.push(new HookInfo(pos + posOffset, HookType.PROPERTY, match[1]))
+                        hooks.push(new HookInfo(pos, HookType.PROPERTY, match[1]))
                     } else if (attributeName === 'class') {
                         // <div id="2" class="red {{myClass}} blue">
                         const classes = from<string>((node as HTMLElement).classList)
                         for (const cls of classes) {
                             if (match = cls.match(CURLIES)) {
                                 (node as HTMLElement).classList.remove(match[0])
-                                hooks.push(new HookInfo(pos + posOffset, HookType.CLASS, match[1]))
+                                hooks.push(new HookInfo(pos, HookType.CLASS, match[1]))
                             }
                         }
                     } else {
@@ -195,7 +194,7 @@ module feather.annotations {
                         const value = attribute.value
                         if (match = value.match(CURLIES)) {
                             (node as HTMLElement).setAttribute(attributeName, '')
-                            hooks.push(new HookInfo(pos + posOffset, HookType.ATTRIBUTE, match[1], attributeName))
+                            hooks.push(new HookInfo(pos, HookType.ATTRIBUTE, match[1], attributeName))
                         }
                     }
                 }
