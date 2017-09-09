@@ -141,6 +141,7 @@ describe('Objects', () => {
         }
 
         it('Should trigger callback', () => {
+            const clock = sinon.useFakeTimers()
             const test = new Test();
             const observe = feather.objects.createObjectPropertyListener;
             expect(test.user).to.be.undefined
@@ -150,7 +151,7 @@ describe('Objects', () => {
             observe(test, 'user.name', test.callback)
             observe(test, 'user.mainAddress.city.plc', test.callback2)
             observe(test, 'user.additional', test.callback3)
-
+            clock.tick(2)
             test.user = user;
             expect(test.user).to.not.be.undefined
             spy.should.have.been.calledOnce
@@ -193,18 +194,22 @@ describe('Objects', () => {
             test.user.additional[0].city.plc = 900
             spy3.should.have.been.calledOnce
             spy3.reset()
+            clock.restore()
         })
 
         it('Can have multiple listeners', () => {
+            const clock = sinon.useFakeTimers()
             const test = new Test();
             const observe = feather.objects.createObjectPropertyListener;
             expect(test.user).to.be.undefined
             const spy = this.sinon.spy(test, 'callback')
             observe(test, 'user', test.callback);
             observe(test, 'user', test.callback);
+            clock.tick(1)
             test.user = user;
             spy.should.have.been.calledTwice
             spy.reset()
+            clock.restore()
         })
 
         it('MergeArrayTypedMap', () => {

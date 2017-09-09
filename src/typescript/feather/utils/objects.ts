@@ -81,7 +81,7 @@ module feather.objects {
         return handlers
     }
 
-    const pathCallbacks = new WeakMap<any, TypedMap<Array<ObjectChange>>>()
+    export const pathCallbacks = new WeakMap<any, TypedMap<Array<ObjectChange>>>()
 
     const addPropertyListener = (obj: {}, root: {}, path: string, callback: Callback) => {
         const property = path.split('.').pop()
@@ -98,21 +98,27 @@ module feather.objects {
         listenToObjectOrArray(val, root, path, callback)
     }
 
+    const pathKeys = (path: string, keys: string[]) => {
+        const arrIndex = path.indexOf('.['),
+              pathStr  = ~arrIndex  ? path.substring(0, arrIndex) : path
+        return keys.filter(p => pathStr.startsWith(p) || p.startsWith(pathStr))
+    }
+
     export const createObjectPropertyListener = (obj: {}, path: string, callback: ObjectChange) => {
         const isObserved = pathCallbacks.get(obj),
               property   = path.split('.').shift(),
               callbacks  = ensure(pathCallbacks, obj, {[path]: [callback]})
         if (!isObserved) {
-            addPropertyListener(obj, obj, property, (path: string) => {
-                const arrIndex = path.indexOf('.['),
-                      pathStr  = ~arrIndex  ? path.substring(0, arrIndex) : path,
-                      pathKeys = Object.keys(callbacks).filter(p => pathStr.startsWith(p) || p.startsWith(pathStr))
-                pathKeys.forEach(pathKey => {
-                    callbacks[pathKey].forEach(listener => {
-                        listener(deepValue(obj, pathKey))
+            // we need to wait for all registrars before knowing what to listen to
+            setTimeout(() =>
+                addPropertyListener(obj, obj, property, (path: string) => {
+                    pathKeys(path, Object.keys(callbacks)).forEach(pathKey => {
+                        callbacks[pathKey].forEach(listener => {
+                            listener(deepValue(obj, pathKey))
+                        })
                     })
                 })
-            })
+            ,0)
         }
     }
 
@@ -120,11 +126,9 @@ module feather.objects {
         if (isObject(obj)) {
             const rootListeners = Object.keys(pathCallbacks.get(root))
             Object.keys(obj).forEach(k => {
-                const arrIndex = path.indexOf('.['),
-                      pathStr  = ~arrIndex  ? path.substring(0, arrIndex) : path,
-                      pathKeys = rootListeners.filter(p => ~arrIndex || pathStr.startsWith(p) || p.startsWith(pathStr))
-                if (pathKeys.length > 0) {
-                    addPropertyListener(obj, root, path + '.' + k, callback)
+                const newPath = path + '.' + k
+                if (pathKeys(newPath, rootListeners).length > 0) {
+                    addPropertyListener(obj, root, newPath, callback)
                 }
             })
         } else if (Array.isArray(obj)) {
