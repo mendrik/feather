@@ -174,7 +174,7 @@ This can be used to render different application pages or different mobile/deskt
 
 Array hooks can be placed in only one manner:
 
-  First declare ```@Bind({}) variable: MyWidget = []``` which contains objects that &must* extend ```feather.core.Widget```.
+  First declare ```@Bind({}) variable: MyWidget = []``` which contains objects that *must* extend ```feather.core.Widget```.
   One can use any of the native array functions to modify the array, but you must not replace the array itself 
   as the bindings and hooks will be lost. Array.fill is unsupported, because the children cannot be duplicates of one other.
   Furthermore never set children directly ```array[2] = mywidget``` because the change will be missed.
