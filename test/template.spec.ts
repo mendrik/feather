@@ -82,22 +82,18 @@ describe('Templates', () => {
                 parsed = pt(str)
             expect(parsed.hookInfos.length).to.be.equal(4);
             expect(parsed.hookInfos[0].curly).to.be.equal('hook1')
-            expect(parsed.hookInfos[0].text).to.be.undefined
             expect(parsed.hookInfos[0].attribute).to.be.undefined
             expect(parsed.hookInfos[0].type).to.be.equal(feather.annotations.HookType.PROPERTY)
 
             expect(parsed.hookInfos[1].curly).to.be.equal('hook2')
             expect(parsed.hookInfos[1].attribute).to.be.equal('bla')
-            expect(parsed.hookInfos[1].text).to.be.undefined
             expect(parsed.hookInfos[1].type).to.be.equal(feather.annotations.HookType.ATTRIBUTE)
 
             expect(parsed.hookInfos[2].curly).to.be.equal('hook3')
             expect(parsed.hookInfos[2].attribute).to.be.undefined
-            expect(parsed.hookInfos[2].text).to.be.undefined
             expect(parsed.hookInfos[2].type).to.be.equal(feather.annotations.HookType.CLASS)
 
             expect(parsed.hookInfos[3].curly).to.be.equal('hook4')
-            expect(parsed.hookInfos[3].text).to.be.equal('{{hook4}}')
             expect(parsed.hookInfos[3].attribute).to.be.undefined
             expect(parsed.hookInfos[3].type).to.be.equal(feather.annotations.HookType.TEXT)
         })

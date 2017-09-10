@@ -156,4 +156,15 @@ describe('String', () => {
         })
     })
 
+    describe('bind html strings', () => {
+        it('should bind', () => {
+            const inh = window.inh as demo.Inheritance,
+                  tester = inh.childWidgets[0] as demo.EventListener
+            tester.who = '<b>me</b>'
+            expect(document.querySelector('.html-test').innerHTML).to.be.equal('Click <b>me</b>!')
+            tester.who = 'me'
+            expect(document.querySelector('.html-test').innerHTML).to.be.equal('Click me!')
+        })
+    })
+
 })

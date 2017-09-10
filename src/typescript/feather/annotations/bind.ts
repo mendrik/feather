@@ -186,9 +186,8 @@ module feather.observe {
                   index = Array.prototype.indexOf.call(parent.childNodes, el);
             const updateDom = (value) => {
                 if (conf.html) {
-                    const html = getFragment(transform(value)).firstElementChild
-                    parent.replaceChild(parent.childNodes[index], html)
-                    el.innerHTML = transform(value)
+                    const html = getFragment(transform(value)).firstChild
+                    parent.replaceChild(html, parent.childNodes[index])
                 } else {
                     el.textContent = transform(value)
                 }

@@ -10,6 +10,7 @@ module demo {
     export class EventListener extends Widget {
 
         @Bind() children = [] as EventListener[]
+        @Bind({html: true}) who = 'me'
 
         constructor(children: number) {
             super()
@@ -53,7 +54,7 @@ module demo {
         getBaseTemplate() {
             return (`
                 <div class="root">
-                    <button>Click me!</button>
+                    <button class="html-test">Click {{who}}!</button>
                     <span><i>Icon</i> Span click</span>                
                     <ul {{children}}/>
                 </div>

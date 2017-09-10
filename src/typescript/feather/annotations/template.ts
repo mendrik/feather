@@ -31,7 +31,6 @@ module feather.annotations {
         constructor(public node: Element,
                     public type: HookType,
                     public attribute: string,
-                    public text: string,
                     public property: string,
                     public transformFns: string[]) {
         }
@@ -45,7 +44,6 @@ module feather.annotations {
                     public type: HookType,
                     public curly: string,
                     public attribute?: string,
-                    public text?: string,
                     public property?: string,
                     public transformFns?: string[]) {
         }
@@ -91,7 +89,6 @@ module feather.annotations {
                           nodeList[i.nodePosition],
                           i.type,
                           i.attribute,
-                          i.text,
                           i.property,
                           i.transformFns
                       )
@@ -172,7 +169,7 @@ module feather.annotations {
                       match = CURLIES.exec(text)
                 // <div id="2">some text {{myProperty}}</div>
                 if (match !== null) {
-                    hooks.push(new HookInfo(pos, HookType.TEXT, match[1], undefined, text))
+                    hooks.push(new HookInfo(pos, HookType.TEXT, match[1]))
                 }
             } else if (node.nodeType === Node.ELEMENT_NODE) {
                 for (const attribute of from<Attr>(node.attributes)) {
