@@ -1,6 +1,6 @@
 # Featherₜₛ
 
-<img src="http://cd.feather-ts.com/mendrik/feather/badge/?branch=master" height="20">&nbsp;<img src="http://dist.feather-ts.com/size.svg?v=1" height="20">&nbsp;<img src="http://www.feather-ts.com/images/licence.svg" height="20">
+<img src="http://cd.feather-ts.com/mendrik/feather/badge/?branch=master" height="20">&nbsp;<img src="http://dist.feather-ts.com/size.svg?v=2" height="20">&nbsp;<img src="http://www.feather-ts.com/images/licence.svg" height="20">
 
 With friendly support of:
 
@@ -65,6 +65,6 @@ This is work in progress so use it only as in inspiration for your own implement
 
 Comparing feather-ts using [this](https://github.com/lhorie/todomvc-perf-comparison) 
 
-With 500 items:
+With 500 items on Chrome:
 
-<img src="http://dist.feather-ts.com/performance.jpg?v=1" style="width: 100%; max-width: 300px">
+<img src="http://dist.feather-ts.com/performance.jpg?v=2" style="width: 100%; max-width: 450px">
