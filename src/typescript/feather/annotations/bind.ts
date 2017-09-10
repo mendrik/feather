@@ -181,12 +181,15 @@ module feather.observe {
         const el = hook.node
 
         if (hook.type === HookType.TEXT) { // <p>some text {{myVar}} goes here</p>
-            const parent = el.parentNode,
-                  index = Array.prototype.indexOf.call(parent.childNodes, el);
+            const parent = el.parentNode
+            let oldNodes = [el]
             const updateDom = (value) => {
                 if (conf.html) {
-                    const html = getFragment(transform(value)).firstChild
-                    parent.replaceChild(html, parent.childNodes[index])
+                    const html = getFragment(transform(value)),
+                          toRemove = oldNodes.slice()
+                    oldNodes = from<Element>(html.childNodes)
+                    parent.replaceChild(html, toRemove.shift())
+                    toRemove.forEach(node => parent.removeChild(node))
                 } else {
                     el.textContent = transform(value)
                 }

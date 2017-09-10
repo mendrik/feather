@@ -152,8 +152,8 @@ in your application.
 
 ### html
 
-With string bindings you might sometimes want to inject unescaped html fragments into the dom tree. Set html 
-to true make sure the injected html has one and only one root element.
+When set to true the property will be injected as unescaped html. The injected html doesn't have to have a single
+root node. Feather will keep track of cleaning up multiple root nodes automatically.
 
 ## @On
 
