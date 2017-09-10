@@ -76,7 +76,7 @@ Call now ```feather.start()``` and your application will render itself into ```<
 
 ## Widget tree
 Widgets form internally a tree, whenever they are referenced in a template or pushed to 
-a bound array property. However they do not align, according to the dom hierarchy in a template.
+a bound array property. However they do not align according to the dom hierarchy in a template.
 What that means is that all widgets in a template will have their parentWidget set to the
 component creating the template and not the parent tag inside the template.
 
