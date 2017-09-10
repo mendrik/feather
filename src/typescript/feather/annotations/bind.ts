@@ -1,7 +1,6 @@
 module feather.observe {
 
     import Widget              = feather.core.Widget
-    import format              = feather.strings.format
     import RouteAware          = feather.routing.RouteAware
     import Hook                = feather.annotations.Hook
     import HookType            = feather.annotations.HookType

@@ -153,7 +153,7 @@ in your application.
 ### html
 
 With string bindings you might sometimes want to inject unescaped html fragments into the dom tree. Set html 
-to true to do this and make sure the injected html has only one root element.
+to true make sure the injected html has one and only one root element.
 
 ## @On
 

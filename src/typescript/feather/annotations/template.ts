@@ -112,12 +112,13 @@ module feather.annotations {
         }
     }
 
+    // to be able to replace parts in text nodes, we need to split them into separate nodes
     const breakApartTextNodes = (root: DocumentFragment) => {
         allTextNodes(root).forEach(node => {
             const split = node.textContent.split(/({{.*?}})/mg)
             if (split.length > 1) {
                 const parent = node.parentNode,
-                      doc = document.createDocumentFragment()
+                      doc    = document.createDocumentFragment()
                 split.forEach(text => {
                     if (text !== '') {
                         doc.appendChild(document.createTextNode(text))

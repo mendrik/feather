@@ -72,10 +72,29 @@ Putting it all together, a very simple widget looks like this:
  
 Call now ```feather.start()``` and your application will render itself into ```<body>```. 
 
+## Widget tree
+Widgets form internally a tree, whenever they are referenced in a template or pushed to 
+a bound array property. However they do not align, according to the dom hierarchy in a template.
+What that means is that all widgets in a template will have their parentWidget set to the
+component creating the template and not the parent tag inside the template.
+
+## Bindings
+Bindings are links between a class property and a place inside the template method. They are
+annotated by using double curly braces {{property.subproperty:method1:method2}}. Subproperties
+can be used of the bound property is a hierarchical object. The path you bind to, will modify
+the target object with setters and getters, so feather ts is aware of the changes within that
+path. Also optional is the set of methods. Those are called transformers and can change the type 
+of a bound property to something that can be rendered. For example you can covert Date objects
+to localized strings. The methods must be defined on the class that holds the template - if 
+you inherit a property value via bequeath. 
+A special case are classes that are annotated as singletons via @Construct(). Their methods
+are also available as a transformer function, regardless of their placement.  
+
 ## Passing arguments to widgets
 
 If you need to pass data from a widget to its children (usually referenced in its template), there are 
-several possibilities, but all of them are done via constructor arguments.
+several possibilities, but all of them are done via constructor arguments collected from their 
+dom attributes.
 
 ### String attributes
  
