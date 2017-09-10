@@ -9,7 +9,7 @@ weight: 20
 Your application will be a collection of classes that must extend ```feather.core.Widget```. The widget class itself 
 inherits other internal classes in the following order, which represent different aspects of the framework.
 Within the classes you can decorate methods to enhance the instances. Decorators are collected throughout
-the class hierarchy, which allows you to extends your own widget class with shared functionality.
+the class hierarchy, which allows you to extend your own widget class with shared functionality.
 
 ```
 MyWidget -> (?) -> Widget -> Observable -> RouteAware -> Subscribable -> EventAware -> MediaQueryAware -> Object
@@ -22,10 +22,12 @@ which can be accessed in your class via ```this.element```. Furthermore it shoul
 name: ```@Template() myMarkup(templateName?: string): string```. This has to be called manually for the widget 
 to render into its root element. This is usually done in the overridden method ```init(el: HTMLElement)```. 
 
-However, feather does make assumption when to render the widget; it might be required to fetch data from 
+However, feather does not make assumption when to render the widget; it might be required to fetch data from 
 the server or wait for other events to complete. To keep things simple the content of a widget's
 @Template decorated method is appended to the root element. If a widget is not added to an array, templates
 can return several root-nodes (this differs a bit from *React* with jsx for example).  
+
+Furthermore you can have renderless widgets, that just attach dom events or manipulate their child nodes. 
  
 A widget usually comes with a ```@Construct({selector: string, ...})``` class decorator, which defines which 
 HTML elements the component will be appended to. Once the Widget has been created, you can override the 
@@ -88,7 +90,14 @@ of a bound property to something that can be rendered. For example you can conve
 to localized strings. The methods must be defined on the class that holds the template, even if 
 you inherit a property via @Bind({bequeath: true}). 
 A special case are classes that are annotated as singletons via @Construct(). Their methods
-are also available as a transformers, regardless of their placement.   
+are also available as a transformers, regardless of their placement.  
+
+### Dynamic content
+
+If you need to swap out larger parts of the DOM, the only way to do this in feather is to utilize
+bound arrays. I.e. if you have a routing component that swaps pages define an array property and 
+call ```pages.splice(0, 1, myNewPage)```. This differs a bit from frameworks where the templates
+can contain if/else statements to render the content, which often leads to hard to read markup.
 
 ## Passing arguments to widgets
 
