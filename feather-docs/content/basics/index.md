@@ -81,24 +81,27 @@ component creating the template and not the parent tag inside the template.
 ## Bindings
 Bindings are links between a class property and a place inside the template method. They are
 annotated by using double curly braces {{property.subproperty:method1:method2}}. Subproperties
-can be used of the bound property is a hierarchical object. The path you bind to, will modify
-the target object with setters and getters, so feather ts is aware of the changes within that
+are optional and can be used if the bound property is a hierarchical object. The path you bind to, 
+will modify the target object with setters and getters, so Feather is aware of the changes within that
 path. Also optional is the set of methods. Those are called transformers and can change the type 
-of a bound property to something that can be rendered. For example you can covert Date objects
-to localized strings. The methods must be defined on the class that holds the template - if 
-you inherit a property value via bequeath. 
+of a bound property to something that can be rendered. For example you can convert Date objects
+to localized strings. The methods must be defined on the class that holds the template, even if 
+you inherit a property via @Bind({bequeath: true}). 
 A special case are classes that are annotated as singletons via @Construct(). Their methods
-are also available as a transformer function, regardless of their placement.  
+are also available as a transformers, regardless of their placement.   
 
 ## Passing arguments to widgets
 
 If you need to pass data from a widget to its children (usually referenced in its template), there are 
-several possibilities, but all of them are done via constructor arguments collected from their 
+several possibilities but all of them are done via constructor arguments collected from their 
 dom attributes.
+
+If you need to pass data to widget at a later point of the application flow, you should use the 
+internal message hub instead, see @Subscribe and the corresponding triggerUp/triggerDown methods.
 
 ### String attributes
  
-The simplest one is using string attributes: ```<my-widget attr1="str1" attr2="str2">```. In your 
+The simplest case is using string attributes: ```<my-widget attr1="str1" attr2="str2">```. In your 
 *MyWidget* class the @Construct decorator should have an attribute array defined like so 
 ```@Construct({selector: 'my-widget', attributes: ['attr1', 'attr2']})```. Additionally provide a 
 constructor with the following signature: ```constructor(attr1: string, attr2: string) {```. 
@@ -114,7 +117,7 @@ a property name in the parent widget its value will be used instead.
 
 Feather provides one-way data-binding, which means you can create *hooks* between the component's 
 data and the DOM. Whenever the data changes your DOM will update accordingly. There are several hook types, 
-which are explained below. Feather does not use a virtual dom, but it binds directly to native DOM 
+which are explained below. Feather does not use a virtual dom, instead it binds directly to native DOM 
 modifiers. 
 Hooks are basically class properties with a ```@Bind()``` decorator and depending on the property type a 
 reference in the widget's template method, declared by double curly braces. You can add hooks to:
