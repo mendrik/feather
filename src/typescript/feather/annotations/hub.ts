@@ -18,7 +18,7 @@ module feather.hub {
         childWidgets: Array<Subscribable> = []
 
         // noinspection JSUnusedGlobalSymbols
-        triggerUp(event: string, data: any[]) {
+        triggerUp(event: string, data: any) {
             feather.hub.Subscribable.trigger(event, this, data)
             if (this.parentWidget) {
                 this.parentWidget.triggerUp(event, data)
@@ -26,11 +26,11 @@ module feather.hub {
         }
 
         // noinspection JSUnusedGlobalSymbols
-        triggerSingleton(event: string, data: any[]) {
+        triggerSingleton(event: string, data: any) {
             WidgetFactory.singletonRegistry.forEach(w => feather.hub.Subscribable.trigger(event, w, data))
         }
 
-        triggerDown(event: string, data: any[]) {
+        triggerDown(event: string, data: any) {
             feather.hub.Subscribable.trigger(event, this, data)
             if (this.childWidgets) {
                 for (const child of this.childWidgets) {
@@ -39,7 +39,7 @@ module feather.hub {
             }
         }
 
-        private static trigger(event: string, context: Subscribable, data: any[]) {
+        private static trigger(event: string, context: Subscribable, data: any) {
             const subs = collect(subscribers, context)
             if (subs[event]) {
                 for (const sub of subs[event]) {
