@@ -12,10 +12,6 @@ module feather.arrays {
         return [].slice.call(object)
     }
 
-    export function flatten<T>(array: T[]): T[] {
-        return array.reduce((a, b) => a.concat(b), [])
-    }
-
     export function removeFromArray(arr: any[], elements: any[]) {
         let deleteCount = 0,
             total = elements.length
@@ -47,8 +43,9 @@ module feather.arrays {
         const old       = arr[key]
         if (key === 'splice') {
             // add docs that removing and re-adding elements to the same array kills event listeners
-            arr.splice = (index, deleteCount, ...addedItems) => {
-                const deletedItems = old.call(arr, index, deleteCount, ...addedItems)
+            arr.splice = function(index, deleteCount) {
+                const addedItems = [].slice.call(arguments, 2),
+                      deletedItems = old.apply(arr, arguments)
                 notifyListenersWithArgs(arr, key, [index, deleteCount, addedItems, deletedItems])
                 return deletedItems
             }

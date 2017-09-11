@@ -72,13 +72,13 @@ module feather.annotations {
                     public hookInfos: feather.annotations.HookInfo[],
                     public hookMap: SimpleMap,
                     public preComponents: PreComponent[]) {
-
-            hookInfos.forEach(i => {
-                const originalCurly = this.hookMap[i.curly.toLowerCase()],
+            for (let i = 0, n = hookInfos.length; i < n; i++) {
+                const hookInfo = hookInfos[i],
+                      originalCurly = this.hookMap[hookInfo.curly.toLowerCase()],
                       transformFns = originalCurly.split(/:/)
-                i.property = transformFns.shift()
-                i.transformFns = transformFns
-            })
+                hookInfo.property = transformFns.shift()
+                hookInfo.transformFns = transformFns
+            }
         }
 
         asParsedTemplate(): ParsedTemplate {
@@ -93,15 +93,17 @@ module feather.annotations {
                           i.transformFns
                       )
                   })
-            const components: Component[] = [],
-                  preComponents = this.preComponents
-            for (let i = 0, n = preComponents.length; i < n; i++) {
-                const nodes = [],
-                      pre = preComponents[i]
-                for (let j = 0, m = pre.nodes.length; j < m; j++) {
-                    nodes.push(nodeList[pre.nodes[j]])
+            const preComponents = this.preComponents,
+                  n = preComponents.length,
+                  components: Component[] = []
+            for (let i = 0; i < n; i++) {
+                const pre = preComponents[i],
+                      m = pre.nodes.length,
+                      nodes = []
+                for (let j = 0; j < m; j++) {
+                    nodes[j] = nodeList[pre.nodes[j]];
                 }
-                components.push({info: pre.info, nodes: nodes})
+                components[i] = {info: pre.info, nodes: nodes}
             }
             return {
                 doc,
