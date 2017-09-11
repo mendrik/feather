@@ -130,22 +130,27 @@ module feather.observe {
                 splice: proxyCallback
             })
         } else {
-            const listeners = ensure(boundProperties, obj, {[property]: [cb]})
-            Object.defineProperty(obj, property, {
-                get: () => value,
-                set: (newValue: any) => {
-                    if (newValue !== value) {
-                        maybeStore(obj, property, conf, newValue, false)
-                        const old = value
-                        value = newValue
-                        for (const cb of listeners[property]) {
-                            cb(newValue, old)
+
+            const binders = boundProperties.get(obj),
+                  isObserved = binders && binders[property],
+                  listeners = ensure(boundProperties, obj, {[property]: [cb]})
+            if (!isObserved) {
+                Object.defineProperty(obj, property, {
+                    get: () => value,
+                    set: (newValue: any) => {
+                        if (newValue !== value) {
+                            maybeStore(obj, property, conf, newValue, false)
+                            const old = value
+                            value = newValue
+                            for (const cb of listeners[property]) {
+                                cb(newValue, old)
+                            }
+                            triggerParentArray(obj)
                         }
-                        triggerParentArray(obj)
+                        return newValue
                     }
-                    return newValue
-                }
-            })
+                })
+            }
         }
     }
 
