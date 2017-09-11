@@ -5,8 +5,12 @@ module feather.functions {
 
     const getType = {}.toString
 
-    export const compose = <U>(fns: FnOne[]): any => (res: any): U =>
-        fns.reduce((p, c) => c(p), res) as U
+    export const compose = <U>(fns: FnOne[]): any => (res: any): U => {
+        if (fns.length === 1) {
+            return fns[0](res)
+        }
+        return fns.reduce((p, c) => c(p), res) as U
+    }
 
     export function isFunction(functionToCheck) {
         return functionToCheck && getType.call(functionToCheck) === '[object Function]'

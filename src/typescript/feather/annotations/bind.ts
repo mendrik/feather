@@ -60,18 +60,6 @@ module feather.observe {
         }
     }
 
-    const triggerParentArray = (obj: Observable) => {
-        const parentArray = parentArrays.get(obj)
-        if (parentArray) {
-            if (triggerQueue.has(parentArray)) {
-                clearTimeout(triggerQueue.get(parentArray))
-            }
-            triggerQueue.set(parentArray,
-                setTimeout(() =>
-                    notifyListeners(parentArray), 10))
-        }
-    }
-
     const getWidgetId = (w: any) => {
         const name = w.id || w.name || w.title || w.constructor.name
         return isFunction(name) ? name() : name
@@ -87,9 +75,11 @@ module feather.observe {
     }
 
     const destroyListeners = (widgets: Subscribable[]) => {
-        for (const w of widgets) {
-            w.cleanUp()
-        }
+        setTimeout(() => {
+            for (const w of widgets) {
+                w.cleanUp()
+            }
+        }, 50)
     }
 
     const store = (parent, property, value) =>
@@ -112,6 +102,16 @@ module feather.observe {
         }
     }
 
+    const triggerParentArray = (obj: Observable) => {
+        const parentArray = parentArrays.get(obj)
+        if (parentArray) {
+            clearTimeout(triggerQueue.get(parentArray))
+            triggerQueue.set(parentArray,
+                setTimeout(() =>
+                    notifyListeners(parentArray), 20))
+        }
+    }
+
     function createListener(obj: Widget,
                             conf: BindProperties,
                             property: string,
@@ -130,22 +130,27 @@ module feather.observe {
                 splice: proxyCallback
             })
         } else {
-            const listeners = ensure(boundProperties, obj, {[property]: [cb]})
-            Object.defineProperty(obj, property, {
-                get: () => value,
-                set: (newValue: any) => {
-                    if (newValue !== value) {
-                        maybeStore(obj, property, conf, newValue, false)
-                        const old = value
-                        value = newValue
-                        for (const cb of listeners[property]) {
-                            cb(newValue, old)
+
+            const binders = boundProperties.get(obj),
+                  isObserved = binders && binders[property],
+                  listeners = ensure(boundProperties, obj, {[property]: [cb]})
+            if (!isObserved) {
+                Object.defineProperty(obj, property, {
+                    get: () => value,
+                    set: (newValue: any) => {
+                        if (newValue !== value) {
+                            maybeStore(obj, property, conf, newValue, false)
+                            const old = value
+                            value = newValue
+                            for (const cb of listeners[property]) {
+                                cb(newValue, old)
+                            }
+                            triggerParentArray(obj)
                         }
-                        triggerParentArray(obj)
+                        return newValue
                     }
-                    return newValue
-                }
-            })
+                })
+            }
         }
     }
 
@@ -181,17 +186,22 @@ module feather.observe {
         const el = hook.node
 
         if (hook.type === HookType.TEXT) { // <p>some text {{myVar}} goes here</p>
-            let oldNodes = [el]
+            let oldNodes = [el],
+                oldValue
             const updateDom = (value) => {
-                if (conf.html) {
-                    const html = getFragment(transform(value)),
-                          toRemove = oldNodes.slice(),
-                          parent = toRemove[0].parentNode
-                    oldNodes = from<Element>(html.childNodes)
-                    parent.replaceChild(html, toRemove.shift())
-                    toRemove.forEach(node => node.parentNode.removeChild(node))
-                } else {
-                    el.textContent = transform(value)
+                const newValue: string = transform(value)
+                if (oldValue !== newValue) {
+                    if (conf.html) {
+                        const html = getFragment(newValue),
+                            toRemove = oldNodes.slice(),
+                            parent = toRemove[0].parentNode
+                        oldNodes = from<Element>(html.childNodes)
+                        parent.replaceChild(html, toRemove.shift())
+                        toRemove.forEach(node => node.parentNode.removeChild(node))
+                    } else {
+                        el.textContent = transform(value)
+                    }
+                    oldValue = newValue
                 }
                 return updateDom
             }
@@ -210,10 +220,14 @@ module feather.observe {
             }
             createListener(this, conf, hook.property, updateDom(value))
         } else if (hook.type === HookType.ATTRIBUTE || hook.type === HookType.PROPERTY) { // <p style="{{myvar}}" {{hidden}}>text goes here</p>
+            let oldValue
             const attributeName = hook.attribute || hook.property,
                   updateDom = (val) => {
                       const formatted: string = transform(val)
-                      setOrRemoveAttribute(el, attributeName, isDef(formatted), formatted)
+                      if (formatted !== oldValue) {
+                          setOrRemoveAttribute(el, attributeName, isDef(formatted), formatted)
+                          oldValue = formatted
+                      }
                       return updateDom
                   }
             createListener(this, conf, hook.property, updateDom(value))
@@ -243,6 +257,7 @@ module feather.observe {
                 const patch = from<boolean>(nodeVisible),
                       childWidgets = widget.childWidgets,
                       filter = filterFactory()
+
                 // handle deleted items
                 nodeVisible.splice(index, deleteCount, ...added.map(v => false))
 
