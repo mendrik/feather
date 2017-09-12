@@ -38,7 +38,7 @@ module demo {
             x: 1
         }
 
-        @Bind({templateName: 'default', changeOn: ['filterState'], bequeath: true})
+        @Bind({templateName: 'default', bequeath: true})
         filteredList: ArrayElement[] = [
             new ArrayElement(true, 'ItemA'),
             new ArrayElement(false, 'ItemB'),
@@ -46,7 +46,7 @@ module demo {
             new ArrayElement(false, 'ItemD')
         ]
 
-        @Bind({templateName: 'simple', changeOn: ['sortState']})
+        @Bind({templateName: 'simple'})
         sortTestArray: ArrayElement[] = [
             new ArrayElement(true,  'a'),
             new ArrayElement(true,  'b'),
@@ -54,7 +54,10 @@ module demo {
             new ArrayElement(false, 'd')
         ]
 
+        @Bind({affectsArrays: ['sortTestArray']})
         sortState: SortState = SortState.BOTH
+
+        @Bind({affectsArrays: ['filteredList']})
         filterState: FilterState = FilterState.ALL
 
         constructor() {
@@ -129,16 +132,16 @@ module demo {
 
         @Template('default')
         protected getBaseTemplate() {
-            return (`
+            return `
                 <div class="booleans"/>
                 <div class="strings"/>
                 <div class="arrays"/>
-                <ul id="filtered-list" {{filteredList:arrayFilter}} truthy="{{filteredList:countTruthy}}"/>
+                <ul id="filtered-list" truthy="{{filteredList:countTruthy}}" {{filteredList:arrayFilter}}/>
                 <ul id="sorted-list" {{sortTestArray:sortFilter}}/>
                 <AttributeWidget id="aw1" text={'a'+'b'} bool={true} func="{this.printStuff}" number="{3+1}"/>
                 <AttributeWidget id="aw2" text={this.printStuff()} bool={false} func={this.printStuff} number={5}/>
                 <Inheritance/>
-            `)
+            `
         }
 
         @Route('/')

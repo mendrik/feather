@@ -44,23 +44,18 @@ describe('Filtered arrays', () => {
         })
 
         it('should apply to delegated filters', () => {
-            const clock = sinon.useFakeTimers()
             const app = window.app as demo.Application,
                   ul  = document.getElementById('filtered-list')
             app.filterState = demo.FilterState.TRUE
-            clock.tick(30)
             expect(ul.getAttribute('truthy')).to.be.equal('2')
             app.filteredList[1].booleanA = true
-            clock.tick(30)
             expect(ul.getAttribute('truthy')).to.be.equal('3')
             expect(ul.children.length).to.be.equal(3)
 
             app.filterState = demo.FilterState.WIDGET
             expect(ul.children.length).to.be.equal(3)
             app.filteredList[2].childWidgets[0]['name'] = 'ItemC'
-            clock.tick(30)
             expect(ul.children.length).to.be.equal(4)
-            clock.restore()
         })
 
         it('should reverse correctly', () => {

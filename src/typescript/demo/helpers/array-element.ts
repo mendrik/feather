@@ -6,7 +6,7 @@ module demo {
 
     export class ArrayElement extends Widget {
 
-        @Bind() booleanA = true
+        @Bind({affectsArrays: ['filteredList']}) booleanA = true
         @Bind() stringA = 'first'
         @Bind() listX = [1, 2, 3]
 
