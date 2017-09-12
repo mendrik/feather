@@ -57,7 +57,7 @@ which is currently set to 5ms.
       localStorage?: boolean,
       html?: boolean,
       bequeath?: boolean,
-      affectsArray?: string
+      affectsArrays?: string
   })
 ```
 
@@ -124,10 +124,10 @@ This property means that it can be also bound in child widget templates. This is
 way to render parent properties in child components without having to rely on @Subscribe to pass around data
 in your application.  
 
-### affectsArray
+### affectsArrays
 
 If you want array bindings to update whenever a property in their children changes, you must set this
-to an array containing the names of the array properties from this or parent widgets.
+to an array containing the names of the array properties from this or any parent widgets.
 
 ### html
 
@@ -192,7 +192,7 @@ You can also use own event extensions to define gestures. This is quite advanced
 
 Triggers the method if the specified media query matches. This can be used to run different logic for different
 viewport sizes. You could for example set a viewport state and filter an array binding with different components.
-See @Bind/changeOn for more info. The method is called initially if matched but also when the viewport size changes.
+See @Bind/affectsArray for more info. The method is called initially if matched but also when the viewport size changes.
 This way you don't need to utilize resize or orientationchange events at all.
 
 ## @Route

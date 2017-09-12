@@ -1,6 +1,6 @@
 {
     "name": "Feather",
-    "version": "1.2.39",
+    "version": "1.2.40",
     "description": "A tiny single page and widget framework",
     "repository": "https://github.com/mendrik/feather",
     "main": "feather.min.js",
@@ -9,7 +9,7 @@
     },
     "scripts": {
         "build:css": "postcss --c conf/postcss.config.js -o out/stylesheets/feather.css src/pcss/feather.pcss",
-        "build:feather": "tsc --listfiles -d -p src/typescript/feather/tsconfig.json",
+        "build:feather": "tsc -d -p src/typescript/feather/tsconfig.json",
         "build:demo": "tsc -d -p src/typescript/demo/tsconfig.json",
         "watch:css": "postcss --c conf/postcss.config.js -w -o out/stylesheets/feather.css src/pcss/feather.pcss",
         "watch:feather": "tsc -w -d -p src/typescript/feather/tsconfig.json",
