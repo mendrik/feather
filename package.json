@@ -9,7 +9,7 @@
     },
     "scripts": {
         "build:css": "postcss --c conf/postcss.config.js -o out/stylesheets/feather.css src/pcss/feather.pcss",
-        "build:feather": "tsc -d -p src/typescript/feather/tsconfig.json",
+        "build:feather": "tsc --listfiles -d -p src/typescript/feather/tsconfig.json",
         "build:demo": "tsc -d -p src/typescript/demo/tsconfig.json",
         "watch:css": "postcss --c conf/postcss.config.js -w -o out/stylesheets/feather.css src/pcss/feather.pcss",
         "watch:feather": "tsc -w -d -p src/typescript/feather/tsconfig.json",
@@ -27,7 +27,6 @@
     "license": "ISC",
     "devDependencies": {
         "@types/chai": "4.0.4",
-        "@types/es6-shim": "0.31.35",
         "@types/jsdom": "11.0.1",
         "@types/mocha": "2.2.42",
         "@types/node": "8.0.25",
@@ -58,7 +57,7 @@
         "ts-node": "3.3.0",
         "tslib": "1.7.1",
         "tslint": "5.7.0",
-        "typescript": "2.4.2",
+        "typescript": "2.5.2",
         "uglify-js": "3.0.28",
         "whatwg-url": "^6.1.0"
     },
@@ -73,7 +72,6 @@
         "chai",
         "sinon-chai",
         "jsdom",
-        "es6-shim",
         "sinon"
     ]
 }

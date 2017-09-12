@@ -9,12 +9,12 @@
         "declaration": false,
         "noEmitOnError": false,
         "noEmitHelpers": true,
-        "moduleResolution": "node",
-        "removeComments": true,
         "rootDir": "./",
+        "removeComments": false,
         "target": "es5",
         "experimentalDecorators": true,
-        "out": "out/javascripts/feather.js"
+        "out": "out/javascripts/feather.js",
+        "lib": ["es2015", "dom"]
     },
     "files": [
         "utils/functions.ts",

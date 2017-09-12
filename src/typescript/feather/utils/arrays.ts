@@ -1,7 +1,9 @@
 module feather.arrays {
 
     type MethodKey  = 'sort' | 'splice'
+    type MuteMethodKey  = 'forEach'
     const observers = new WeakMap<any[], ArrayListener<any>[]>()
+    const muteLock = new WeakMap<any[], boolean>()
 
     export interface ArrayListener<T> {
         sort(indices: number[])
@@ -32,14 +34,24 @@ module feather.arrays {
         }
     }
 
-    const notifyListenersWithArgs = (arr, method: MethodKey, args: any[]) => {
+    const notifyListenersWithArgs = (arr, method: MethodKey | MuteMethodKey, args: any[]) => {
         const listeners = observers.get(arr)
         for (const listener of listeners) {
             listener[method].apply(arr, args)
         }
     }
 
-    function createProperty<T>(key: MethodKey, arr: any) {
+    function muteMethod<T>(key: MuteMethodKey, arr: any) {
+        const old = arr[key]
+        arr[key] = function () {
+            muteLock.set(arr, true)
+            old.apply(arr, arguments)
+            muteLock.set(arr, false)
+            notifyListenersWithArgs(arr, key, [0, 0, [], []])
+        }
+    }
+
+    function duckPunch<T>(key: MethodKey, arr: any) {
         const old       = arr[key]
         if (key === 'splice') {
             // add docs that removing and re-adding elements to the same array kills event listeners
@@ -107,8 +119,9 @@ module feather.arrays {
                 arr.splice(0, 0, ...items)
                 return arr.length
             }
-            createProperty('splice', arr)
-            createProperty('sort', arr)
+            duckPunch('splice', arr)
+            duckPunch('sort', arr)
+            muteMethod('forEach', arr)
         } else {
             listeners.push(listener)
         }

@@ -54,10 +54,10 @@ which is currently set to 5ms.
 ```typescript
   @Bind({
       templateName?: string,   
-      changeOn?: string[], 
       localStorage?: boolean,
       html?: boolean,
-      bequeath?: boolean
+      bequeath?: boolean,
+      affectsArray?: string
   })
 ```
 
@@ -103,32 +103,6 @@ which is currently set to 5ms.
   }
 ```
 
-### changeOn
-
-Used exclusively with array bindings and will trigger all template hooks for this array 
-to be re-evaluated. 
-Especially useful when you have transformers that reduce the array to a string or filter it. 
-
-```typescript
-  class Parent extends Widget {
-    @Bind({changeOn: ['state']}) myArray: Child[] = []
-    @Bind() state = true
-    
-    init() {
-      this.render()
-    }
-    
-    @Template()
-    markup() {
-      return `<ul {{myArray:filter}}></ul>`
-    }
-    
-    filter() {
-      return (el: Child) => this.state
-    }
-  } 
-```
-
 Now if you change *state* the ```<ul>``` tag will show or hide its children.
 
 ### localStorage
@@ -149,6 +123,11 @@ set to 50ms.
 This property means that it can be also bound in child widget templates. This is an easy
 way to render parent properties in child components without having to rely on @Subscribe to pass around data
 in your application.  
+
+### affectsArray
+
+If you want array bindings to update whenever a property in their children changes, you must set this
+to an array containing the names of the array properties from this or parent widgets.
 
 ### html
 

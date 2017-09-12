@@ -69,7 +69,9 @@ module feather.objects {
         return a
     }
 
-    export function collectAnnotationsFromTypeMap<T, P extends Object>(map: WeakMap<ObjectConstructor, TypedMap<T>>, start: P): TypedMap<T> {
+    export type NestedMapLike<V> = WeakMap<ObjectConstructor, TypedMap<V>> | Map<ObjectConstructor, TypedMap<V>>
+
+    export function collectAnnotationsFromTypeMap<T, P extends Object>(map: NestedMapLike<T>, start: P): TypedMap<T> {
         if (isUndef(start)) {
             return {}
         }
@@ -145,7 +147,7 @@ module feather.objects {
         }
     }
 
-    export const ensure = <T>(map: WeakMap<{}, T>,
+    export const ensure = <T>(map: WeakMap<{}, T> | Map<{}, T>,
                               obj: any,
                               defaultValue: any): T => {
         let lookup: any = map.get(obj)
