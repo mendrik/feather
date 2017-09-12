@@ -71,11 +71,11 @@ module feather.objects {
 
     export type NestedMapLike<V> = WeakMap<ObjectConstructor, TypedMap<V>> | Map<ObjectConstructor, TypedMap<V>>
 
-    export function collectAnnotationsFromTypeMap<T, P extends Object>(map: NestedMapLike<T>, start: P, alreadyProto = false): TypedMap<T> {
+    export function collectAnnotationsFromTypeMap<T, P extends Object>(map: NestedMapLike<T>, start: P): TypedMap<T> {
         if (isUndef(start)) {
             return {}
         }
-        const proto = alreadyProto ? start : Object.getPrototypeOf(start)
+        const proto = Object.getPrototypeOf(start)
         const handlers = {...(map.get(proto)|| {})}
         if (proto) {
             merge(handlers, collectAnnotationsFromTypeMap(map, proto))
