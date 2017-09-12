@@ -22,7 +22,6 @@ module feather.arrays {
             if (~elements.indexOf(arr[i])) {
                 deleteCount++ // optimize removal of consecutive elements
             } else if (deleteCount) {
-                console.log('dc', arr[i])
                 arr.splice(i + 1, deleteCount)
                 if ((total -= deleteCount) === 0) { // if we removed all already, break early
                     deleteCount = 0
