@@ -1,9 +1,10 @@
 module feather.arrays {
 
-    type MethodKey  = 'sort' | 'splice'
+    type MethodKey      = 'sort' | 'splice'
     type MuteMethodKey  = 'forEach'
-    const observers = new WeakMap<any[], ArrayListener<any>[]>()
-    const muteLock = new WeakMap<any[], boolean>()
+    const observers     = new WeakMap<any[], ArrayListener<any>[]>()
+    const muteLock      = new WeakMap<any[], boolean>()
+    const NOOP_ARGS     = [0, 0, [], []]
 
     export interface ArrayListener<T> {
         sort(indices: number[])
@@ -34,7 +35,7 @@ module feather.arrays {
         }
     }
 
-    const notifyListenersWithArgs = (arr, method: MethodKey | MuteMethodKey, args: any[]) => {
+    const notify = (arr, method: MethodKey | MuteMethodKey, args: any[]) => {
         const mute = muteLock.get(arr)
         if (mute !== true) {
             const listeners = observers.get(arr)
@@ -50,7 +51,7 @@ module feather.arrays {
             muteLock.set(arr, true)
             const res = old.apply(arr, arguments)
             muteLock.set(arr, false)
-            notifyListenersWithArgs(arr, 'splice', [0, 0, [], []])
+            notify(arr, 'splice', NOOP_ARGS)
             return res;
         }
     }
@@ -62,7 +63,7 @@ module feather.arrays {
             arr.splice = function(index, deleteCount) {
                 const addedItems = [].slice.call(arguments, 2),
                       deletedItems = old.apply(arr, arguments)
-                notifyListenersWithArgs(arr, key, [index, deleteCount, addedItems, deletedItems])
+                notify(arr, key, [index, deleteCount, addedItems, deletedItems])
                 return deletedItems
             }
         } else if (key === 'sort') {
@@ -75,17 +76,13 @@ module feather.arrays {
                              .map (e => indices[e])
                       ] : indices,
                       res = old.call(arr, cmp)
-                notifyListenersWithArgs(arr, key, args)
+                notify(arr, key, args)
                 return res
             }
         }
     }
 
-    export let notifyListeners = (source: any[]) => {
-        for (const l of observers.get(source) || []) {
-            l.splice(0, 0, [], [])
-        }
-    }
+    export let notifyListeners = (source: any[]) => notify(source, 'splice', NOOP_ARGS)
 
     export const range = (start: number, end: number): number[] => {
         const len = end - start + 1,
@@ -98,6 +95,7 @@ module feather.arrays {
 
     // essentially we can reduce array modifying functions to two implementations: sort and splice
     export const observeArray = <T>(arr: T[], listener: ArrayListener<T>) => {
+        // replace this in the future with es6 proxies
         const listeners = observers.get(arr)
         if (!listeners) {
             observers.set(arr, [listener])
