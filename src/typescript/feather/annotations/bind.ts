@@ -386,7 +386,7 @@ module feather.observe {
             if (instanceBinders) {
                 const binders  = values(instanceBinders)
                 arrayTriggers  = binders.filter(conf => conf.affectsArrays.length !== 0)
-                storableArrays = binders.filter(conf => conf.localStorage)
+                storableArrays = binders.filter(conf => conf.localStorage && Array.isArray(this[conf.property]))
             }
             if (isUndef(parent)) {
                 loadLocalStorageValue(this)
