@@ -35,9 +35,12 @@ module feather.arrays {
     }
 
     const notifyListenersWithArgs = (arr, method: MethodKey | MuteMethodKey, args: any[]) => {
-        const listeners = observers.get(arr)
-        for (const listener of listeners) {
-            listener[method].apply(arr, args)
+        const mute = muteLock.get(arr)
+        if (mute !== true) {
+            const listeners = observers.get(arr)
+            for (const listener of listeners) {
+                listener[method].apply(arr, args)
+            }
         }
     }
 
