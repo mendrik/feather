@@ -48,9 +48,10 @@ module feather.arrays {
         const old = arr[key]
         arr[key] = function () {
             muteLock.set(arr, true)
-            old.apply(arr, arguments)
+            const res = old.apply(arr, arguments)
             muteLock.set(arr, false)
             notifyListenersWithArgs(arr, 'splice', [0, 0, [], []])
+            return res;
         }
     }
 

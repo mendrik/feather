@@ -21,7 +21,7 @@ module demo {
     @Construct({selector: 'Inheritance'})
     export class Inheritance extends Widget {
 
-        @Bind({}) person: Person
+        @Bind() person: Person
         @Bind({localStorage: true}) people: Person[] = []
         @Bind({templateName: 'minimal'}) elements: ArrayElement[] = []
 
