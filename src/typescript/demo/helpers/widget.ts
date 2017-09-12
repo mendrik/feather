@@ -10,7 +10,7 @@ module demo {
     @Construct({selector: '.widget', attributes: ['name']})
     export class SubWidget extends Widget {
 
-        @Bind() name: string
+        @Bind({affectsArrays: ['filteredList']}) name: string
 
         constructor(name: string) {
             super();

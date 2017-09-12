@@ -54,10 +54,10 @@ module demo {
             new ArrayElement(false, 'd')
         ]
 
-        @Bind({affectsArray: ['sortTestArray']})
+        @Bind({affectsArrays: ['sortTestArray']})
         sortState: SortState = SortState.BOTH
 
-        @Bind({affectsArray: ['filteredList']})
+        @Bind({affectsArrays: ['filteredList']})
         filterState: FilterState = FilterState.ALL
 
         constructor() {

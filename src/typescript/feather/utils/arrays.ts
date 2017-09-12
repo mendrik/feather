@@ -47,7 +47,7 @@ module feather.arrays {
             muteLock.set(arr, true)
             old.apply(arr, arguments)
             muteLock.set(arr, false)
-            notifyListenersWithArgs(arr, key, [0, 0, [], []])
+            notifyListenersWithArgs(arr, 'splice', [0, 0, [], []])
         }
     }
 

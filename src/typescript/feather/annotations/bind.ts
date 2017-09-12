@@ -22,10 +22,10 @@ module feather.observe {
     import ensure              = feather.objects.ensure
     import collect             = feather.objects.collectAnnotationsFromTypeMap
     import observe             = feather.objects.createObjectPropertyListener
+    import values              = feather.objects.values
     import Subscribable        = feather.hub.Subscribable
     import WidgetFactory       = feather.boot.WidgetFactory
     import getFragment         = feather.annotations.getFragment
-    import notifyListeners = feather.arrays.notifyListeners;
 
     const boundProperties      = new WeakMap<any, TypedMap<Function[]>>()
     const binders              = new WeakMap<any, TypedMap<BindProperties>>()
@@ -33,11 +33,12 @@ module feather.observe {
     const storeQueue           = new WeakMap<any, any>()
 
     export interface BindProperties {
-        templateName?: string   // when pushing new widgets into an array, the template name to render the children with
-        localStorage?: boolean  // initialize values from local storage
-        bequeath?:     boolean  // child widget can bind this in their own templates
-        html?:         boolean  // string contains html, do not bind to template root. experimental.
-        affectsArray?: string[] // let feather know, that changing this property should reevaluate bindings on an array in a parentwidget
+        templateName?:  string   // when pushing new widgets into an array, the template name to render the children with
+        localStorage?:  boolean  // initialize values from local storage
+        bequeath?:      boolean  // child widget can bind this in their own templates
+        html?:          boolean  // string contains html, do not bind to template root. experimental.
+        affectsArrays?: string[] // let feather know, that changing this property should reevaluate bindings on an array in a parentwidget
+        property?:      string   // internal property name reference, cannot be set externally
     }
 
     const setOrRemoveAttribute = (el: Element, attribute: string, condition: boolean, val: string) => {
@@ -129,12 +130,12 @@ module feather.observe {
                     }
                 })
             }
-            if (conf.affectsArray.length) {
-                const n = conf.affectsArray.length
+            if (conf.affectsArrays.length) {
+                const n = conf.affectsArrays.length
                 let   pw: Subscribable = obj, i, arr
                 do {
                     for (i = 0; i < n; i++) {
-                        arr = pw[conf.affectsArray[i]]
+                        arr = pw[conf.affectsArrays[i]]
                         if (isDef(arr)) {
                             ensure(boundProperties, obj, {[property]: [() => notifyListeners(arr)]})
                         }
@@ -384,8 +385,9 @@ module feather.observe {
         attachHooks(hooks: Hook[], parent?: any) {
             const context: Widget = parent || this,
                   instanceBinders = collect(binders, this),
-                  arrayTriggers = instanceBinders ? Object.keys(instanceBinders)
-                      .filter(prop => instanceBinders[prop].affectsArray.length !== 0) : []
+                  arrayTriggers = instanceBinders ?
+                                    values(instanceBinders).filter(conf => conf.affectsArrays.length !== 0) :
+                                    []
             if (isUndef(parent)) {
                 loadLocalStorageValue(this)
             }
@@ -422,7 +424,7 @@ module feather.observe {
                 createObserver.call(this, transform(value), hook, conf, transform)
             }
             for (const trigger of arrayTriggers) {
-                createListener(this, instanceBinders[trigger], trigger, () => 0)
+                createListener(this, trigger, trigger.property, () => 0)
             }
         }
 
@@ -433,7 +435,13 @@ module feather.observe {
     }
 
     export const Bind = (props?: BindProperties) => (proto: Observable, property: string) => {
-        const defProps: BindProperties = {templateName: 'default', localStorage: false, affectsArray: [], html: false},
+        const defProps: BindProperties = {
+                    templateName: 'default',
+                    localStorage: false,
+                    affectsArrays: [],
+                    property,
+                    html: false
+              },
               finalProps               = {...defProps, ...(props || {})}
         ensure(binders, proto, {[property]: finalProps})
     }
