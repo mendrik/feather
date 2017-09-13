@@ -51,6 +51,8 @@ const loadPage = (callback: Function) => {
         addListener: () => 0
     })
 
+    window.document.requestAnimationFrame = (fn) => fn()
+
     window.document.createRange = () => ({
         createContextualFragment: (source) => {
             const doc = window.document,

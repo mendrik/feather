@@ -120,7 +120,7 @@ module feather.objects {
                         })
                     })
                 })
-            ,0)
+            , 0)
         }
     }
 
