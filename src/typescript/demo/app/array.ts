@@ -58,7 +58,7 @@ module demo {
         @Subscribe('message')
         receiveMessage() {
             console.log('Message received')
-            this.triggerUp('message-up', 1, 2, 3)
+            this.triggerUp('message-up', [1, 2, 3])
         }
 
         count = (list: Widget[]) => list.length

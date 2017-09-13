@@ -6,54 +6,58 @@ module feather.hub {
     import collect       = feather.objects.collectAnnotationsFromTypeMap
     import WidgetFactory = feather.boot.WidgetFactory
 
-    export const subscribers    = new WeakMap<any, TypedMap<Subscriber[]>>()
-
-    export class Subscriber {
-        constructor(public event: string, public method: string) {
-        }
-    }
+    export const subscribers    = new WeakMap<any, TypedMap<string[]>>()
 
     export abstract class Subscribable extends EventAware {
         parentWidget: Subscribable
         childWidgets: Array<Subscribable> = []
 
         // noinspection JSUnusedGlobalSymbols
-        triggerUp(event: string, ...data: any[]) {
-            feather.hub.Subscribable.trigger(event, this, data)
+        triggerUp(event: string, data?: any) {
+            this.trigger(event, data)
             if (this.parentWidget) {
-                this.parentWidget.triggerUp(event, ...data)
+                this.parentWidget.triggerUp(event, data)
             }
         }
 
         // noinspection JSUnusedGlobalSymbols
-        triggerSingleton(event: string, ...data: any[]) {
-            WidgetFactory.singletonRegistry.forEach(w => feather.hub.Subscribable.trigger(event, w, data))
+        triggerSingleton(event: string, data?: any) {
+            WidgetFactory.singletonRegistry.forEach(w => w.trigger(event, data))
         }
 
-        triggerDown(event: string, ...data: any[]) {
-            feather.hub.Subscribable.trigger(event, this, data)
+        triggerDown(event: string, data?: any) {
+            this.trigger(event, data)
             if (this.childWidgets) {
                 for (const child of this.childWidgets) {
-                    child.triggerDown(event, ...data)
+                    child.triggerDown(event, data)
                 }
             }
         }
 
-        private static trigger(event: string, context: Subscribable, ...data: any[]) {
-            const subs = collect(subscribers, context)
-            if (subs[event]) {
-                for (const sub of subs[event]) {
-                    context[sub.method].apply(context, ...data)
+        private trigger(event: string, data?: any) {
+            const subs = collect(subscribers, this)[event]
+            if (subs) {
+                for (const method of subs) {
+                    Object.getPrototypeOf(this)[method].call(this, data)
                 }
             }
-        }
-
-        cleanUp() {
-            super.cleanUp()
-            subscribers.delete(this)
         }
     }
 
-    export let Subscribe = (event: string) => (proto: Subscribable, method: string) =>
-        ensure(subscribers, proto, {[event]: [new Subscriber(event, method)]})
+    export let Subscribe = (event: string, animationFrame?: boolean) =>
+        (proto: Subscribable, method: string, desc: PropertyDescriptor) => {
+        if (animationFrame === true) {
+            const old = desc.value,
+                  args = []
+            desc.value = function (arg) {
+                const context = this
+                args.push(arg)
+                requestAnimationFrame(() => {
+                    old.call(context, args)
+                    args.splice(0, args.length)
+                })
+            }
+        }
+        ensure(subscribers, proto, {[event]: [method]})
+    }
 }
