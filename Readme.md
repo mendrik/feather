@@ -63,8 +63,4 @@ This is work in progress so use it only as in inspiration for your own implement
 
 # Performance
 
-Comparing feather-ts using [this](https://github.com/lhorie/todomvc-perf-comparison) 
-
-With 500 items on Chrome:
-
-<img src="http://dist.feather-ts.com/performance.jpg?v=3" style="width: 100%; max-width: 450px">
+A todo mvc benchmark can be run [here](http://www.feather-ts.com/todomvc/todomvc-benchmark/index.html) with 150 items.
