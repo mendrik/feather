@@ -48,52 +48,66 @@ very compact and flat.
 ```typescript
 module todomvc.feather {
 
-    import Widget          = feather.core.Widget /* imports of referenced components */
+    /* imports of referenced components */
+    import Widget = feather.core.Widget 
     ...
     
-    @Construct({selector: '.todoapp'}) /* the selector to bind this widget to */
-    class TodoList extends Widget {    /* all widgets must extend Widget */
+    /* the selector to bind this widget to */
+    @Construct({selector: '.todoapp'}) 
+    /* all widgets must extend Widget */
+    class TodoList extends Widget {    
 
-        @Bind() state = ListState.ALL  /* prefix members that auto update DOM with @Bind(), supported are booleans, strings and numbers */
+        /* prefix members that auto update DOM with @Bind(), 
+         * supported are booleans, strings and numbers */
+        @Bind() state = ListState.ALL  
 
-        @Bind({templateName: 'default', changeOn: ['state']}) /* arrays are a special case, more about the params later */
+        /* arrays are a special case, more about the params later */
+        @Bind({templateName: 'default', changeOn: ['state']}) 
         todos: Todo[] = []
         
         /* no constructor is required */
-
-        init(element: HTMLElement) {   /* whenever a widget is fully initialized it calls init() */
+        /* whenever a widget is fully initialized it calls init() */
+        init(element: HTMLElement) {   
             this.getData()
         }
         
-        @Fetch('/api/todos')           /* fetch data from a REST api and render the widget */
+        /* fetch data from a REST api and render the widget */
+        @Fetch('/api/todos')           
         getData(data?: Todo[]) {
             this.todos.push.apply(this.todos, data)
-            this.render('default')     /* if you're not loading data you can render() already in init() */
+            /* if you're not loading data you can render() already in init() */
+            this.render('default')     
         }
 
-        @Subscribe('create-todo')      /* listen to messages from parent or child widgets via @Subscribe */
+        /* listen to messages from parent or child widgets via @Subscribe */
+        @Subscribe('create-todo')      
         newTodo(todo: Todo) {
             this.todos.push(todo)
         }
 
-        @Route('/:path')               /* listen to route changes with @Route */
+        /* listen to route changes with @Route */
+        @Route('/:path')               
         locationPath(params: SimpleMap) {
             if (params['path'] === 'active') {
                 ...
             }
         }
 
-        @On({event: 'click', selector: '.clear-completed', preventDefault: true}) /* attach DOM events via @On */
+        /* attach DOM events via @On */
+        @On({event: 'click', selector: '.clear-completed', preventDefault: true}) 
         clearCompleted() {
             ...
         }
 
-        @Template('default') /* widgets can be rendered with different templates */
+        /* widgets can be rendered with different templates */
+        @Template('default') 
         toHtml() { /* use ES6 template strings to define HTML snippets */
             return (`
               ...
               <ul class="todo-list" {{todos:listFilter}}></ul>
-              <button class="clear-completed" hidden="{{todos:noCompleted}}">Clear completed</button>
+              <button class="clear-completed" hidden="{{todos:noCompleted}}">
+                    Clear completed
+              </button>
               ...
             `)
         }
