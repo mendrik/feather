@@ -1,0 +1,23 @@
+label[for="search"] {
+    color: #574A5B;
+    display: inline-flex;
+    align-items: center;
+
+    input {
+        background-color: transparent;
+        border: 1px solid #574A5B;
+        border-radius: 20px;
+        outline: none;
+        color: white;
+        padding: 7px 10px 7px 30px;
+        transition: border-color 0.3s linear;
+
+        &:focus {
+            border-color: white;
+        }
+    }
+
+    &:before {
+        margin-right: -25px;
+    }
+}

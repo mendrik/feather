@@ -1,0 +1,120 @@
+@font-face {
+    font-family: 'Josefin Sans Thin';
+    font-style: normal;
+    font-weight: 100;
+    src: local('JosefinSans Thin'), local('JosefinSans-Thin'), url('/fonts/JosefinSans-Thin.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Josefin Sans Light';
+    font-style: normal;
+    font-weight: 300;
+    src: local('JosefinSans Light'), local('JosefinSans-Light'), url('/fonts/JosefinSans-Light.ttf') format('truetype');
+}
+
+.fa {
+    display: inline-block;
+    font: normal normal normal 14px/1 FontAwesome;
+    font-size: inherit;
+    text-rendering: auto;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+h1,
+h2,
+h3,
+h4 {
+    color: white;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+    font-weight: normal;
+}
+
+h1 {
+    font-family: 'Josefin Sans Thin', sans-serif;
+    text-align: center;
+    font-size: 200%;
+    text-shadow: none;
+}
+
+h2 {
+    font-size: 110%;
+}
+
+h3 {
+    font-size: 105%;
+    color: #d6b9d1;
+    font-weight: bold;
+}
+
+h4 {
+    font-size: 100%;
+    font-weight: bold;
+}
+
+pre > code.language-typescript.hljs,
+pre > code.language-json.hljs {
+    font-size: 80%;
+    padding: 20px 3000px;
+    margin: 0 -3000px;
+    border-top: 1px solid rgba(0, 0, 0, 0.13);
+    border-bottom: 1px solid rgba(214, 185, 209, 0.13);
+
+    &::-webkit-scrollbar {
+        display: none;
+    }
+}
+
+code {
+    font-size: 80%;
+    font-family: monospace;
+    color: #ceb7b7;
+}
+
+p {
+    &:first-letter {
+        font-weight: bold;
+    }
+}
+
+.wrapper ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    background-image: url('/images/bullet_bg.svg');
+    background-size: 10px 100%;
+    background-position: 0 0;
+    background-repeat: no-repeat;
+
+    > li {
+        display: flex;
+        align-items: stretch;
+
+        &:before {
+            content: '';
+            margin-right: 10px;
+            vertical-align: top;
+            display: block;
+            background-image: url('/images/bullet.svg');
+            background-size: 12px;
+            background-clip: border-box;
+            background-position: -1px -1px;
+            width: 10px;
+            text-align: left;
+            flex: none;
+        }
+
+    }
+}
+
+blockquote {
+    border-left: 3px solid #DF7100;
+    margin: 0;
+    padding: 10px 20px 10px 30px;
+    background-color: #342B3A;
+
+    > p {
+        margin: 0;
+        color: #DFAB9C;
+    }
+}

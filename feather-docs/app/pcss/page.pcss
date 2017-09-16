@@ -1,0 +1,45 @@
+body, html {
+    background-color: #3B3142;
+    color: #ccb6c8;
+    font-family: 'Josefin Sans Light', sans-serif;
+    font-size: 18px;
+    line-height: 1.4;
+    margin: 0;
+}
+
+body {
+    padding: 0 10px 20px 10px;
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+a {
+    color: #AD94A8;
+    text-decoration: none;
+}
+
+#page {
+    max-width: 700px;
+    padding-top: 20px;
+    margin: 0 auto;
+    background: url('/images/backdrop.svg') no-repeat center -350px;
+    background-size: contain;
+    background-clip: border-box;
+}
+
+#header {
+    display: flex;
+    align-items: center;
+
+    > * {
+        flex: none;
+
+        &:first-child {
+            margin-right: auto;
+        }
+
+        &:last-child {
+            margin-left: auto;
+        }
+    }
+}

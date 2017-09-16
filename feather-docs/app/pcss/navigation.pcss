@@ -1,0 +1,103 @@
+nav.toc > ul {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin: 50px 0;
+    list-style: none;
+    padding: 0;
+    width: 100%;
+
+    > * {
+        flex: none;
+
+        a {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0 5px;
+
+            &:before {
+                display: inline-block;
+                font: normal normal normal 14px/1 FontAwesome;
+                font-size: 30px;
+                text-rendering: auto;
+                -webkit-font-smoothing: antialiased;
+                -moz-osx-font-smoothing: grayscale;
+                margin-bottom: 5px;
+            }
+
+            &.current {
+                color: white;
+
+                &:before {
+                    text-shadow: 0 0 30px rgba(253, 229, 255, 0.4);
+                }
+            }
+
+            &[title="About"]:before {
+                content: "\f05a";
+            }
+
+            &[title="Installation"]:before {
+                content: "\f144";
+            }
+
+            &[title="Documentation"]:before {
+                content: "\f1cd";
+            }
+
+            &[title="Issues"]:before {
+                content: "\f188";
+            }
+
+            &[title="Questions"]:before {
+                content: "\f29c";
+            }
+
+            &[title="Examples"]:before {
+                content: "\f06e";
+            }
+        }
+    }
+}
+
+ul.subnavigation {
+    font-family: 'Josefin Sans Thin', sans-serif;
+    margin-bottom: 20px;
+
+    &:empty {
+        display: none;
+    }
+
+}
+
+@media (min-width: 768px) {
+    ul.subnavigation {
+        display: flex;
+        background: none;
+        justify-content: space-between;
+
+        > li:before {
+            content: normal;
+        }
+    }
+}
+
+
+nav.pagination {
+    display: flex;
+    margin-bottom: 20px;
+
+    .previous {
+        margin-right: auto;
+    }
+
+    .next {
+        margin-left: auto;
+        text-align: right;
+    }
+
+    .page {
+        color: white;
+    }
+}

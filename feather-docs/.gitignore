@@ -15,12 +15,6 @@ tmp
 /**/.classpath
 /**/.project
 .cache
-/out/javascripts
-/out/stylesheets
-/out/images
-/node_modules
+/app/node_modules
+/public
 npm-debug.log.*
-/feather-docs/public
-/feather-docs/typings
-/deploy.sh
-/docs

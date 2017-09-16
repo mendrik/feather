@@ -1,7 +1,6 @@
 ---
-date: 2016-10-02T21:07:13+01:00
+date: 2017-11-02T21:07:13+01:00
 title: Examples
-weight: 40
 ---
 
 Here are a few common use-cases in single page application that illustrate how Feather handles those:
