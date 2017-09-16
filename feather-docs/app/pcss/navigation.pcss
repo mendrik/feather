@@ -7,7 +7,19 @@ nav.toc > ul {
     padding: 0;
     width: 100%;
 
-    > * {
+    @media (max-width: 570px) {
+        font-size: 80%;
+
+        > li a:before {
+            font-size: 20px;
+        }
+    }
+
+    @media (max-width: 360px) {
+        font-size: 50%;
+    }
+
+    > li {
         flex: none;
 
         a {
@@ -42,7 +54,7 @@ nav.toc > ul {
                 content: "\f144";
             }
 
-            &[title="Documentation"]:before {
+            &[title="Docs"]:before {
                 content: "\f1cd";
             }
 

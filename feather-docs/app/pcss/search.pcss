@@ -11,6 +11,11 @@ label[for="search"] {
         color: white;
         padding: 7px 10px 7px 30px;
         transition: border-color 0.3s linear;
+        width: 170px;
+
+        @media (max-width: 570px) {
+            max-width: 100px;
+        }
 
         &:focus {
             border-color: white;

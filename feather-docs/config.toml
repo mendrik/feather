@@ -50,7 +50,7 @@ googleAnalytics = "UA-84969611-1"
 	weight = 20
 
 [[menu.main]]
-	name   = "Documentation"
+	name   = "Docs"
 	url    = "documentation/"
 	weight = 30
 
