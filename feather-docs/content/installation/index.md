@@ -10,7 +10,7 @@ files: `feather.min.js` and `feather.d.ts` for the typescript declarations.
 npm install feather-ts --save
 ```
 
-The next thing you probably want to do is to create a ```tsconfig.json``` file. Make sure you enable experimental decorators
+The next thing you probably want to do is to create a `tsconfig.json` file. Make sure you enable experimental decorators
 and you can disable emitting helpers, because feather already embeds them from [tslib](https://github.com/Microsoft/tslib). 
 An example config could look something like this:
 

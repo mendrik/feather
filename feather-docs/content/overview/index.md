@@ -34,9 +34,9 @@ can return several root-nodes (this differs a bit from *React* with jsx for exam
 
 Furthermore you can have renderless widgets, that just attach dom events or manipulate their child nodes. 
  
-A widget usually comes with a ```@Construct({selector: string, ...})``` class decorator, which defines which 
+A widget usually comes with a `@Construct({selector: string, ...})` class decorator, which defines which 
 HTML elements the component will be appended to. Once the Widget has been created, you can override the 
-```init(element: HTMLElement)``` method in your class and call this.render(templateName) there. 
+`init(element: HTMLElement)` method in your class and call this.render(templateName) there. 
 
 > Widgets don't require a constructor and custom initialization should be done in the overwritten `init` 
 method. An exception to this are array-widgets. Array widget are widgets that are pushed into an array
@@ -44,7 +44,7 @@ property of another widget. They differ in so far that they don't require a `thi
 they have a `@Construct` decorator.
 
 You can have different template generating methods in the same widget class and choose which one to run
-when calling `this.render()`. For this use a specific template name in the @Template decorator and call
+when calling `this.render()`. For this use a specific template name in the `@Template` decorator and call
 `this.render(chosenName)` accordingly.
 
 Putting it all together, a very simple widget looks like this:
@@ -73,7 +73,7 @@ Putting it all together, a very simple widget looks like this:
  }
  ```
  
-Call now ```feather.start()``` and your application will render itself into ```<body>```. 
+Call now `feather.start()` and your application will render itself into `<body>`. 
 
 ## Widget tree
 Widgets form internally a tree, whenever they are referenced in a template or pushed to 

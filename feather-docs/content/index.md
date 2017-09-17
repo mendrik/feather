@@ -4,7 +4,7 @@ title: A minimalistic framework
 type: index
 ---
 
-Feather is a small component framework written in [TypeScript](https://www.typescriptlang.org/).
+Feather is a small UI framework written in [TypeScript](https://www.typescriptlang.org/).
 You can use it to write embeddable widgets or single page applications. With less than 10kb in size 
 it is suited for mobile apps and desktop alike. Regardless of its tiny footprint it has zero 
 dependencies and provides routing, DOM events and REST integration out of the box.
@@ -19,7 +19,7 @@ itself, but this can be achieved with many other ready-made solutions. On the up
 are synchronous and you can write UI tests against the real DOM without having to wait for the render 
 loop to complete. Furthermore keeping track of what needs to update on a very granular level allows 
 feather to minimize write access to the DOM and without the need to diff and patch two representations 
-of the UI it also outperforms most frameworks in speed.
+of the UI it also outperforms most frameworks in [speed](http://www.feather-ts.com/todomvc/todomvc-benchmark/index.html).
 
 ### The framework offers the following features:
 
@@ -40,11 +40,13 @@ of the UI it also outperforms most frameworks in speed.
 * Generates clean HTML markup without any trace of the framework
 * No wrappers required for your data holders
 
-Intellij IDEA [plugin](http://dist.feather-ts.com/feather.jar) for syntax highlighting in templates 
-and decorators.
+## Intellij IDEA
+
+Feather comes with an own [IDE plugin]((http://dist.feather-ts.com/feather.jar)) to help you with syntax 
+highlighting and mistyped references. Grab it from the link or the official plugin repository.
   
-> With this framework you will be able to write natural code without too many dogmatic aspects. 
-> There is no hidden mess of global state objects, action constants, no hard to follow data messaging  
-  
-You can checkout a todomvc demo [here](http://todo.feather-ts.com).
+## Examples  
+    
+* <div>You can check out the todomvc demo from [here](http://todo.feather-ts.com).</div>
+* <div>Some UI components written with feather-ts are located [here](https://github.com/mendrik/feather-components).</div>
   
