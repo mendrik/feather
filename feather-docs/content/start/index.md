@@ -175,29 +175,30 @@ module feather.docs {
 
 ```
 
-Now whenever the value of ```who``` changes, the text node will update automatically. You can bind properties 
+Now whenever the value of `who` changes, the text node will update automatically. You can bind properties 
 in 4 different places within the template and in combination with the property type only some of them make 
 sense. Let's have a look:
  
-* ```<div class="right {{variable}} large">...</div>``` As a new class in the class attribute (only strings)
-* ```<div class="red" style="{{variable}}">...</div>``` Within an arbitrary attribute (only strings and booleans)
-* ```<div class="red" {{variable}}>...</div>``` As a property hook (booleans and arrays but no transformer methods)
-* ```<div class="red">Some {{variable}} text!</div>``` Within a text node (only strings)
+* <div>`<div class="right {{variable}} large">...</div>`<br>As a new class in the class attribute (only strings)</div>
+* <div>`<div class="red" style="{{variable}}">...</div>`<br>Within an arbitrary attribute (only strings and booleans)</div>
+* <div>`<div class="red" {{variable}}>...</div>`<br>As a property hook (booleans and arrays but no transformer methods)</div>
+* <div>`<div class="red">Some {{variable}} text!</div>`<br>Within a text node (only strings)</div>
+
 
 > Note that any binding can convert booleans, numbers or arrays into strings. This is done but declaring a *transformer* 
-> function in the widget class. You can then bind it like this: ```<div class="{{variable:formatAsString}}">...</div>```
+> function in the widget class. You can then bind it like this: `<div class="{{variable:formatAsString}}">...</div>`
 
 
 ### Booleans
 
 Booleans are bound almost the same way as primitives, but there are a few shortcuts that can be used:
  
-  * ```<div class="right {{variable}} large">...</div>``` 
-     Not supported. Consider using a transformer function, must be declared on the same widget class which returns a string.  
-  * ```<div class="red" style="{{variable}}">...</div>``` if variable is true the attribute will be set, if ```undefined``` removed
-  * ```<div class="red" {{variable}}>...</div>``` Special shortcut where the attribute's name is same as the variable. This is 
-  useful for attributes like *checked* or *hidden*
-  * ```<div class="red">Some {{variable}} text!</div>``` Not supported, use a transformer function to convert to a string.
+  * <div>`<div class="right {{variable}} large">...</div>`<br> 
+     Not supported. Consider using a transformer function, must be declared on the same widget class which returns a string.</div>  
+  * <div>`<div class="red" style="{{variable}}">...</div>`<br>if variable is true the attribute will be set, if `undefined` removed</div>
+  * <div>`<div class="red" {{variable}}>...</div>`<br>Special shortcut where the attribute's name is same as the variable. This is 
+  useful for attributes like *checked* or *hidden*</div>
+  * <div>`<div class="red">Some {{variable}} text!</div>`<br>Not supported, use a transformer function to convert to a string.</div>
 
  
 ### Arrays
@@ -246,7 +247,7 @@ There is however to possibility to *deep* bind properties. If a widget property 
 you can assign template hooks via object dot notation: ```<div>{{property.x.y.z}}</div>```. The root
 object will internally be observed so whenever any of the internal values change the template hook
 will be re-rendered (or the object itself for that matter). This also works in combination with inherited 
-bindings ```(@Bind({bequeath: true})``` from parent widgets and transformers: 
+bindings `@Bind({bequeath: true}` from parent widgets and transformers: 
 ```
 <div>{{parentProperty.x.y.z:calculate}}</div>
 ```
