@@ -8,19 +8,25 @@ nav.toc > ul {
     width: 100%;
 
     @media (max-width: 570px) {
-        font-size: 75%;
-
         > li a:before {
             font-size: 20px;
         }
     }
 
-    @media (max-width: 380px) {
-        font-size: 50%;
-    }
-
     > li {
         flex: none;
+
+        @media (max-width: 570px) {
+            &:nth-child(4) {
+                display: none;
+            }
+        }
+
+        @media (max-width: 460px) {
+            &:nth-child(6) {
+                display: none;
+            }
+        }
 
         a {
             display: flex;
@@ -73,9 +79,19 @@ nav.toc > ul {
     }
 }
 
+@media (min-width: 768px) {
+    nav.subnavigation {
+        position: sticky;
+        top: 0;
+        left: 0;
+        background-color: #3B3142;
+        padding: 10px 3000px;
+        margin: 0 -3000px;
+    }
+}
+
 ul.subnavigation {
     font-family: 'Josefin Sans Thin', sans-serif;
-    margin-bottom: 20px;
 
     &:empty {
         display: none;
@@ -98,7 +114,7 @@ ul.subnavigation {
 
 nav.pagination {
     display: flex;
-    margin-bottom: 20px;
+    margin: 20px 0;
 
     .previous {
         margin-right: auto;
