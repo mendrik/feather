@@ -15,7 +15,7 @@ module feather.docs {
 
         init(el: HTMLElement) {
             const h2 = from<HTMLElement>(document.querySelectorAll(".wrapper h2"))
-            if (h2.length > 3 && !/faq/.test(document.location)) {
+            if (h2.length > 3 && !/faq/.test(document.location.href)) {
                 this.children.push(...h2.map(h2 => {
                     return new NaviItem( "#" + h2.id, h2.textContent.substring(1))
                 }))

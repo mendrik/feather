@@ -11,14 +11,12 @@ module feather.docs {
 
         @Media('(max-width: 768px)')
         renderMobile() {
-            console.log('bla')
-            this.render('mobile')
+            this.render('mobile', true)
         }
 
         @Media('(min-width: 769px)')
         renderDesktop() {
-            console.log('blub')
-            this.render('desktop')
+            this.render('desktop', true)
         }
 
         @Template('mobile')

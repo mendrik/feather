@@ -61,13 +61,11 @@ which is currently set to 5ms.
 ```
 
 ### templateName 
-  This is used with array bindings and specifies which template method should be used to render the children. 
-  If no name is used it defaults to the method that is decorated with no argument inside of @Template()
-  
-  {{< note title="Note" >}}
-  Note that child widgets in an array should not call ```this.render()``` in the init method, since the 
-  framework will take care of this. However, you can still use the init method for other bootstrapping. 
-  {{< /note >}}
+This is used with array bindings and specifies which template method should be used to render the children. 
+If no name is used it defaults to the method that is decorated with no argument inside of @Template()
+
+> Note that child widgets in an array should not call ```this.render()``` in the init method, since the 
+> framework will take care of this. However, you can still use the init method for other bootstrapping. 
   
   Here an example:
 
@@ -178,10 +176,8 @@ Small helper if you want to avoid calling ```ev.preventDefault()``` yourself. Sa
 If set to true it will bubble this dom event beyond the widget's root element. Feather stops event propagation
 by default at the root, so it is possible to have nested Widgets of the same class and scope their events accordingly. 
 
-{{< note title="Note" >}}
-You can also use own event extensions to define gestures. This is quite advanced but an example is 
-[available here](https://github.com/mendrik/feather-components/blob/master/src/common/events.ts)  
-{{< /note >}}
+> You can also use own event extensions to define gestures. This is quite advanced but an example is 
+> [available here](https://github.com/mendrik/feather-components/blob/master/src/common/events.ts)  
 
 ## @Media
 
@@ -391,7 +387,5 @@ If one needs to add custom headers to the request one can use it like so:
   }
 ```
 
-{{< note title="Note" >}}
-More information can be found directly from the source code of feather-ts. Check it out on github either from 
-the [framework](https://github.com/mendrik/feather) or the [UI components](https://github.com/mendrik/feather-components). 
-{{< /note >}}
+> More information can be found directly from the source code of feather-ts. Check it out on github either from 
+> the [framework](https://github.com/mendrik/feather) or the [UI components](https://github.com/mendrik/feather-components). 
