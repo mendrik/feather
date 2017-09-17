@@ -23,31 +23,6 @@
 {{ end }}
 {{ end }}
 
-{{ if .IsHome }}
-{{ if gt (len .Site.Pages) 2 }}
-<nav class="pagination" aria-label="Footer">
-    <div class="previous">
-    </div>
-
-    {{ $title := (index (.Site.Pages.ByDate) 1).Title }}
-    {{ $permalink := (index (.Site.Pages.ByDate) 1).Permalink }}
-    <div class="next">
-        <a href="{{ $permalink }}" title="{{ $title }}">
-        <span class="direction">
-          Next <i class="fa fa-angle-right"></i>
-        </span>
-            <div class="page">
-                <div class="stretch">
-                    <div class="title">
-                        {{ $title }}
-                    </div>
-                </div>
-            </div>
-        </a>
-    </div>
-</nav>
-{{ end }}
-{{ end }}
 
 <a href="https://github.com/mendrik/feather" target="_blank" title="@{{ . }} on GitHub">
     <i class="fa fa-github"></i> source code on github

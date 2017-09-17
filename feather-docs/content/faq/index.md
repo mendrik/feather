@@ -1,5 +1,5 @@
 ---
-date: 2017-08-06T21:07:13+01:00
+date: 2016-01-01T21:07:13+01:00
 title: Frequently asked questions
 ---
 ## Why is there no virtual dom?
