@@ -1,0 +1,7 @@
+<nav class="toc" aria-label="Navigation">
+    {{ if gt (len .Site.Menus.main) 0 }}
+    <ul>
+        {{ partial "nav" . }}
+    </ul>
+    {{ end }}
+</nav>

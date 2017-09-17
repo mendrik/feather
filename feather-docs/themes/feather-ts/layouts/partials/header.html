@@ -1,0 +1,18 @@
+<nav id="header" aria-label="Header">
+  <div id="logo">
+    <a href="{{ .Site.BaseURL }}" class="project">
+        {{ with .Site.Params.logo }}
+          <img src="{{ $.Site.BaseURL }}{{ . }}">
+        {{ end }}
+    </a>
+  </div>
+  <div class="bar search">
+    <label for="search" class="fa fa-search">
+      <input type="text" id="search" autocomplete="off" placeholder="Search issues">
+    </label>
+  </div>
+</nav>
+<div class="drawer">
+  {{ partial "drawer" . }}
+</div>
+
