@@ -38,8 +38,8 @@ the internal message hub with ```this.triggerDown('xy', data)``` and
 ## How do I add localization to my components?
 
 Create a singleton component ```@Construct({singleton: true})``` that holds a 
-messages map with a method ```translate = (key: string) => this.translations```.
-Then in any other component you can use with @Bind annoated keys in your template 
+messages map with a method ```translate = (key: string) => this.translations[key]```.
+Then in any other component you can use with @Bind annotated keys in your template 
 ```{{mykey:translate}}```. Usually the transformer methods live on the instance
 that holds the template, but if they are not found from there feather will try
 to resolve them from singletons too.
