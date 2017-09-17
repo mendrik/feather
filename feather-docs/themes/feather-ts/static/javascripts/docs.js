@@ -164,7 +164,7 @@ var feather;
         var Construct = feather.annotations.Construct;
         var On = feather.event.On;
         var format = feather.strings.format;
-        var searchUrl = 'https://github.com/mendrik/feather/search?utf8=%E2%9C%93&q={{search}}&type=';
+        var searchUrl = 'https://github.com/mendrik/feather/issues?utf8=%E2%9C%93&q=is%3Aissue%20{{search}}';
         var Search = /** @class */ (function (_super) {
             __extends(Search, _super);
             function Search() {
