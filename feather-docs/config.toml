@@ -1,6 +1,6 @@
 baseurl = "/"
 languageCode = "en-us"
-title = "Featherₜₛ"
+title = "Feather TS"
 theme = "feather-ts"
 metadataformat = "yaml"
 canonifyurls = true

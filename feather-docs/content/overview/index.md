@@ -29,7 +29,7 @@ to render into its root element. This is usually done in the overridden method `
 
 However, feather does not make assumption when to render the widget; it might be required to fetch data from 
 the server or wait for other events to complete. To keep things simple the content of a widget's
-`@Template` decorated method is appended to the root element. If a widget is not added to an array, templates
+[@Template](/documentation/#template) decorated method is appended to the root element. If a widget is not added to an array, templates
 can return several root-nodes (this differs a bit from *React* with jsx for example).  
 
 Furthermore you can have renderless widgets, that just attach dom events or manipulate their child nodes. 
@@ -107,7 +107,7 @@ several possibilities but all of them are done via constructor arguments collect
 dom attributes.
 
 If you need to pass data to widget at a later point of the application flow, you should use the 
-internal message hub instead, see `@Subscribe` and the corresponding `triggerUp`/`triggerDown` methods.
+internal message hub instead, see [@Subscribe](/documentation/#subscribe) and the corresponding `triggerUp`/`triggerDown` methods.
 
 ### String attributes
  
@@ -129,7 +129,7 @@ Feather provides one-way data-binding, which means you can create *hooks* betwee
 data and the DOM. Whenever the data changes your DOM will update accordingly. There are several hook types, 
 which are explained below. Feather does not use a virtual dom, instead it binds directly to native DOM 
 modifiers. 
-Hooks are basically class properties with a `@Bind()` decorator and depending on the property type a 
+Hooks are basically class properties with a [@Bind()](/documentation/#bind) decorator and depending on the property type a 
 reference in the widget's template method, declared by double curly braces. You can add hooks to:
 
 ### Primitives
@@ -204,11 +204,12 @@ This can be used to render different application pages or different mobile/deskt
 
 Array hooks can be placed in only one manner:
 
-  First declare `@Bind({}) variable: MyWidget = []` which contains objects that *must* extend `feather.core.Widget`.
+  First declare `@Bind({}) variable: MyWidget[] = []` which contains objects that *must* extend `feather.core.Widget`.
   One can use any of the native array functions to modify the array, but you must not replace the array itself 
   as the bindings and hooks will be lost. Array.fill is unsupported, because the children cannot be duplicates of one other.
-  Furthermore never set children directly `array[2] = mywidget` because the change will be missed.
-  Read more about bindings in the decorator section. Make sure **not** to call `this.render()` in widgets that are inserted 
+  Furthermore never set children directly `array[2] = mywidget` because the change will be missed, use splice instead: 
+  `array.splice(2, 1, mywidget)`.
+  Read more about bindings in the [decorator](/documentation) section. Make sure **not** to call `this.render()` in widgets that are inserted 
   to a bound array. 
 
   * `<div class="red" {{variable}}>...</div>` 

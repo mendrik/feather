@@ -34,7 +34,7 @@ order matches the constructor's arguments.
 
 ### singleton
 
-A boolean marker that can be used with ```this.triggerSingleton()```. See more in @Subscribe(). 
+A boolean marker that can be used with ```this.triggerSingleton()```. See more under [@Subscribe](/documentation/#subscribe). 
 Singletons are additionally in so far special that transformer methods can reference those. This is useful
 if you want to define a "global" localization method in a high-up singleton component, that serves translated keys
 to other components. 
