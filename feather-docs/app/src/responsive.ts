@@ -1,6 +1,5 @@
 module feather.docs {
 
-
     import Widget = feather.core.Widget
     import Template = feather.annotations.Template
     import Construct = feather.annotations.Construct
@@ -28,6 +27,5 @@ module feather.docs {
         markupDesktop() {
             return `Desktop version`
         }
-
     }
 }

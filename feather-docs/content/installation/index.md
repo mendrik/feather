@@ -1,10 +1,10 @@
 ---
 date: 2017-09-26T21:07:13+01:00
-title: Installation
+title: First steps
 ---
 
-Since feather is a single file framework all you need is to install it as dependency via NPM. The package comes with two
-files: feather.min.js and feather.d.ts for the typescript declarations.
+Since feather is a single file framework all you need is to install it as dependency via [NPM](https://www.npmjs.com/package/feather-ts). The package comes with two
+files: `feather.min.js` and `feather.d.ts` for the typescript declarations.
 
 ```
 npm install feather-ts --save

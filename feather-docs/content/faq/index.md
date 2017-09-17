@@ -47,27 +47,25 @@ An example:
 
 ```typescript
 module feather.docs {
-
     import Widget = feather.core.Widget
     import Template = feather.annotations.Template
     import Construct = feather.annotations.Construct
     import Media = feather.media.Media
 
-    @Construct({selector: '.my-selector'})
+    @Construct({selector: '.responsive'})
     export class Responsive extends Widget {
-
-        init() {
-            console.log('jahans')
-        }
 
         @Media('(max-width: 768px)')
         renderMobile() {
-            this.render('mobile')
+            // usually widgets append themselves only, 
+            // if you need to clear out the previous content
+            // pass true as the second argument
+            this.render('mobile', true) 
         }
 
         @Media('(min-width: 769px)')
         renderDesktop() {
-            this.render('desktop')
+            this.render('desktop', true)
         }
 
         @Template('mobile')
@@ -79,11 +77,10 @@ module feather.docs {
         markupDesktop() {
             return `Desktop version`
         }
-
     }
 }
 ```
-See it by resizing your browser window:
+Try it out by resizing your browser window
 
 <div class="responsive demo"></div>
 
