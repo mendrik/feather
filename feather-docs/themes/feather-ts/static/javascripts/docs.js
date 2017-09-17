@@ -133,7 +133,7 @@ var feather;
                 var h2 = from(document.querySelectorAll(".wrapper h2"));
                 if (h2.length > 3 && /documentation/.test(document.location.href)) {
                     (_a = this.children).push.apply(_a, h2.map(function (h2) {
-                        return new NaviItem("#" + h2.id, h2.textContent.substring(1));
+                        return new NaviItem("#" + h2.id, h2.childNodes[0].textContent.substring(1));
                     }));
                     this.render();
                 }

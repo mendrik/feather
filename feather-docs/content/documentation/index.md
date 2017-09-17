@@ -10,7 +10,7 @@ components. For example you cannot use *this* in the decorator's arguments. Most
 decorators that need access to instance properties provide a similar pattern that is used in template
 methods: tokens in double braces within a string.
 
-## @Construct
+## @Construct <span>(feather.annotations)</span>
 
 ```typescript
   @Construct({
@@ -39,7 +39,7 @@ Singletons are additionally in so far special that transformer methods can refer
 if you want to define a "global" localization method in a high-up singleton component, that serves translated keys
 to other components. 
 
-## @Bind
+## @Bind <span>(feather.observe)</span>
 
 Allows to bind component properties to DOM which will update your UI whenever the bound property 
 changes. When widgets are stored in a parent array the array evaluation is buffered. Even though
@@ -123,19 +123,19 @@ in your application.
 
 ### affectsArrays
 
-If you want array bindings to update whenever a property in their children changes, you must set this
-to an array containing the names of the array properties from this or any parent widgets.
+If you want array bindings to update whenever another property changes, because they change ie. filter states, 
+add the array name to this array property `@Bind({affectsArrays: ['filteredArray']) filterState = ...`
 
 ### html
 
 When set to true the property will be injected as unescaped html. The injected html doesn't have to have a single
 root node. Feather will keep track of cleaning up multiple root nodes automatically.
 
-## @On
+## @On <span>(feather.event)</span>
 
 With this decorator you can add event listeners to the root element of a widget. The event handling is done through 
-delegation. Event bubbling stops the root element. If you need to bubble events further up you must set *bubble* 
-to true.
+delegation. Event bubbling stops at the root element. If you need to bubble events further up you must set *bubble* 
+to true. However if no widgets are in between, you can listen to events triggered way at the bottom of the dom tree.
 
 ```typescript
   @On({
@@ -179,7 +179,7 @@ by default at the root, so it is possible to have nested Widgets of the same cla
 > You can also use own event extensions to define gestures. This is quite advanced but an example is 
 > [available here](https://github.com/mendrik/feather-components/blob/master/src/common/events.ts)  
 
-## @Media
+## @Media <span>(feather.media)</span>
 
 ```typescript
   @Media('(min-width: 600px)')
@@ -190,7 +190,7 @@ viewport sizes. You could for example set a viewport state and filter an array b
 See @Bind/affectsArray for more info. The method is called initially if matched but also when the viewport size changes.
 This way you don't need to utilize resize or orientationchange events at all.
 
-## @Route
+## @Route <span>(feather.routing)</span>
 
 Triggers when the route matches the current location. Feather supports hash based urls but also HTML5's 
 history API. If you want to enable hash based routing add an attribute ```routing="hash"``` anywhere in your
@@ -232,7 +232,7 @@ class RoutingLink extends Widget {
 
 ```
 
-## @Subscribe
+## @Subscribe <span>(feather.hub)</span>
 
 Subscribe to component events. Events can be broadcasted either up or down the widget's hierarchy. A widget
 object has always an array ```childWidgets``` and an optional ```parentWidget``` reference. 
@@ -247,7 +247,7 @@ instance of this widget otherwise you might encounter unpredicted side effects.
   @Subscribe('my-event')
 ```
 
-## @Template
+## @Template <span>(feather.annotations)</span>
 
 ```typescript
   @Template(name?: string, warmUp?: boolean)
@@ -261,7 +261,7 @@ with the name being set to match the @Template(name) decorator.
 Note that template methods must be real methods and not arrow function.
 
 
-## @Rest
+## @Rest <span>(feather.xhr)</span>
 
 ```typescript
   @Rest({
