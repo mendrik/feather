@@ -85,6 +85,6 @@ module feather.docs {
 ```
 See it by resizing your browser window:
 
-<div class="responsive"></div>
+<div class="responsive demo"></div>
 
 

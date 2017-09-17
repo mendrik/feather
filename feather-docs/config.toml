@@ -40,8 +40,8 @@ googleAnalytics = "UA-84969611-1"
 	email   = "mendrik76@gmail.com"
 
 [[menu.main]]
-	name   = "About"
-	url    = "about/"
+	name   = "Start"
+	url    = "start/"
 	weight = 10
 
 [[menu.main]]

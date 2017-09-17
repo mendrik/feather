@@ -1,6 +1,6 @@
 ---
 date: 2017-10-29T21:07:13+01:00
-title: About
+title: A minimalistic framework
 type: index
 ---
 
