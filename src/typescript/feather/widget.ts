@@ -28,8 +28,11 @@ module feather.core {
         }
 
         // noinspection JSUnusedGlobalSymbols
-        protected render(templateName: string = 'default') {
+        protected render(templateName: string = 'default', clearContent = false) {
             const parsed = this.getParsed(templateName)
+            if (clearContent) {
+                this.element.innerHTML = ''
+            }
             this.element.appendChild(parsed.doc)
         }
 
