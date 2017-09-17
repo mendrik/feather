@@ -1,0 +1,54 @@
+{{ if .IsPage }}
+{{ if .Prev | or .Next }}
+<nav class="pagination" aria-label="Footer">
+
+    <div class="previous">
+        {{ if .Prev }}
+        <a href="{{ .Prev.Permalink }}" title="{{ .Prev.Title }}">
+            <span class="direction"><i class="fa fa-angle-left"></i> Previous</span>
+            <div class="page">{{ .Prev.Title }}</div>
+        </a>
+        {{ end }}
+    </div>
+
+    <div class="next">
+        {{ if .Next }}
+        <a href="{{ .Next.Permalink }}" title="{{ .Next.Title }}">
+            <span class="direction">Next <i class="fa fa-angle-right"></i></span>
+            <div class="page">{{ .Next.Title }}</div>
+        </a>
+        {{ end }}
+    </div>
+</nav>
+{{ end }}
+{{ end }}
+
+{{ if .IsHome }}
+{{ if gt (len .Site.Pages) 2 }}
+<nav class="pagination" aria-label="Footer">
+    <div class="previous">
+    </div>
+
+    {{ $title := (index (.Site.Pages.ByDate) 1).Title }}
+    {{ $permalink := (index (.Site.Pages.ByDate) 1).Permalink }}
+    <div class="next">
+        <a href="{{ $permalink }}" title="{{ $title }}">
+        <span class="direction">
+          Next <i class="fa fa-angle-right"></i>
+        </span>
+            <div class="page">
+                <div class="stretch">
+                    <div class="title">
+                        {{ $title }}
+                    </div>
+                </div>
+            </div>
+        </a>
+    </div>
+</nav>
+{{ end }}
+{{ end }}
+
+<a href="https://github.com/mendrik/feather" target="_blank" title="@{{ . }} on GitHub">
+    <i class="fa fa-github"></i> source code on github
+</a>

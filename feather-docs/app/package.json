@@ -1,0 +1,37 @@
+{
+  "name": "feather-docs",
+  "version": "1.0.0",
+  "description": "Official feather-ts documentation",
+  "main": "index.js",
+  "scripts": {
+    "build:css": "postcss -o ../themes/feather-ts/static/stylesheets/application.css",
+    "build:app": "tsc -d -p tsconfig.json",
+    "watch:css": "postcss -w -o ../themes/feather-ts/static/stylesheets/application.css pcss/all.pcss",
+    "watch:app": "tsc -w -d -p tsconfig.json",
+    "uglify": "node uglify.js",
+    "start": "npm-run-all --parallel watch:app watch:css",
+    "build": "npm run build:app",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "docs",
+    "manual",
+    "documentation"
+  ],
+  "author": "Andreas Prudzilko",
+  "license": "ISC",
+  "dependencies": {
+    "feather-ts": "1.2.45"
+  },
+  "devDependencies": {
+    "npm-run-all": "4.1.1",
+    "postcss-clean": "1.0.3",
+    "postcss-cli": "4.1.0",
+    "postcss-custom-properties": "6.1.0",
+    "postcss-discard-comments": "2.0.4",
+    "postcss-import": "10.0.0",
+    "postcss-math": "0.0.8",
+    "postcss-mixins": "6.1.0",
+    "uglify-js": "^3.1.0"
+  }
+}

@@ -1,0 +1,13 @@
+name = "Feather-ts"
+license = "MIT"
+licenselink = "https://github.com/digitalcraftsman/hugo-material-docs/blob/master/LICENSE.md"
+description = "Custom theme for feather-ts."
+homepage = "https://www.feather-ts.com"
+tags = ["feather-ts", "documentation", "docs", "google analytics", "responsive"]
+features = ["", ""]
+min_version = 0.01
+
+[author]
+  name = "Andreas Prudzilko"
+  homepage = "https://github.com/mendrik"
+

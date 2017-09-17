@@ -1,20 +1,27 @@
 ---
-date: 2016-09-29T21:07:13+01:00
-title: Introduction
+date: 2017-10-29T21:07:13+01:00
+title: A minimalistic framework
 type: index
-weight: 0
 ---
 
-Featherₜₛ is a small component framework written in [TypeScript](https://www.typescriptlang.org/). 
-Whether you are writing embeddable javascript widgets or a single page application this framework 
-might be of use. With less than 10kb in size it is suited for mobile apps and desktop alike.
+Feather is a small component framework written in [TypeScript](https://www.typescriptlang.org/).
+You can use it to write embeddable widgets or single page applications. With less than 10kb in size 
+it is suited for mobile apps and desktop alike. Regardless of its tiny footprint it has zero 
+dependencies and provides routing, DOM events and REST integration out of the box.
 
-With this framework you will be able to write natural code without too many dogmatic aspects. 
-There is no hidden mess of global state objects, action constants, no hard to follow data messaging 
-between components but foremost the framework is so lightweight that your build times will be instantaneous 
-and because of its speed no server-side rendering is required.
+The main goal is to provide a framework that has a flat learning curve and integrates well into any 
+environment you throw it at. The resulting code is clean and lean and the generated HTML is just 
+what you wrote without any trace of the framework which makes debugging a bliss. 
 
-The framework offers the following features:
+Unlike many other frameworks feather does not utilize a virtual dom. This has pros and cons that
+you should consider before starting a project. Feather does not provide server-side rendering by 
+itself, but this can be achieved with many other ready-made solutions. On the upside all DOM calls 
+are synchronous and you can write UI tests against the real DOM without having to wait for the render 
+loop to complete. Furthermore keeping track of what needs to update on a very granular level allows 
+feather to minimize write access to the DOM and without the need to diff and patch two representations 
+of the UI it also outperforms most frameworks in speed.
+
+### The framework offers the following features:
 
 * Each component is holding logic, view and model in a single file
 * Components automatically build a hierarchical tree
@@ -24,23 +31,20 @@ The framework offers the following features:
 * Pure HTML templates without logic and a very simple binding syntax
 * Event delegation out of the box
 * Written in TypeScript
-* No module loaders needed, embed directly via NPM
+* No module loaders needed, just a single throw-in file.
 * With asynchronous decorators no need for _promises_
-* Integrated media query based component views for responsive application design
+* Integrated media-query based views for responsive application design
 * Support for modern browsers including IE9 (with polyfills)
 * Component trees are initialized in off-screen document fragments for maximum performance.
 * Access to up-tree properties without repetitive property clutter
 * Generates clean HTML markup without any trace of the framework
 * No wrappers required for your data holders
-  
+
 Intellij IDEA [plugin](http://dist.feather-ts.com/feather.jar) for syntax highlighting in templates 
 and decorators.
   
+> With this framework you will be able to write natural code without too many dogmatic aspects. 
+> There is no hidden mess of global state objects, action constants, no hard to follow data messaging  
+  
 You can checkout a todomvc demo [here](http://todo.feather-ts.com).
   
-{{< note title="Note" >}}
-This project is in now in alpha and you can use it in private projects if you wish. However if you need 
-something more production or enterprise ready, you should probably check out one of the a many javascript 
-frameworks out there.
-{{< /note >}}
-

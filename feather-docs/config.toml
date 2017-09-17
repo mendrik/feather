@@ -1,9 +1,13 @@
 baseurl = "/"
 languageCode = "en-us"
 title = "Featherₜₛ"
-theme = "hugo-material-docs"
+theme = "feather-ts"
 metadataformat = "yaml"
 canonifyurls = true
+relativeURLS = true
+
+ignoreFiles = ["^/app/"]
+
 # Enable Google Analytics by entering your tracking id
 googleAnalytics = "UA-84969611-1"
 
@@ -30,49 +34,33 @@ googleAnalytics = "UA-84969611-1"
 	# Syntax highlighting theme
 	highlight_css  = ""
 
-	[params.palette]
-    	primary = "deep-purple"
-    	accent  = "cyan"
-
-    [params.font]
-    	text = "Ubuntu"
-    	code = "Ubuntu Mono"
-
-
 [social]
 	twitter = ""
 	github  = "mendrik"
 	email   = "mendrik76@gmail.com"
 
-
 [[menu.main]]
-	name   = "Introduction"
-	url    = "/"
-	weight = 0
-
-[[menu.main]]
-	name   = "Getting started"
-	url    = "getting-started/"
+	name   = "Start"
+	url    = "start/"
 	weight = 10
 
 [[menu.main]]
-	name   = "Basics"
-	url    = "basics/"
+	name   = "Installation"
+	url    = "installation/"
 	weight = 20
 
 [[menu.main]]
-	name   = "Decorators"
-	url    = "decorators/"
+	name   = "Docs"
+	url    = "documentation/"
 	weight = 30
 
 [[menu.main]]
-	name   = "Examples"
-	url    = "examples/"
+	name   = "Questions"
+	url    = "faq/"
 	weight = 40
 
+[[menu.main]]
+	name   = "Issues"
+	url    = "https://github.com/mendrik/feather/issues"
+	weight = 50
 
-[blackfriday]
-	smartypants	= true
-	fractions = true
-	smartDashes = true
-	plainIDAnchors = true

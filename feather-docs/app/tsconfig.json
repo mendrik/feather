@@ -1,0 +1,29 @@
+{
+    "compileOnSave": true,
+    "compilerOptions": {
+        "pretty": true,
+        "sourceMap": true,
+        "sourceRoot": "./",
+        "inlineSources": true,
+        "noImplicitAny": false,
+        "declaration": false,
+        "noEmitOnError": false,
+        "noEmitHelpers": true,
+        "rootDir": "./",
+        "removeComments": false,
+        "target": "es5",
+        "experimentalDecorators": true,
+        "out": "../themes/feather-ts/static/javascripts/docs.js",
+        "lib": ["es2015", "dom"],
+        "types": ["feather-ts"],
+        "typeRoots": ["node_modules"]
+    },
+    "files": [
+        "src/hello-world.ts",
+        "src/responsive.ts",
+        "src/navi-item.ts",
+        "src/subnavigation.ts",
+        "src/search.ts",
+        "src/start.ts"
+    ]
+}
