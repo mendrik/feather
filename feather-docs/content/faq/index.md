@@ -2,9 +2,6 @@
 date: 2017-08-06T21:07:13+01:00
 title: Frequently asked questions
 ---
-
-Here is a collection of commonly asked questions
-
 ## Why is there no virtual dom?
 
 A virtual dom implementation provides many benefits like universal javascript
@@ -43,4 +40,51 @@ Then in any other component you can use with @Bind annotated keys in your templa
 ```{{mykey:translate}}```. Usually the transformer methods live on the instance
 that holds the template, but if they are not found from there feather will try
 to resolve them from singletons too.
+
+## How can I render a component differently for mobile and desktop
+
+An example: 
+
+```typescript
+module feather.docs {
+
+    import Widget = feather.core.Widget
+    import Template = feather.annotations.Template
+    import Construct = feather.annotations.Construct
+    import Media = feather.media.Media
+
+    @Construct({selector: '.my-selector'})
+    export class Responsive extends Widget {
+
+        init() {
+            console.log('jahans')
+        }
+
+        @Media('(max-width: 768px)')
+        renderMobile() {
+            this.render('mobile')
+        }
+
+        @Media('(min-width: 769px)')
+        renderDesktop() {
+            this.render('desktop')
+        }
+
+        @Template('mobile')
+        markupMobile() {
+            return `Mobile version`
+        }
+
+        @Template('desktop')
+        markupDesktop() {
+            return `Desktop version`
+        }
+
+    }
+}
+```
+See it by resizing your browser window:
+
+<div class="responsive"></div>
+
 

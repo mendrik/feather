@@ -19,6 +19,7 @@
         "typeRoots": ["node_modules"]
     },
     "files": [
+        "src/responsive.ts",
         "src/navi-item.ts",
         "src/subnavigation.ts",
         "src/search.ts",

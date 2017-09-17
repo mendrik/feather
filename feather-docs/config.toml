@@ -63,8 +63,3 @@ googleAnalytics = "UA-84969611-1"
 	name   = "Issues"
 	url    = "https://github.com/mendrik/feather/issues"
 	weight = 50
-
-[[menu.main]]
-	name   = "Examples"
-	url    = "examples/"
-	weight = 60
