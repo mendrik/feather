@@ -247,7 +247,7 @@ There are no object bindings in feather. If you need subcomponents you should co
 new widget and add it via template tags or push it to a locally bound array.
 
 There is however to possibility to *deep* bind properties. If a widget property is a complex object,
-you can assign template hooks via object dot notation: `{{property.x.y.z}}</div>`. The root
+you can assign template hooks via object dot notation: `{{property.x.y.z}}`. The root
 object will internally be observed so whenever any of the internal values change the template hook
 will be re-rendered (or the object itself for that matter). This also works in combination with inherited 
 bindings `@Bind({bequeath: true}` from parent widgets and transformers: 
