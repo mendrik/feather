@@ -26,6 +26,8 @@ At its core a widget class is attached to a single DOM element. It will hold a r
 which can be accessed in your class via `this.element`. Furthermore it should have a method with an arbitrary
 name: `@Template() myMarkup(templateName?: string): string`. This has to be called manually for the widget 
 to render into its root element. This is usually done in the overridden method `init(el: HTMLElement)`. 
+The rendered template is appended to the root element, if you need to clear out the previous children, call
+with a second parameter set to true `this.render('templateName', true)`.
 
 However, feather does not make assumption when to render the widget; it might be required to fetch data from 
 the server or wait for other events to complete. To keep things simple the content of a widget's

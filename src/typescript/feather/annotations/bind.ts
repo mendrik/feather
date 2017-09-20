@@ -287,41 +287,37 @@ module feather.observe {
     }
 
     function createDeepObserver(path: string, hook: Hook, transform: FnOne) {
-        const dummyCreate = (newVal) => (a, b, c, callback) => dummyCreate,
+        const dummyCreate = (a, b, c, callback) => observe(this, path, callback),
               rootProperty = path.split('.').shift(),
               initialValue = deepValue(this, path),
               typeOfValue = (typeof transform(initialValue)).toLowerCase(),
-              conf = collect(binders, this)[rootProperty],
-              update = (val) => {
-                  if ('boolean' === typeOfValue) {
-                      bindBoolean.call(this, val, hook, transform, conf, dummyCreate)
-                  } else if (/string|number|undefined/.test(typeOfValue)) {
-                      bindStringOrNumber.call(this, val, hook, transform, conf, dummyCreate)
-                  } else {
-                      console.log(
-                          'Deeply bound properties work only with strings, numbers or booleans. ' +
-                          'For arrays you can use a transformer: {{var:myTransformer}}?'
-                      )
-                  }
-                  return update
-              }
-        observe(this, path, update(initialValue))
+              conf = collect(binders, this)[rootProperty]
+        if ('boolean' === typeOfValue) {
+            bindBoolean.call(this, initialValue, hook, transform, conf, dummyCreate)
+        } else if (/string|number|undefined/.test(typeOfValue)) {
+            bindStringOrNumber.call(this, initialValue, hook, transform, conf, dummyCreate)
+        } else {
+            console.log(
+                'Deeply bound properties work only with strings, numbers or booleans. ' +
+                'For arrays you can use a transformer: {{var:myTransformer}}?'
+            )
+        }
     }
 
     const identity = (el) => () => true
 
-    function createObserver(transformedValue: Primitive|Function, hook: Hook, conf: BindProperties, transform: Function) {
+    function createObserver(widget: Observable, transformedValue: Primitive|Function, hook: Hook, conf: BindProperties, transform: Function) {
         const typeOfValue = Array.isArray(transformedValue) ? 'array' : (typeof transformedValue).toLowerCase(),
-              initialValue = this[hook.property]
+              initialValue = widget[hook.property]
         if ('boolean' === typeOfValue) {
-            bindBoolean.call(this, initialValue, hook, transform, conf, createListener)
+            bindBoolean.call(widget, initialValue, hook, transform, conf, createListener)
         } else if (/string|number|undefined/.test(typeOfValue)) {
-            bindStringOrNumber.call(this, initialValue, hook, transform, conf, createListener)
+            bindStringOrNumber.call(widget, initialValue, hook, transform, conf, createListener)
         } else if ('array' === typeOfValue || isFunction(transformedValue)) {
             if (!isFunction(transformedValue)) {
                 transform = identity
             }
-            bindArray.call(this, initialValue, hook, conf, transform)
+            bindArray.call(widget, initialValue, hook, conf, transform)
         } else {
             console.log('Bindings are only supported on arrays, booleans, strings and numbers')
         }
@@ -421,7 +417,7 @@ module feather.observe {
                     tryToBindFromParentWidget(this.parentWidget as Observable, this, hook, property)
                     continue
                 }
-                createObserver.call(this, transform(value), hook, conf, transform)
+                createObserver(this, transform(value), hook, conf, transform)
             }
             if (arrayTriggers) {
                 for (const trigger of arrayTriggers) {
