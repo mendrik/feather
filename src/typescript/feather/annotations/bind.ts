@@ -147,7 +147,6 @@ module feather.observe {
                          conf: BindProperties,
                          createListener: Function) {
         if (hook.type === HookType.ATTRIBUTE || hook.type === HookType.PROPERTY) {
-
             const el = (hook.node as HTMLElement),
                   attributeName = hook.attribute || hook.property,
                   updateDom = (val) => {
@@ -281,9 +280,13 @@ module feather.observe {
     }
 
     function bindArray(arr: Widget[], hook: Hook, conf: BindProperties, transform: Function) {
-        const removed = arr.splice(0, arr.length)
-        observeArray(arr, defaultArrayListener(this, arr, hook, conf, transform))
-        arr.push(...removed)
+        if (hook.type === HookType.PROPERTY) {
+            const removed = arr.splice(0, arr.length)
+            observeArray(arr, defaultArrayListener(this, arr, hook, conf, transform))
+            arr.push(...removed)
+        } else {
+            console.log('Arrays can be bound only in a node: <div {{myarray}}></div>')
+        }
     }
 
     function createDeepObserver(path: string, hook: Hook, transform: FnOne) {
@@ -389,7 +392,6 @@ module feather.observe {
             }
             for (const hook of hooks) {
                 const property     = hook.property,
-                      conf         = instanceBinders[property],
                       transform    = compose<any>(hook.transformFns
                                      .map(method => {
                                          const func = context[method]
@@ -398,7 +400,10 @@ module feather.observe {
                 let value = this[property],
                     isObj = isObject(value)
 
-                if (~property.indexOf('.') || isObj && hook.hasMethods()) {
+                if (isFunction(value)) {
+                    console.log('Binding to functions is not supported. Use new filters.')
+                    continue
+                } else if (~property.indexOf('.') || isObj && hook.hasMethods()) {
                     value = deepValue(this, property)
                     if (isUndef(value)) {
                         tryToBindFromParentWidget(this.parentWidget as Observable, this, hook, property)
@@ -409,10 +414,8 @@ module feather.observe {
                 } else if (isObj && !hook.hasMethods()) {
                     console.log('Binding to objects is not supported. Use new widgets or specify inner property: x.y.z')
                     continue
-                } else if (isFunction(value)) {
-                    console.log('Binding to functions is not supported. Use new filters.')
-                    continue
                 }
+                const conf = instanceBinders[property]
                 if (isUndef(conf)) {
                     tryToBindFromParentWidget(this.parentWidget as Observable, this, hook, property)
                     continue
