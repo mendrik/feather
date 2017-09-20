@@ -256,6 +256,17 @@ Even though deep arrays are also observed, you cannot access its children proper
 > properties, the widget must be either added to a parent's widget array or referenced somewhere in the
 > template rendering hierarchy as a tag.
 
+## Binding overview
+
+|                       | Boolean | String | Array | Object |
+| :---------------------|:-------:|:------:|:-----:|:------:|
+| `<div {{a}}>`         |   <i/>  |  <i/>  |  <i/> |        |
+| `<div class="{{a}}">` |         |  <i/>  |       |        |
+| `<div attr="{{a}}">`  |         |  <i/>  |       |        |
+| `<div>{{a}}</div>`    |         |  <i/>  |       |        |
+
+Once arrays, objects or dates are transformed to booleans or strings the above table applies again.
+
 ## Imports
 
 Feather doesn't use any module loaders, so the imports are written like this:
