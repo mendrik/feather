@@ -186,6 +186,10 @@ sense. Let's have a look:
 > Note that any binding can convert booleans, numbers or arrays into strings. This is done but declaring a *transformer* 
 > function in the widget class. You can then bind it like this: `<div class="{{variable:formatAsString}}">...</div>`
 
+### Attributes
+
+When binding primitives as attributes the property value is passed on to the attribute's value. If the value is
+`undefined` the attribute is removed from the dom.
 
 ### Booleans
 
