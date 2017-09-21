@@ -1,36 +1,34 @@
 module feather.observe {
 
-    import Widget              = feather.core.Widget
-    import RouteAware          = feather.routing.RouteAware
-    import Hook                = feather.annotations.Hook
-    import HookType            = feather.annotations.HookType
-    import TypedMap            = feather.types.TypedMap
-    import FnOne               = feather.types.FnOne
-    import Primitive           = feather.types.Primitive
-    import OldNewCallback      = feather.types.OldNewCallback
-    import observeArray        = feather.arrays.observeArray
-    import ArrayListener       = feather.arrays.ArrayListener
-    import from                = feather.arrays.from
-    import notifyListeners     = feather.arrays.notifyListeners
-    import removeFromArray     = feather.arrays.removeFromArray
-    import isFunction          = feather.functions.isFunction
-    import compose             = feather.functions.compose
-    import isDef               = feather.functions.isDef
-    import isUndef             = feather.functions.isUndef
-    import isObject            = feather.objects.isObject
-    import deepValue           = feather.objects.deepValue
-    import ensure              = feather.objects.ensure
-    import collect             = feather.objects.collectAnnotationsFromTypeMap
-    import observe             = feather.objects.createObjectPropertyListener
-    import values              = feather.objects.values
-    import Subscribable        = feather.hub.Subscribable
-    import WidgetFactory       = feather.boot.WidgetFactory
-    import getFragment         = feather.annotations.getFragment
+    import Widget           = feather.core.Widget
+    import RouteAware       = feather.routing.RouteAware
+    import Hook             = feather.annotations.Hook
+    import HookType         = feather.annotations.HookType
+    import TypedMap         = feather.types.TypedMap
+    import FnOne            = feather.types.FnOne
+    import Primitive        = feather.types.Primitive
+    import OldNewCallback   = feather.types.OldNewCallback
+    import observeArray     = feather.arrays.observeArray
+    import from             = feather.arrays.from
+    import notifyListeners  = feather.arrays.notifyListeners
+    import isFunction       = feather.functions.isFunction
+    import compose          = feather.functions.compose
+    import isDef            = feather.functions.isDef
+    import isUndef          = feather.functions.isUndef
+    import isObject         = feather.objects.isObject
+    import deepValue        = feather.objects.deepValue
+    import ensure           = feather.objects.ensure
+    import collect          = feather.objects.collectAnnotationsFromTypeMap
+    import observe          = feather.objects.createObjectPropertyListener
+    import values           = feather.objects.values
+    import Subscribable     = feather.hub.Subscribable
+    import WidgetFactory    = feather.boot.WidgetFactory
+    import getFragment      = feather.annotations.getFragment
+    import domArrayListener = feather.arrays.defaultArrayListener
 
-    const boundProperties      = new WeakMap<any, TypedMap<Function[]>>()
-    const binders              = new WeakMap<any, TypedMap<BindProperties>>()
-    const serializers          = new WeakMap<any, TypedMap<Serializer>>()
-    const storeQueue           = new WeakMap<any, any>()
+    const boundProperties   = new WeakMap<any, TypedMap<Function[]>>()
+    const binders           = new WeakMap<any, TypedMap<BindProperties>>()
+    const identity          = (el) => () => true
 
     export interface BindProperties {
         templateName?:  string   // when pushing new widgets into an array, the template name to render the children with
@@ -51,48 +49,6 @@ module feather.observe {
         }
     }
 
-    const getWidgetId = (w: any) => {
-        const name = w.id || w.name || w.title || w.constructor.name
-        return isFunction(name) ? name() : name
-    }
-
-    const getPath = (obj: Subscribable, property: string) => {
-        const segments = [property]
-        let parent = obj
-        do {
-            segments.unshift(getWidgetId(parent))
-        } while (parent = parent.parentWidget)
-        return segments.join('.')
-    }
-
-    const destroyListeners = (widgets: Subscribable[]) => {
-        setTimeout(() => {
-            for (const w of widgets) {
-                w.cleanUp()
-            }
-        }, 50)
-    }
-
-    const store = (parent, property, value) =>
-        localStorage.setItem(getPath(parent, property), JSON.stringify({value}))
-
-    const maybeStore = (parent: Subscribable, property: string, conf: BindProperties, value: any, isArray: boolean) => {
-        if (conf && conf.localStorage) {
-            if (isArray) {
-                if (storeQueue.has(value)) {
-                    clearTimeout(storeQueue.get(value))
-                }
-                storeQueue.set(value, setTimeout(() => {
-                    const serializer = collect(serializers, parent)[property]
-                    value = value.map(parent[serializer.write])
-                    store(parent, property, value)
-                }, 80))
-            } else {
-                store(parent, property, value)
-            }
-        }
-    }
-
     function createListener(obj: Observable,
                             conf: BindProperties,
                             property: string,
@@ -107,9 +63,9 @@ module feather.observe {
                 splice: () => cb(value),
             })
         } else {
-            const binders = boundProperties.get(obj),
+            const binders    = boundProperties.get(obj),
                   isObserved = binders && binders[property],
-                  listeners = ensure(boundProperties, obj, {[property]: [cb]})
+                  listeners  = ensure(boundProperties, obj, {[property]: [cb]})
             if (!isObserved) {
                 Object.defineProperty(obj, property, {
                     get: () => value,
@@ -209,9 +165,9 @@ module feather.observe {
             let oldValue
             const attributeName = hook.attribute || hook.property,
                   updateDom = (val) => {
-                      const formatted: string = transform(val)
+                      const formatted = transform(val)
                       if (formatted !== oldValue) {
-                          setOrRemoveAttribute(el, attributeName, isDef(formatted), formatted)
+                          setOrRemoveAttribute(el, attributeName, isDef(formatted), formatted as string)
                           oldValue = formatted
                       }
                       return updateDom
@@ -220,69 +176,10 @@ module feather.observe {
         }
     }
 
-    function defaultArrayListener(widget: Widget,
-                                  arr: Widget[],
-                                  hook: Hook,
-                                  conf: BindProperties,
-                                  filterFactory: Function): ArrayListener<Widget> {
-        const el = hook.node,
-              firstChild = el.firstElementChild // usually null, lists that share a parent with other nodes are prepended.
-        let nodeVisible: boolean[] = []
-        return {
-            sort(indices: any[]) {
-                const copy: boolean[] = []
-                for (let i = 0; i < indices.length; i++) {
-                    if (nodeVisible[indices[i]]) {
-                        el.appendChild(arr[i].element)
-                    }
-                    copy[i] = nodeVisible[indices[i]]
-                }
-                nodeVisible = copy
-            },
-            splice(index: number, deleteCount: number, added: Widget[], deleted: Widget[] = []) {
-                const patch = from<boolean>(nodeVisible),
-                      childWidgets = widget.childWidgets,
-                      filter = filterFactory()
-
-                // handle deleted items
-                nodeVisible.splice(index, deleteCount, ...added.map(v => false))
-
-                if (deleteCount) {
-                    deleted.forEach(del => el.removeChild(del.element))
-                    removeFromArray(childWidgets, deleted)
-                    destroyListeners(deleted)
-                }
-                if (added.length) {
-                    childWidgets.push(...added)
-                    for (const item of added) {
-                        item.parentWidget = widget
-                        if (!item.element) {
-                            const parsed = item.getParsed(conf.templateName)
-                            item.bindToElement(parsed.first)
-                        }
-                    }
-                }
-                patch.splice(index, deleteCount, ...added.map(v => true))
-                for (let i = 0, n = arr.length; i < n; i++) {
-                    patch[i] = filter(arr[i])
-                    if (patch[i] && !nodeVisible[i]) {
-                        const nextVisible = nodeVisible.indexOf(true, i),
-                              refNode     = ~nextVisible ? arr[nextVisible].element : firstChild
-                        el.insertBefore(arr[i].element, refNode)
-                    }
-                    else if (!patch[i] && nodeVisible[i]) {
-                        el.removeChild(arr[i].element)
-                    }
-                }
-                nodeVisible = patch
-            }
-        }
-    }
-
     function bindArray(arr: Widget[], hook: Hook, conf: BindProperties, transform: Function) {
         if (hook.type === HookType.PROPERTY) {
             const removed = arr.splice(0, arr.length)
-            observeArray(arr, defaultArrayListener(this, arr, hook, conf, transform))
+            observeArray(arr, domArrayListener(this, arr, hook, conf, transform))
             arr.push(...removed)
         } else {
             console.log('Arrays can be bound only in a node: <div {{myarray}}></div>')
@@ -307,9 +204,8 @@ module feather.observe {
         }
     }
 
-    const identity = (el) => () => true
-
-    function createObserver(widget: Observable, transformedValue: Primitive|Function, hook: Hook, conf: BindProperties, transform: Function) {
+    function createObserver(widget: Observable, transformedValue: Primitive|Function, hook: Hook,
+                            conf: BindProperties, transform: Function) {
         const typeOfValue = Array.isArray(transformedValue) ? 'array' : (typeof transformedValue).toLowerCase(),
               initialValue = widget[hook.property]
         if ('boolean' === typeOfValue) {
@@ -340,30 +236,6 @@ module feather.observe {
         }
     }
 
-    const loadLocalStorageValue = (context: Observable) => {
-        const boundProperties = collect(binders, context)
-        if (boundProperties) {
-            Object.keys(boundProperties).forEach(property => {
-                if (boundProperties[property].localStorage) {
-                    try {
-                        const json = localStorage.getItem(getPath(context, property))
-                        if (json) {
-                            const storedValue = JSON.parse(json).value
-                            if (Array.isArray(storedValue)) {
-                                const serializer = collect(serializers, context)[property]
-                                context[property] = storedValue.map(context[serializer.read])
-                            } else {
-                                context[property] = storedValue
-                            }
-                        }
-                    } catch (e) {
-                        console.warn(e)
-                    }
-                }
-            })
-        }
-    }
-
     const findFromSingletons = (start: Observable, method: string) => {
         const widgets = WidgetFactory.singletonRegistry;
         for (let i = 0; i < widgets.length; i++) {
@@ -388,12 +260,11 @@ module feather.observe {
                 storableArrays = binders.filter(conf => conf.localStorage && Array.isArray(this[conf.property]))
             }
             if (isUndef(parent)) {
-                loadLocalStorageValue(this)
+                loadLocalStorageValue(binders, this)
             }
             for (const hook of hooks) {
                 const property     = hook.property,
-                      transform    = compose<any>(hook.transformFns
-                                     .map(method => {
+                      transform    = compose<any>(hook.transformFns.map(method => {
                                          const func = context[method]
                                          return func ? func.bind(this) : findFromSingletons(this, method)
                                      }))
@@ -453,7 +324,7 @@ module feather.observe {
                     property,
                     html: false
               },
-              finalProps               = {...defProps, ...(props || {})}
+              finalProps = {...defProps, ...(props || {})}
         ensure(binders, proto, {[property]: finalProps})
     }
 
@@ -462,11 +333,4 @@ module feather.observe {
         read?: string
     }
 
-    export const Write = (arrayName: string) => (proto: Observable, method: string) => {
-        ensure(serializers, proto, {[arrayName]: {write: method}})
-    }
-
-    export const Read = (arrayName: string) => (proto: Observable, method: string) => {
-        ensure(serializers, proto, {[arrayName]: {read: method}})
-    }
 }

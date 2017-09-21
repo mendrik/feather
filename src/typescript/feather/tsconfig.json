@@ -23,6 +23,7 @@
         "utils/dom.ts",
         "utils/types.ts",
         "utils/strings.ts",
+        "utils/localstorage.ts",
         "boot.ts",
         "annotations/media-query.ts",
         "annotations/template.ts",
