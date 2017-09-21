@@ -15,6 +15,12 @@ module feather.core {
 
     export type StringGenerator = () => string
 
+    export enum RenderPlacement {
+        append,
+        prepend,
+        replace
+    }
+
     export abstract class Widget extends Observable implements Initializable {
         element: Element
         id?: string|StringGenerator
@@ -28,12 +34,16 @@ module feather.core {
         }
 
         // noinspection JSUnusedGlobalSymbols
-        protected render(templateName: string = 'default', clearContent = false) {
+        protected render(templateName: string = 'default', placement: RenderPlacement = RenderPlacement.append) {
             const parsed = this.getParsed(templateName)
-            if (clearContent) {
+            if (placement === RenderPlacement.replace) {
                 this.element.innerHTML = ''
             }
-            this.element.appendChild(parsed.doc)
+            if (placement === RenderPlacement.prepend) {
+                this.element.insertBefore(parsed.doc, this.element.firstChild)
+            } else {
+                this.element.appendChild(parsed.doc)
+            }
         }
 
         getParsed(templateName: string): ParsedTemplate {

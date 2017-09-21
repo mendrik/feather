@@ -26,8 +26,8 @@ At its core a widget class is attached to a single DOM element. It will hold a r
 which can be accessed in your class via `this.element`. Furthermore it should have a method with an arbitrary
 name: `@Template() myMarkup(templateName?: string): string`. This has to be called manually for the widget 
 to render into its root element. This is usually done in the overridden method `init(el: HTMLElement)`. 
-The rendered template is appended to the root element, if you need to clear out the previous children, call
-with a second parameter set to true `this.render('templateName', true)`.
+The rendered template is appended to the root element, however you can change the placement with a second
+argument to the render call with a value from `feather.core.RenderPlacement` enum.
 
 However, feather does not make assumption when to render the widget; it might be required to fetch data from 
 the server or wait for other events to complete. To keep things simple the content of a widget's
@@ -259,17 +259,6 @@ Even though deep arrays are also observed, you cannot access its children proper
 > Don't confuse inherited properties as class inherited ones. For a child widget to access parent widget's
 > properties, the widget must be either added to a parent's widget array or referenced somewhere in the
 > template rendering hierarchy as a tag.
-
-## Binding overview
-
-|                       | Boolean | String | Array | Object |
-| :---------------------|:-------:|:------:|:-----:|:------:|
-| `<div {{a}}>`         |   <i/>  |  <i/>  |  <i/> |        |
-| `<div class="{{a}}">` |         |  <i/>  |       |        |
-| `<div attr="{{a}}">`  |         |  <i/>  |       |        |
-| `<div>{{a}}</div>`    |         |  <i/>  |       |        |
-
-Once arrays, objects or dates are transformed to booleans or strings the above table applies again.
 
 ## Imports
 

@@ -51,6 +51,7 @@ module feather.docs {
     import Template = feather.annotations.Template
     import Construct = feather.annotations.Construct
     import Media = feather.media.Media
+    import RenderPlacement = feather.core.RenderPlacement
 
     @Construct({selector: '.responsive'})
     export class Responsive extends Widget {
@@ -60,12 +61,12 @@ module feather.docs {
             // usually widgets append themselves only, 
             // if you need to clear out the previous content
             // pass true as the second argument
-            this.render('mobile', true) 
+            this.render('mobile', RenderPlacement.replace) 
         }
 
         @Media('(min-width: 769px)')
         renderDesktop() {
-            this.render('desktop', true)
+            this.render('desktop', RenderPlacement.replace)
         }
 
         @Template('mobile')
