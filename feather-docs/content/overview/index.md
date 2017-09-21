@@ -92,10 +92,10 @@ component creating the template and not the parent tag inside the template.
 
 ## Bindings
 Bindings are links between a widget property and a place inside the template method. They are
-referenced by using double curly braces `{{property.subproperty:method1:method2}}`. Subproperties
-are optional and can be used if the bound property is a hierarchical object. The path you bind to, 
-will modify the target object with setters and getters, so Feather is aware of the changes within that
-path. 
+referenced by using double curly braces `{{property.subproperty:method1:method2}}`. Deep properties
+are optional and can be used if the bound property is a hierarchical object. The path you bind to 
+will modify the target object with setters and getters, so _feather_ is aware of the changes 
+within that path. 
 
 > Deep properties in an object that are not referenced in a template remain untouched and are not wrapped
 with getters anf setters.
@@ -201,7 +201,7 @@ them make sense. Let's have a look:
 * <div>`<div class="red" {{variable}}>...</div>`<br>As a property hook (booleans and arrays but no transformer methods)</div>
 * <div>`<div class="red">Some {{variable}} text!</div>`<br>Within a text node (only strings)</div>
 
-> Note that any binding can convert booleans, numbers, objects or arrays into strings. This is done but declaring a *transformer* 
+> Note that any binding can convert booleans, numbers, objects or arrays into strings. This is done by declaring a *transformer* 
 > function in the widget class. You can then bind it like this: `<div class="{{variable:formatAsString}}">...</div>`
 
 ### Attributes

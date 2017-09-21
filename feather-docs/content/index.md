@@ -5,22 +5,22 @@ type: index
 ---
 ##### Because digging deeper doesn't get you out of a hole. 
 
-Feather is a small but powerful UI framework written in [TypeScript](https://www.typescriptlang.org/).
+_Feather_ is a small but powerful _ui_ framework written in [TypeScript](https://www.typescriptlang.org/).
 You can use it to write embeddable widgets or single page applications. With less than 10kb in size 
 it is suited for mobile apps and desktop alike. Regardless of its tiny footprint it has zero 
-dependencies and provides routing, component messaging, DOM events and REST integration out of the box.
+dependencies and provides routing, component messaging, _dom_ events and _rest_ integration out of the box.
 
 The main goal is to provide a framework that has a flat learning curve and integrates well into any 
-environment you throw it at. The resulting code is clean and lean and the generated HTML is just 
+environment you throw it in. The resulting code is clean and lean and the generated HTML is just 
 what you wrote without any trace of the framework which makes debugging a bliss. 
 
-Unlike many other frameworks feather does not utilize a virtual dom. This has pros and cons that
-you should consider before starting a project. Feather does not provide server-side rendering by 
-itself, but this can be achieved with many other ready-made solutions. On the upside all DOM calls 
-are synchronous and you can write UI tests against the real DOM without having to wait for the render 
+Unlike many other frameworks _feather_ does not utilize a virtual dom. This has pros and cons that
+you should consider before starting a project. It does not provide server-side rendering by 
+itself, but this can be achieved with many other ready-made solutions. On the upside all _dom_ calls 
+are synchronous and you can write _ui_ tests against the real _dom_ without having to wait for the render 
 loop to complete. Furthermore keeping track of what needs to update on a very granular level allows 
-feather to minimize write access to the DOM and without the need to diff and patch two representations 
-of the UI it also outperforms most frameworks in [speed](http://www.feather-ts.com/todomvc/todomvc-benchmark/index.html).
+it to minimize write access to the _dom_ and without the need to diff and patch two representations 
+of the _ui_ it also outperforms most frameworks in [speed](http://www.feather-ts.com/todomvc/todomvc-benchmark/index.html).
 
 ### The framework offers the following features:
 
@@ -51,7 +51,7 @@ any dogmatic constructs you need to follow.
 
 ## Intellij IDEA
 
-Feather comes with an own [IDE plugin]((http://dist.feather-ts.com/feather.jar)) to help you with syntax 
+Feather comes with an own [IDE plugin](http://dist.feather-ts.com/feather.jar) to help you with syntax 
 highlighting and mistyped references. Grab it from the link or the official plugin repository.
   
 ## Examples  

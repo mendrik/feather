@@ -1,13 +1,31 @@
 .demo {
-    display: block;
+    display: flex;
     width: 100%;
     border: 1px solid rgba(255, 255, 255, 0.1);
     margin: 10px 0;
     padding: 10px;
     background-color: rgba(255, 255, 255, 0.05);
+    align-items: center;
+
+    > * {
+        margin-left: 10px;
+    }
 }
 
 .item-loader ul {
+
+    list-style: circle;
+    background: none;
+
+    > li {
+        background: none;
+        display: list-item;
+        margin-left: 20px;
+
+        &:before {
+            content: normal;
+        }
+    }
 
     + .loading {
         display: none;
