@@ -33,16 +33,16 @@ of the UI it also outperforms most frameworks in [speed](http://www.feather-ts.c
 * Event delegation out of the box
 * Written in TypeScript
 * No module loaders needed, just a single throw-in file.
-* With asynchronous decorators no need for _promises_
+* With asynchronous decorators no need for promises
 * Integrated media-query based views for responsive application design
 * Support for modern browsers including IE9 (with polyfills)
 * Component trees are initialized in off-screen document fragments for maximum performance.
-* Access to up-tree properties without repetitive property clutter
+* Access to up-tree properties from child components
 * Generates clean HTML markup without any trace of the framework
 * No wrappers required for your data holders
 * No pass-down property clutter
 * No actions, action creators, reducers, sinks, directives, intents or other vocabulary needed.
-* First meaningful rendering in midsized apps is in less than 150ms.
+* First meaningful rendering in midsized apps in less than 150ms.
 
 Feather is a back to the basics tool and tries to make coding SPAs fun again. If you come back 
 to your code months from now, you won't have to wonder what you did to make the framework work
