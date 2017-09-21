@@ -101,7 +101,7 @@ module feather.annotations {
                       m = pre.nodes.length,
                       nodes = []
                 for (let j = 0; j < m; j++) {
-                    nodes[j] = nodeList[pre.nodes[j]];
+                    nodes[j] = nodeList[pre.nodes[j]]
                 }
                 components[i] = {info: pre.info, nodes: nodes}
             }
@@ -129,7 +129,7 @@ module feather.annotations {
                 parent.replaceChild(doc, node)
             }
         })
-        return root;
+        return root
     }
 
     const range = document.createRange()
@@ -137,6 +137,7 @@ module feather.annotations {
 
     export function getPreparsedTemplate(templateStr: string): PreparsedTemplate {
         const source   = templateStr.replace(selfClosingTags, openTags),
+              // lets split up text nodes into several nodes, so we can update dynamic parts granularly
               frag     = breakApartTextNodes(getFragment(source)),
               allNodes = allChildNodes(frag),
               hookMap  = {} // we need to remember case sensitive hooks, b/c attributes turn lowercase
@@ -146,7 +147,7 @@ module feather.annotations {
         }
         const registry = feather.boot.WidgetFactory.widgetRegistry,
               components = []
-        // find components in this template
+        // find components in this template, so we don't have to search them again later
         for (let i = 0, r = registry.length, m = allNodes.length; i < r; i++) {
             const nodes = [],
                   info = registry[i]
@@ -174,14 +175,16 @@ module feather.annotations {
                 if (match !== null) {
                     hooks.push(new HookInfo(pos, HookType.TEXT, match[1]))
                 }
-            } else if (node.nodeType === Node.ELEMENT_NODE) {
+            }
+            else if (node.nodeType === Node.ELEMENT_NODE) {
                 for (const attribute of from<Attr>(node.attributes)) {
                     const attributeName = attribute.nodeName
                     if (match = attributeName.match(CURLIES)) {
                         // <div id="2" {{myProperty}}>
                         (node as HTMLElement).removeAttribute(match[0])
                         hooks.push(new HookInfo(pos, HookType.PROPERTY, match[1]))
-                    } else if (attributeName === 'class') {
+                    }
+                    else if (attributeName === 'class') {
                         // <div id="2" class="red {{myClass}} blue">
                         const classes = from<string>((node as HTMLElement).classList)
                         for (const cls of classes) {
@@ -190,7 +193,8 @@ module feather.annotations {
                                 hooks.push(new HookInfo(pos, HookType.CLASS, match[1]))
                             }
                         }
-                    } else {
+                    }
+                    else {
                         // <div id="2" myProperty="{{myProperty}}">
                         const value = attribute.value
                         if (match = value.match(CURLIES)) {
@@ -217,6 +221,7 @@ module feather.annotations {
             return preparsedTemplate.asParsedTemplate()
         }
 
+        // create preparsed template ahead of time
         static warmUp = () => {
             templates.forEach((map, proto) => Object.keys(map).forEach(template => {
                 const method = map[template]

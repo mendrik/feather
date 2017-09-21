@@ -95,7 +95,8 @@ module feather.event {
                             }
                             return this[handler.method].call(this, ev, el)
                         })
-                    } else {
+                    }
+                    else {
                         console.warn(`${handler.selector} didn't match anything inside the template`)
                     }
                 }
@@ -111,6 +112,7 @@ module feather.event {
             })
         }
 
+        // noinspection JSUnusedLocalSymbols
         eventRegistered(context: any, event: string, handler: Handler[], scope: Scope) {
             // use for whatever
         }

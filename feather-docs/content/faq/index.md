@@ -51,6 +51,7 @@ module feather.docs {
     import Template = feather.annotations.Template
     import Construct = feather.annotations.Construct
     import Media = feather.media.Media
+    import RenderPlacement = feather.core.RenderPlacement
 
     @Construct({selector: '.responsive'})
     export class Responsive extends Widget {
@@ -60,12 +61,12 @@ module feather.docs {
             // usually widgets append themselves only, 
             // if you need to clear out the previous content
             // pass true as the second argument
-            this.render('mobile', true) 
+            this.render('mobile', RenderPlacement.replace) 
         }
 
         @Media('(min-width: 769px)')
         renderDesktop() {
-            this.render('desktop', true)
+            this.render('desktop', RenderPlacement.replace)
         }
 
         @Template('mobile')
@@ -84,4 +85,83 @@ Try it out by resizing your browser window
 
 <div class="responsive demo"></div>
 
+## I want to load items dynamically but show a loading screen first
 
+There no if/else statements in Feather for templates but oftentimes one want to show a placeholder,
+load some data and then show the result. This can be done easily with CSS only: 
+
+```typescript
+module feather.docs {
+
+    import Template = feather.annotations.Template
+    import Bind = feather.observe.Bind
+    import Widget = feather.core.Widget
+    import Construct = feather.annotations.Construct
+    import On = feather.event.On
+    import range = feather.arrays.range
+
+    class Item extends Widget {
+
+        @Bind() order: number
+
+        constructor(i: number) {
+            super()
+            this.order = i
+        }
+
+        @Template()
+        itemMarkup() {
+            return `<li>Loaded item {{order}}</li>`
+        }
+    }
+
+
+    @Construct({selector: '.item-loader'})
+    class Loader extends Widget {
+
+        @Bind() items: Item[] = []
+
+        init(element: HTMLElement) {
+            this.render('default')
+        }
+
+        @On({event: 'click', selector: 'button'})
+        click() {
+            this.items.push(
+                ...range(1, 5).map(i =>
+                    new Item(i)
+                )
+            )
+        }
+
+        @Template('default')
+        protected getBaseTemplate() {
+            return `<button>Load items</button>
+                    <ul {{items}}/>
+                    <div class="loading">Loading items...</div>`
+        }
+    }
+}
+```
+
+<div class="item-loader"></div>
+
+Now we can add some css that will show the loading div only if the parent `<ul>` is not empty:
+
+```
+.item-loader ul {
+
+    + .loading {
+        display: none;
+        margin: 10px 0;
+    }
+
+    &:empty {
+        display: none;
+
+        + .loading {
+            display: block;
+        }
+    }
+}
+``` 

@@ -14,7 +14,7 @@ module demo {
         @Bind() funcResult: string
 
         constructor(text: string, bool: boolean, func: Function, number: number) {
-            super();
+            super()
             this.text = text
             this.bool = bool
             this.funcResult = func()

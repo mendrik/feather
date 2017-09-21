@@ -55,6 +55,29 @@ describe('Deep property bind', () => {
             inh.person.mother.name = 'Angela'
             expect(personDiv.textContent).to.be.equal('Peter')
             expect(motherDiv.textContent).to.be.equal('Angela')
+            inh.person.mother.name = 'Michaela'
+        })
+
+        it('Binds properties with transformers correctly', () => {
+            const inh = window.inh as demo.Inheritance
+            const motherDiv = document.querySelector('#mother')
+            expect(motherDiv.getAttribute('uppercase')).to.be.equal('MICHAELA')
+            expect(motherDiv.getAttribute('uppercaseMothersName')).to.be.equal('MICHAELA')
+            inh.person.mother.name = 'Angela'
+            expect(motherDiv.getAttribute('uppercase')).to.be.equal('ANGELA')
+            expect(motherDiv.getAttribute('uppercaseMothersName')).to.be.equal('ANGELA')
+            inh.person.mother.name = 'Michaela'
+        })
+
+        it('Binds bequeathed properties with transformers correctly', () => {
+            const app = window.app as demo.Application
+            const motherDiv = document.querySelector('#aunt')
+            expect(motherDiv.getAttribute('uppercase')).to.be.equal('GRAND MAY')
+            expect(motherDiv.getAttribute('uppercaseMothersName')).to.be.equal('GRAND MAY')
+            app.aunt.mother.name = 'June'
+            expect(motherDiv.getAttribute('uppercase')).to.be.equal('JUNE')
+            expect(motherDiv.getAttribute('uppercaseMothersName')).to.be.equal('JUNE')
+            app.aunt.mother.name = 'Grand May'
         })
     })
 })

@@ -2,6 +2,8 @@
 declare module feather.docs {
 }
 declare module feather.docs {
+}
+declare module feather.docs {
     import Widget = feather.core.Widget;
     class Responsive extends Widget {
         renderMobile(): void;

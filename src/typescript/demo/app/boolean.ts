@@ -1,9 +1,9 @@
 module demo {
 
-    import Widget = feather.core.Widget;
-    import Construct = feather.annotations.Construct;
-    import Template = feather.annotations.Template;
-    import Bind = feather.observe.Bind;
+    import Widget = feather.core.Widget
+    import Construct = feather.annotations.Construct
+    import Template = feather.annotations.Template
+    import Bind = feather.observe.Bind
 
     @Construct({selector: '.booleans'})
     export class Booleans extends Widget {

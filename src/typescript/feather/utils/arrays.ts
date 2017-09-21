@@ -1,10 +1,14 @@
 module feather.arrays {
 
-    type MethodKey      = 'sort' | 'splice'
-    type MuteMethodKey  = 'forEach'
-    const observers     = new WeakMap<any[], ArrayListener<any>[]>()
-    const muteLock      = new WeakMap<any[], boolean>()
-    const NOOP_ARGS     = [0, 0, [], []]
+    import Subscribable   = feather.hub.Subscribable
+    import Widget         = feather.core.Widget
+    import Hook           = feather.annotations.Hook
+    import BindProperties = feather.observe.BindProperties
+    type   MethodKey      = 'sort' | 'splice'
+    type   MuteMethodKey  = 'forEach'
+    const  observers      = new WeakMap<any[], ArrayListener<any>[]>()
+    const  muteLock       = new WeakMap<any[], boolean>()
+    const  NOOP_ARGS      = [0, 0, [], []]
 
     export interface ArrayListener<T> {
         sort(indices: number[])
@@ -21,7 +25,8 @@ module feather.arrays {
         for (let i = arr.length; i--;) {
             if (~elements.indexOf(arr[i])) {
                 deleteCount++ // optimize removal of consecutive elements
-            } else if (deleteCount) {
+            }
+            else if (deleteCount) {
                 arr.splice(i + 1, deleteCount)
                 if ((total -= deleteCount) === 0) { // if we removed all already, break early
                     deleteCount = 0
@@ -52,7 +57,7 @@ module feather.arrays {
             const res = old.apply(arr, arguments)
             muteLock.set(arr, false)
             notify(arr, 'splice', NOOP_ARGS)
-            return res;
+            return res
         }
     }
 
@@ -66,7 +71,8 @@ module feather.arrays {
                 notify(arr, key, [index, deleteCount, addedItems, deletedItems])
                 return deletedItems
             }
-        } else if (key === 'sort') {
+        }
+        else if (key === 'sort') {
             arr.sort = (cmp) => {
                 // sort is a special case, we need to inform listeners how sorting has changed the array
                 const indices = range(0, arr.length - 1),
@@ -124,8 +130,73 @@ module feather.arrays {
             duckPunch('splice', arr)
             duckPunch('sort', arr)
             muteMethod('forEach', arr)
-        } else {
+        }
+        else {
             listeners.push(listener)
+        }
+    }
+
+    const destroyListeners = (widgets: Subscribable[]) => {
+        setTimeout(() => {
+            for (const w of widgets) {
+                w.cleanUp()
+            }
+        }, 50)
+    }
+
+    export function defaultArrayListener(widget: Widget, arr: Widget[], hook: Hook, conf: BindProperties,
+                                         filterFactory: Function): ArrayListener<Widget> {
+        const el = hook.node,
+              firstChild = el.firstElementChild // usually null, lists that share a parent with other nodes are prepended.
+        let nodeVisible: boolean[] = []
+        return {
+            sort(indices: any[]) {
+                const copy: boolean[] = []
+                for (let i = 0; i < indices.length; i++) {
+                    if (nodeVisible[indices[i]]) {
+                        el.appendChild(arr[i].element)
+                    }
+                    copy[i] = nodeVisible[indices[i]]
+                }
+                nodeVisible = copy
+            },
+            splice(index: number, deleteCount: number, added: Widget[], deleted: Widget[] = []) {
+                const patch = from<boolean>(nodeVisible),
+                    childWidgets = widget.childWidgets,
+                    filter = filterFactory()
+
+                // handle deleted items
+                nodeVisible.splice(index, deleteCount, ...added.map(v => false))
+
+                if (deleteCount) {
+                    deleted.forEach(del => el.removeChild(del.element))
+                    removeFromArray(childWidgets, deleted)
+                    destroyListeners(deleted)
+                }
+                if (added.length) {
+                    childWidgets.push(...added)
+                    for (const item of added) {
+                        item.parentWidget = widget
+                        if (!item.element) {
+                            const parsed = item.getParsed(conf.templateName)
+                            item.bindToElement(parsed.first)
+                        }
+                    }
+                }
+                patch.splice(index, deleteCount, ...added.map(v => true))
+                for (let i = 0, n = arr.length; i < n; i++) {
+                    patch[i] = filter(arr[i])
+                    if (patch[i] && !nodeVisible[i]) {
+                        const nextVisible = nodeVisible.indexOf(true, i),
+                            refNode     = ~nextVisible ? arr[nextVisible].element : firstChild
+                        el.insertBefore(arr[i].element, refNode)
+                    }
+                    else if (!patch[i] && nodeVisible[i]) {
+                        el.removeChild(arr[i].element)
+                    }
+                }
+                nodeVisible = patch
+            }
         }
     }
 }

@@ -50,19 +50,18 @@ module feather.objects {
 
     /**
      * deep merge objects and if some values are arrays, merge those accordingly
-     * @param a
-     * @param b
-     * @returns {any}
      */
-    export const merge = (a: any = {}, b: any) => {
+    export const merge = (a: any = {}, b: any): any => {
         Object.keys(b).forEach(k => {
             const ak = a[k],
                   bk = b[k]
             if (Array.isArray(ak)) {
                 ak.push(...bk)
-            } else if (isObject(ak)) {
+            }
+            else if (isObject(ak)) {
                 merge(ak, bk)
-            } else {
+            }
+            else {
                 a[k] = bk
             }
         })
@@ -107,20 +106,17 @@ module feather.objects {
     }
 
     export const createObjectPropertyListener = (obj: {}, path: string, callback: ObjectChange) => {
-        const isObserved = pathCallbacks.get(obj),
-              property   = path.split('.').shift(),
+        const property   = path.split('.').shift(),
+              isObserved = pathCallbacks.get(obj) && pathCallbacks.get(obj)[path],
               callbacks  = ensure(pathCallbacks, obj, {[path]: [callback]})
         if (!isObserved) {
-            // we need to wait for all registrars before knowing what to listen to
-            setTimeout(() =>
-                addPropertyListener(obj, obj, property, (path: string) => {
-                    pathKeys(path, Object.keys(callbacks)).forEach(pathKey => {
-                        callbacks[pathKey].forEach(listener => {
-                            listener(deepValue(obj, pathKey))
-                        })
+            addPropertyListener(obj, obj, property, (path: string) => {
+                pathKeys(path, Object.keys(callbacks)).forEach(pathKey => {
+                    callbacks[pathKey].forEach(listener => {
+                        listener(deepValue(obj, pathKey))
                     })
                 })
-            , 0)
+            })
         }
     }
 
@@ -133,7 +129,8 @@ module feather.objects {
                     addPropertyListener(obj, root, newPath, callback)
                 }
             })
-        } else if (Array.isArray(obj)) {
+        }
+        else if (Array.isArray(obj)) {
             obj.forEach((i, idx) => listenToObjectOrArray(i, root, path + `.[${idx}]`, callback))
             observeArray(obj, {
                 sort: () => callback(path),
@@ -153,9 +150,11 @@ module feather.objects {
         let lookup: any = map.get(obj)
         if (!lookup) {
             map.set(obj, lookup = defaultValue)
-        } else if (Array.isArray(lookup) && Array.isArray(defaultValue)) {
+        }
+        else if (Array.isArray(lookup) && Array.isArray(defaultValue)) {
             lookup.push(...defaultValue)
-        } else if (isObject(lookup)) {
+        }
+        else if (isObject(lookup)) {
             merge(lookup, defaultValue)
         }
         return lookup

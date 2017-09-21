@@ -60,14 +60,21 @@ module demo {
         @Bind({affectsArrays: ['filteredList']})
         filterState: FilterState = FilterState.ALL
 
+        @Bind({bequeath: true}) aunt: Person = {
+            name: 'May',
+            mother: {
+                name: 'Grand May'
+            }
+        }
+
         constructor() {
             super()
-            window['app'] = this;
+            window['app'] = this
         }
 
         init(element: HTMLElement) {
             this.render('default')
-            window['app'] = this;
+            window['app'] = this
         }
 
         @Rest({url: '/test-{{data.x}}.json'})
