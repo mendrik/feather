@@ -42,9 +42,11 @@ module feather.observe {
     const setOrRemoveAttribute = (el: Element, attribute: string, condition: boolean, val: string) => {
         if (attribute === 'value') {
             (el as HTMLInputElement).value = condition ? val : ''
-        } else if (condition) {
+        }
+        else if (condition) {
             el.setAttribute(attribute, val)
-        } else {
+        }
+        else {
             el.removeAttribute(attribute)
         }
     }
@@ -62,7 +64,8 @@ module feather.observe {
                 sort: () => cb(value),
                 splice: () => cb(value),
             })
-        } else {
+        }
+        else {
             const binders    = boundProperties.get(obj),
                   isObserved = binders && binders[property],
                   listeners  = ensure(boundProperties, obj, {[property]: [cb]})
@@ -108,23 +111,25 @@ module feather.observe {
                   updateDom = (val) => {
                       if (typeof el[attributeName] === 'boolean') {
                           el[attributeName] = !!transform(val)
-                      } else {
+                      }
+                      else {
                           setOrRemoveAttribute(el, attributeName, !!transform(val), '')
                       }
                       return updateDom
                   }
             createListener(this, conf, hook.property, updateDom(value))
-        } else {
+        }
+        else {
             throw Error('Bool value can only be bound to attributes ie. hidden="{{myBool}}. ' +
                 'Consider using filters to convert them to strings (true|false|yes|no etc)"')
         }
     }
 
-    function bindStringOrNumber(value: string|number,
-                                hook: Hook,
-                                transform: FnOne,
-                                conf: BindProperties,
-                                createListener: Function) {
+    function bindPrimitive(value: string|number,
+                           hook: Hook,
+                           transform: FnOne,
+                           conf: BindProperties,
+                           createListener: Function) {
         const el = hook.node
 
         if (hook.type === HookType.TEXT) { // <p>some text {{myVar}} goes here</p>
@@ -140,7 +145,8 @@ module feather.observe {
                         oldNodes = from<Element>(html.childNodes)
                         parent.replaceChild(html, toRemove.shift())
                         toRemove.forEach(node => node.parentNode.removeChild(node))
-                    } else {
+                    }
+                    else {
                         el.textContent = transform(value)
                     }
                     oldValue = newValue
@@ -148,7 +154,8 @@ module feather.observe {
                 return updateDom
             }
             createListener(this, conf, hook.property, updateDom(value))
-        } else if (hook.type === HookType.CLASS) { // <p class="red {{myVar}}">text goes here</p>
+        }
+        else if (hook.type === HookType.CLASS) { // <p class="red {{myVar}}">text goes here</p>
             const classList = (val: any, fn: Function) => {
                 if (isDef(val)) {
                     const nVal = transform(val)
@@ -161,7 +168,8 @@ module feather.observe {
                 return updateDom
             }
             createListener(this, conf, hook.property, updateDom(value))
-        } else if (hook.type === HookType.ATTRIBUTE || hook.type === HookType.PROPERTY) { // <p style="{{myvar}}" {{hidden}}>text goes here</p>
+        }
+        else if (hook.type === HookType.ATTRIBUTE || hook.type === HookType.PROPERTY) { // <p style="{{myvar}}" {{hidden}}>text goes here</p>
             let oldValue
             const attributeName = hook.attribute || hook.property,
                   updateDom = (val) => {
@@ -181,27 +189,40 @@ module feather.observe {
             const removed = arr.splice(0, arr.length)
             observeArray(arr, domArrayListener(this, arr, hook, conf, transform))
             arr.push(...removed)
-        } else {
+        }
+        else {
             console.log('Arrays can be bound only in a node: <div {{myarray}}></div>')
         }
     }
 
-    function createDeepObserver(path: string, hook: Hook, transform: FnOne) {
+    function createDeepObserver(path: string, hook: Hook, initialValue: any, transform: FnOne) {
         const dummyCreate = (a, b, c, callback) => observe(this, path, callback),
               rootProperty = path.split('.').shift(),
-              initialValue = deepValue(this, path),
               typeOfValue = (typeof transform(initialValue)).toLowerCase(),
               conf = collect(binders, this)[rootProperty]
         if ('boolean' === typeOfValue) {
             bindBoolean.call(this, initialValue, hook, transform, conf, dummyCreate)
-        } else if (/string|number|undefined/.test(typeOfValue)) {
-            bindStringOrNumber.call(this, initialValue, hook, transform, conf, dummyCreate)
-        } else {
+        }
+        else if (/string|number|undefined/.test(typeOfValue)) {
+            bindPrimitive.call(this, initialValue, hook, transform, conf, dummyCreate)
+        }
+        else {
             console.log(
                 'Deeply bound properties work only with strings, numbers or booleans. ' +
                 'For arrays you can use a transformer: {{var:myTransformer}}?'
             )
         }
+    }
+
+    function createStyleObserver(property: string, hook: Hook) {
+        const el       = hook.node as HTMLElement,
+              update   = (val) => {
+                  Object.keys(val).forEach(key => {
+                      el.style[key] = val[key]
+                  })
+                  return update
+              }
+        observe(this, property, update(this[property]))
     }
 
     function createObserver(widget: Observable, transformedValue: Primitive|Function, hook: Hook,
@@ -210,14 +231,17 @@ module feather.observe {
               initialValue = widget[hook.property]
         if ('boolean' === typeOfValue) {
             bindBoolean.call(widget, initialValue, hook, transform, conf, createListener)
-        } else if (/string|number|undefined/.test(typeOfValue)) {
-            bindStringOrNumber.call(widget, initialValue, hook, transform, conf, createListener)
-        } else if ('array' === typeOfValue || isFunction(transformedValue)) {
+        }
+        else if (/string|number|undefined/.test(typeOfValue)) {
+            bindPrimitive.call(widget, initialValue, hook, transform, conf, createListener)
+        }
+        else if ('array' === typeOfValue || isFunction(transformedValue)) {
             if (!isFunction(transformedValue)) {
                 transform = identity
             }
             bindArray.call(widget, initialValue, hook, conf, transform)
-        } else {
+        }
+        else {
             console.log('Bindings are only supported on arrays, booleans, strings and numbers')
         }
     }
@@ -231,13 +255,15 @@ module feather.observe {
         const conf = collect(binders, current)[property]
         if (conf && conf.bequeath) {
             current.attachHooks.call(current, [hook], context)
-        } else {
+        }
+        else {
             tryToBindFromParentWidget(current.parentWidget as Widget, context, hook, property)
         }
     }
 
+    // transformers can also exist on singletons and be used where ever
     const findFromSingletons = (start: Observable, method: string) => {
-        const widgets = WidgetFactory.singletonRegistry;
+        const widgets = WidgetFactory.singletonRegistry
         for (let i = 0; i < widgets.length; i++) {
             const func = widgets[i][method]
             if (func) {
@@ -259,6 +285,7 @@ module feather.observe {
                 arrayTriggers  = binders.filter(conf => conf.affectsArrays.length !== 0)
                 storableArrays = binders.filter(conf => conf.localStorage && Array.isArray(this[conf.property]))
             }
+            // load values from local storage
             if (isUndef(parent)) {
                 loadLocalStorageValue(binders, this)
             }
@@ -267,37 +294,55 @@ module feather.observe {
                       transform    = compose<any>(hook.transformFns.map(method => {
                                          const func = context[method]
                                          return func ? func.bind(this) : findFromSingletons(this, method)
-                                     }))
-                let value = this[property],
-                    isObj = isObject(value)
-
+                                     })),
+                      value = this[property],
+                      isObj = isObject(value)
+                // annotated functions are pointless
                 if (isFunction(value)) {
-                    console.log('Binding to functions is not supported. Use new filters.')
-                    continue
-                } else if (~property.indexOf('.') || isObj && hook.hasMethods()) {
-                    value = deepValue(this, property)
-                    if (isUndef(value)) {
-                        tryToBindFromParentWidget(this.parentWidget as Observable, this, hook, property)
-                    } else {
-                        createDeepObserver.call(this, property, hook, transform)
-                    }
-                    continue
-                } else if (isObj && !hook.hasMethods()) {
-                    console.log('Binding to objects is not supported. Use new widgets or specify inner property: x.y.z')
+                    console.log('Binding to functions is not supported. Use a property with a transformer {{x:myfunc}}.')
                     continue
                 }
+                // if hook has dot notation or we transform an object to a string or boolean
+                else if (~property.indexOf('.') || isObj && hook.hasMethods()) {
+                    const initialValue = deepValue(this, property)
+                    // not found on current widget, check parent widgets for bequeath: true bindings
+                    if (isUndef(initialValue)) {
+                        tryToBindFromParentWidget(this.parentWidget as Observable, this, hook, property)
+                    }
+                    else {
+                        createDeepObserver.call(this, property, hook, initialValue, transform)
+                    }
+                    continue
+                }
+                // all other objects
+                else if (isObj) {
+                    // if mapped to inline styles
+                    if (hook.attribute === 'style') {
+                        createStyleObserver.call(this, property, hook)
+                        continue
+                    }
+                    // every other direct object binding is not permitted
+                    else if (!hook.hasMethods()) {
+                        console.log('Binding to objects is not supported. Use new widgets or specify inner property: x.y.z')
+                        continue
+                    }
+                }
                 const conf = instanceBinders[property]
+                // conf missing look up bequeath: true bindings from parent widgets
                 if (isUndef(conf)) {
                     tryToBindFromParentWidget(this.parentWidget as Observable, this, hook, property)
                     continue
                 }
+                // now let's do the real binding
                 createObserver(this, transform(value), hook, conf, transform)
             }
+            // all properties that trigger array refresh are bound here
             if (arrayTriggers) {
                 for (const trigger of arrayTriggers) {
                     createListener(this, trigger, trigger.property, () => 0)
                 }
             }
+            // assign local storage persistence if annotated
             if (storableArrays) {
                 for (const toStore of storableArrays) {
                     const arr = this[toStore.property],

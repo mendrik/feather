@@ -19,6 +19,7 @@
         "typeRoots": ["node_modules"]
     },
     "files": [
+        "src/loader.ts",
         "src/hello-world.ts",
         "src/responsive.ts",
         "src/navi-item.ts",

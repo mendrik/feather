@@ -38,7 +38,8 @@ module feather.observe {
                     value = value.map(parent[serializer.write])
                     store(parent, property, value)
                 }, 80))
-            } else {
+            }
+            else {
                 store(parent, property, value)
             }
         }
@@ -56,7 +57,8 @@ module feather.observe {
                             if (Array.isArray(storedValue)) {
                                 const serializer = collect(serializers, context)[property]
                                 context[property] = storedValue.map(context[serializer.read])
-                            } else {
+                            }
+                            else {
                                 context[property] = storedValue
                             }
                         }

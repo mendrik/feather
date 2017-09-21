@@ -6,6 +6,70 @@ var feather;
         var Bind = feather.observe.Bind;
         var Widget = feather.core.Widget;
         var Construct = feather.annotations.Construct;
+        var On = feather.event.On;
+        var range = feather.arrays.range;
+        var Item = /** @class */ (function (_super) {
+            __extends(Item, _super);
+            function Item(i) {
+                var _this = _super.call(this) || this;
+                _this.order = i;
+                return _this;
+            }
+            Item.prototype.itemMarkup = function () {
+                return "<li>Loaded item {{order}}</li>";
+            };
+            __decorate([
+                Bind()
+            ], Item.prototype, "order", void 0);
+            __decorate([
+                Template()
+            ], Item.prototype, "itemMarkup", null);
+            return Item;
+        }(Widget));
+        var Loader = /** @class */ (function (_super) {
+            __extends(Loader, _super);
+            function Loader() {
+                var _this = _super !== null && _super.apply(this, arguments) || this;
+                _this.items = [];
+                return _this;
+            }
+            Loader.prototype.init = function (element) {
+                this.render('default');
+            };
+            Loader.prototype.click = function () {
+                (_a = this.items).push.apply(_a, range(1, 5).map(function (i) {
+                    return new Item(i);
+                }));
+                var _a;
+            };
+            Loader.prototype.getBaseTemplate = function () {
+                return "<button>Load items</button><ul {{items}}/><div class=\"loading\">Loading items...</div>";
+            };
+            __decorate([
+                Bind()
+            ], Loader.prototype, "items", void 0);
+            __decorate([
+                On({ event: 'click', selector: 'button' })
+            ], Loader.prototype, "click", null);
+            __decorate([
+                Template('default')
+            ], Loader.prototype, "getBaseTemplate", null);
+            Loader = __decorate([
+                Construct({ selector: '.item-loader' })
+            ], Loader);
+            return Loader;
+        }(Widget));
+    })(docs = feather.docs || (feather.docs = {}));
+})(feather || (feather = {}));
+var feather;
+(function (feather) {
+    var docs;
+    (function (docs) {
+        var Template = feather.annotations.Template;
+        var Bind = feather.observe.Bind;
+        var Widget = feather.core.Widget;
+        var Construct = feather.annotations.Construct;
+        var On = feather.event.On;
         var MyApplication = /** @class */ (function (_super) {
             __extends(MyApplication, _super);
             function MyApplication() {
@@ -15,16 +79,19 @@ var feather;
             }
             MyApplication.prototype.init = function (element) {
                 this.render('default');
-                setTimeout(function () {
-                    this.who = "everyone";
-                }.bind(this), 2000);
+            };
+            MyApplication.prototype.click = function () {
+                this.who = 'everyone';
             };
             MyApplication.prototype.getBaseTemplate = function () {
-                return "Hello {{who}}!";
+                return "Hello {{who}}! <button>Change</button>";
             };
             __decorate([
                 Bind()
             ], MyApplication.prototype, "who", void 0);
+            __decorate([
+                On({ event: 'click', selector: 'button' })
+            ], MyApplication.prototype, "click", null);
             __decorate([
                 Template('default')
             ], MyApplication.prototype, "getBaseTemplate", null);

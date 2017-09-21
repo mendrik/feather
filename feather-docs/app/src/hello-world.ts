@@ -4,6 +4,7 @@ module feather.docs {
     import Bind = feather.observe.Bind;
     import Widget = feather.core.Widget;
     import Construct = feather.annotations.Construct;
+    import On = feather.event.On
 
     @Construct({selector: '.hello-world'})
     class MyApplication extends Widget {
@@ -12,15 +13,16 @@ module feather.docs {
 
         init(element: HTMLElement) {
             this.render('default')
-            setTimeout(function () {
-                this.who = "everyone"
-            }.bind(this), 2000)
+        }
+
+        @On({event: 'click', selector: 'button'})
+        click() {
+            this.who = 'everyone'
         }
 
         @Template('default')
         protected getBaseTemplate() {
-            return `Hello {{who}}!`
+            return `Hello {{who}}! <button>Change</button>`
         }
     }
-
 }

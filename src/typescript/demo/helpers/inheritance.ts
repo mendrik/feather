@@ -25,8 +25,13 @@ module demo {
         @Bind({localStorage: true}) people: Person[] = []
         @Bind({templateName: 'minimal'}) elements: ArrayElement[] = []
 
+        @Bind() styles = {
+            color: 'red',
+            borderWidth: '1px'
+        }
+
         constructor() {
-            super();
+            super()
             window['inh'] = this
         }
 
@@ -47,11 +52,18 @@ module demo {
         @Template()
         protected getBaseTemplate() {
             return (`
-                <div id="inherit" test={{inheritedString}} length={{filteredList:sizeOfArray}} people={{people:sizeOfArray}}>
+                <div id="inherit" style="{{styles}}" test="{{inheritedString}}" length="{{filteredList:sizeOfArray}}" people="{{people:sizeOfArray}}">
                     <span uncles={{person.mother.siblings:sizeOfArray}}>{{inheritedString}}</span>
-                    <div id="person" siblingsLength={{person.siblings:sizeOfArray}} uncles={{person.mother.siblings:sizeOfArray}}>{{person.name}}</div>
-                    <div id="mother">{{person.mother.name}}</div>
+                    <div id="person"
+                         siblingsLength={{person.siblings:sizeOfArray}}
+                         uncles={{person.mother.siblings:sizeOfArray}}>{{person.name}}</div>
+                    <div id="mother"
+                         uppercase="{{person.mother.name:uppercase}}"
+                         uppercaseMothersName="{{person:uppercaseMothersName}}">{{person.mother.name}}</div>
                     <div id="sibling-names">{{person.siblings:names}}</div>
+                    <div id="aunt"
+                         uppercase="{{aunt.mother.name:uppercase}}"
+                         uppercaseMothersName="{{aunt:uppercaseMothersName}}">{{person.mother.name}}</div>
                     <div id="inherited-object" fullName={{inheritedObject:fullname}}>
                         {{inheritedObject.fullname.name}} {{inheritedObject.fullname.surname}}
                     </div>
@@ -64,6 +76,8 @@ module demo {
         @Write('people') write = (person: Person): StoredPerson => ({name: person.name})
         @Read('people') read = (stored: StoredPerson): Person => ({name: stored.name})
 
+        uppercase = (name: string) => name.toUpperCase()
+        uppercaseMothersName = (person: Person) => person.mother.name.toUpperCase()
         sizeOfArray = (arr: any[]) => `${arr.length}`
         names = (arr: Person[]) => `${arr.map(p => p.name).join(', ')}`
         fullname = (obj: any) => `${obj.fullname.name} ${obj.fullname.surname}`

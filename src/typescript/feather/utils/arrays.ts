@@ -4,11 +4,11 @@ module feather.arrays {
     import Widget         = feather.core.Widget
     import Hook           = feather.annotations.Hook
     import BindProperties = feather.observe.BindProperties
-    type MethodKey        = 'sort' | 'splice'
-    type MuteMethodKey    = 'forEach'
-    const observers       = new WeakMap<any[], ArrayListener<any>[]>()
-    const muteLock        = new WeakMap<any[], boolean>()
-    const NOOP_ARGS       = [0, 0, [], []]
+    type   MethodKey      = 'sort' | 'splice'
+    type   MuteMethodKey  = 'forEach'
+    const  observers      = new WeakMap<any[], ArrayListener<any>[]>()
+    const  muteLock       = new WeakMap<any[], boolean>()
+    const  NOOP_ARGS      = [0, 0, [], []]
 
     export interface ArrayListener<T> {
         sort(indices: number[])
@@ -25,7 +25,8 @@ module feather.arrays {
         for (let i = arr.length; i--;) {
             if (~elements.indexOf(arr[i])) {
                 deleteCount++ // optimize removal of consecutive elements
-            } else if (deleteCount) {
+            }
+            else if (deleteCount) {
                 arr.splice(i + 1, deleteCount)
                 if ((total -= deleteCount) === 0) { // if we removed all already, break early
                     deleteCount = 0
@@ -56,7 +57,7 @@ module feather.arrays {
             const res = old.apply(arr, arguments)
             muteLock.set(arr, false)
             notify(arr, 'splice', NOOP_ARGS)
-            return res;
+            return res
         }
     }
 
@@ -70,7 +71,8 @@ module feather.arrays {
                 notify(arr, key, [index, deleteCount, addedItems, deletedItems])
                 return deletedItems
             }
-        } else if (key === 'sort') {
+        }
+        else if (key === 'sort') {
             arr.sort = (cmp) => {
                 // sort is a special case, we need to inform listeners how sorting has changed the array
                 const indices = range(0, arr.length - 1),
@@ -128,7 +130,8 @@ module feather.arrays {
             duckPunch('splice', arr)
             duckPunch('sort', arr)
             muteMethod('forEach', arr)
-        } else {
+        }
+        else {
             listeners.push(listener)
         }
     }
@@ -144,7 +147,7 @@ module feather.arrays {
     export function defaultArrayListener(widget: Widget, arr: Widget[], hook: Hook, conf: BindProperties,
                                          filterFactory: Function): ArrayListener<Widget> {
         const el = hook.node,
-            firstChild = el.firstElementChild // usually null, lists that share a parent with other nodes are prepended.
+              firstChild = el.firstElementChild // usually null, lists that share a parent with other nodes are prepended.
         let nodeVisible: boolean[] = []
         return {
             sort(indices: any[]) {

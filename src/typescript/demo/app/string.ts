@@ -1,9 +1,9 @@
 module demo {
 
-    import Widget = feather.core.Widget;
-    import Construct = feather.annotations.Construct;
-    import Template = feather.annotations.Template;
-    import Bind = feather.observe.Bind;
+    import Widget = feather.core.Widget
+    import Construct = feather.annotations.Construct
+    import Template = feather.annotations.Template
+    import Bind = feather.observe.Bind
 
     @Construct({selector: '.strings'})
     export class Strings extends Widget {
@@ -52,6 +52,6 @@ module demo {
         }
 
         uppercase = (str: string) => str.toUpperCase()
-        reverse = (str: string) => str.split('').reverse().join('');
+        reverse = (str: string) => str.split('').reverse().join('')
     }
 }

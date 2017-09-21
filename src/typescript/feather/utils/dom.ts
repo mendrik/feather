@@ -29,9 +29,11 @@ module feather.dom {
 
     export function allTextNodes(doc: Node): Node[] {
         const a = [],
-              walk = document.createTreeWalker(doc, NodeFilter.SHOW_TEXT, null, false);
-        let n;
-        while (n = walk.nextNode()) a.push(n);
-        return a;
+              walk = document.createTreeWalker(doc, NodeFilter.SHOW_TEXT, null, false)
+        let n
+        while (n = walk.nextNode()) {
+            a.push(n)
+        }
+        return a
     }
 }

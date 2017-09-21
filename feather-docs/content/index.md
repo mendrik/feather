@@ -3,11 +3,12 @@ date: 2017-10-29T21:07:13+01:00
 title: A minimalistic framework
 type: index
 ---
+##### Because digging deeper doesn't get you out of a hole. 
 
-Feather is a small UI framework written in [TypeScript](https://www.typescriptlang.org/).
+Feather is a small but powerful UI framework written in [TypeScript](https://www.typescriptlang.org/).
 You can use it to write embeddable widgets or single page applications. With less than 10kb in size 
 it is suited for mobile apps and desktop alike. Regardless of its tiny footprint it has zero 
-dependencies and provides routing, DOM events and REST integration out of the box.
+dependencies and provides routing, component messaging, DOM events and REST integration out of the box.
 
 The main goal is to provide a framework that has a flat learning curve and integrates well into any 
 environment you throw it at. The resulting code is clean and lean and the generated HTML is just 
@@ -39,6 +40,14 @@ of the UI it also outperforms most frameworks in [speed](http://www.feather-ts.c
 * Access to up-tree properties without repetitive property clutter
 * Generates clean HTML markup without any trace of the framework
 * No wrappers required for your data holders
+* No pass-down property clutter
+* No actions, action creators, reducers, sinks, directives, intents or other vocabulary needed.
+* First meaningful rendering in midsized apps is in less than 150ms.
+
+Feather is a back to the basics tool and tries to make coding SPAs fun again. If you come back 
+to your code months from now, you won't have to wonder what you did to make the framework work
+or how the data flow was going. The code is flat and reduced to your own business logic without
+any dogmatic constructs you need to follow. 
 
 ## Intellij IDEA
 

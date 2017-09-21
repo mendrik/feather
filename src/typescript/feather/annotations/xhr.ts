@@ -64,7 +64,8 @@ module feather.xhr {
                 const status = ~~(xhr.status/100)
                 if (status === 2 || status === 3) {
                     success(conf.responseFilter(xhr.responseText))
-                } else {
+                }
+                else {
                     error(conf.responseFilter(xhr.responseText), xhr)
                 }
             }
@@ -102,7 +103,8 @@ module feather.xhr {
             return sendRequest(paramsCopy, desc.value.original.bind(this), (err, xhr: XMLHttpRequest) => {
                 if (xhr && xhr.status) {
                     this.triggerDown('xhr-failure-'+xhr.status, err, xhr)
-                } else if (err) {
+                }
+                else if (err) {
                     const type = (err as Event).type
                     this.triggerDown('xhr-failure-' + type)
                 }

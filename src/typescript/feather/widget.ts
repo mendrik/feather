@@ -41,7 +41,8 @@ module feather.core {
             }
             if (placement === RenderPlacement.prepend) {
                 this.element.insertBefore(parsed.doc, this.element.firstChild)
-            } else {
+            }
+            else {
                 this.element.appendChild(parsed.doc)
             }
         }

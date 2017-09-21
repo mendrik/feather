@@ -30,7 +30,8 @@ module feather.routing {
             const repl = rules.reduce((p, c: [RegExp, string]) => p.replace(c[0], c[1]), pattern),
                   finalR = new RegExp('^' + repl + '$', 'gi')
             return namedRegexMatch(input, finalR, names)
-        } else {
+        }
+        else {
             if (new RegExp('^' + pattern + '$', 'gi').exec(input)) {
                 return {}
             }
@@ -42,7 +43,8 @@ module feather.routing {
         if (!historyAPI) {
             if (path !== '/') {
                 location.replace('/#' + path)
-            } else {
+            }
+            else {
                 path = !location.hash ? '/' : location.hash.replace(/^#/, '')
             }
         }
@@ -67,13 +69,15 @@ module feather.routing {
         if (historyAPI) {
             history.pushState(null, '', path)
             notifyListeners(getCurrentRoute())
-        } else {
+        }
+        else {
             location.hash = path
         }
     }
 
     export abstract class RouteAware extends Subscribable {
 
+        // noinspection JSUnusedGlobalSymbols
         currentRoute = getCurrentRoute
 
         initRoutes() {

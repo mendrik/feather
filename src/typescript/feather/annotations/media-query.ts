@@ -1,7 +1,7 @@
 module feather.media {
 
-    import collect       = feather.objects.collectAnnotationsFromArray
-    import ensure        = feather.objects.ensure
+    import collect = feather.objects.collectAnnotationsFromArray
+    import ensure  = feather.objects.ensure
 
     export interface MediaConfig {
         query:  string,

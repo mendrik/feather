@@ -1,8 +1,8 @@
 module demo {
 
-    import Widget    = feather.core.Widget;
-    import Template  = feather.annotations.Template;
-    import Bind      = feather.observe.Bind;
+    import Widget    = feather.core.Widget
+    import Template  = feather.annotations.Template
+    import Bind      = feather.observe.Bind
 
     export class ArrayElement extends Widget {
 
@@ -11,9 +11,9 @@ module demo {
         @Bind() listX = [1, 2, 3]
 
         constructor(booleanA: boolean, stringA: string) {
-            super();
-            this.booleanA = booleanA;
-            this.stringA = stringA;
+            super()
+            this.booleanA = booleanA
+            this.stringA = stringA
         }
 
         @Template('default')

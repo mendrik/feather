@@ -55,7 +55,7 @@ module demo {
             return (`
                 <div class="root">
                     <button class="html-test">Click {{who}}!</button>
-                    <span><i>Icon</i> Span click</span>                
+                    <span><i>Icon</i> Span click</span>
                     <ul {{children}}/>
                 </div>
             `)
