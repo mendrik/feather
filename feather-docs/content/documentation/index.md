@@ -267,7 +267,7 @@ instance of this widget otherwise you might encounter unpredicted side effects.
 ## @Template <span>(feather.annotations)</span>
 
 ```
-  @Template(name?: string, warmUp?: boolean)
+  @Template(name?: string)
 ```
 
 Decorates methods that return html as a simple string to render the widget. You can have multiple templates 
@@ -275,7 +275,7 @@ per widget, if you need to display it in different ways. If the name parameter i
 is set to 'default'. Then you can use `this.render()` without any arguments otherwise call this.render(name)
 with the name being set to match the `@Template(name)` decorator. 
 
-Note that template methods must be real methods and not arrow function.
+> Note that template methods must be real methods and not arrow function.
 
 
 ## @Rest <span>(feather.xhr)</span>
