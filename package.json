@@ -23,7 +23,7 @@
         "build": "npm run min:feather",
         "test": "mocha"
     },
-    "author": "Andreas Prudzilko",
+    "author": "Andreas Herd",
     "license": "ISC",
     "devDependencies": {
         "@types/chai": "4.0.4",

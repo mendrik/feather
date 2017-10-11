@@ -18,7 +18,7 @@
     "manual",
     "documentation"
   ],
-  "author": "Andreas Prudzilko",
+  "author": "Andreas Herd",
   "license": "ISC",
   "dependencies": {
     "feather-ts": "1.2.45"

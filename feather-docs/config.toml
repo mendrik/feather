@@ -13,7 +13,7 @@ googleAnalytics = "UA-84969611-1"
 
 [params]
 	# General information
-	author = "Andreas Prudzilko"
+	author = "Andreas Herd"
 	description = "Feather TS - official Website"
 	copyright = ""
 

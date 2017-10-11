@@ -8,6 +8,6 @@ features = ["", ""]
 min_version = 0.01
 
 [author]
-  name = "Andreas Prudzilko"
+  name = "Andreas Herd"
   homepage = "https://github.com/mendrik"
 
