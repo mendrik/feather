@@ -13,13 +13,12 @@ module feather.annotations {
 
     const CURLIES                = /{{(.*?)}}/
     const ALL_CURLIES            = /{{(.*?)}}/g
-    export const TEXT_CURLIES    = /(.*?){{(.*?)}}/gmi
     const templates              = new Map<any, TypedMap<Function>>()
     const parsedTemplateCache    = {} as Map<string, PreparsedTemplate>
     export const selfClosingTags = /<(\w+)((\s+([^=\s\/<>]+|\w+=('[^']*'|"[^"]*"|[^"']\S*)))*)\s*\/>/gi
     export const openTags        = '<$1$2></$1>'
 
-    export const enum HookType {
+    export enum HookType {
         CLASS,
         PROPERTY,
         ATTRIBUTE,

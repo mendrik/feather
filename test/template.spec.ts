@@ -12,32 +12,6 @@ describe('Templates', () => {
 
     describe('Self closing tags', () => {
 
-        it('Text curlies work', () => {
-            const r  = featherTs.annotations.TEXT_CURLIES,
-                  t1 = 'first: {{bla}} second: {{blub}}',
-                  t2 = '{{bla}} - {{blub}}',
-                  a  = [],
-                  b  = []
-            let   m
-            while((m = r.exec(t1)) !== null) {
-                a.push(m)
-            }
-            expect(a.length).to.be.equal(2)
-            expect(a[0][1]).to.be.equal('first: ')
-            expect(a[0][2]).to.be.equal('bla')
-            expect(a[1][1]).to.be.equal(' second: ')
-            expect(a[1][2]).to.be.equal('blub')
-
-            while((m = r.exec(t2)) !== null) {
-                b.push(m)
-            }
-            expect(b.length).to.be.equal(2)
-            expect(b[0][1]).to.be.equal('')
-            expect(b[0][2]).to.be.equal('bla')
-            expect(b[1][1]).to.be.equal(' - ')
-            expect(b[1][2]).to.be.equal('blub')
-        })
-
         it('Regexp works', () => {
             const r = featherTs.annotations.selfClosingTags,
                 o = featherTs.annotations.openTags
@@ -83,19 +57,19 @@ describe('Templates', () => {
             expect(parsed.hookInfos.length).to.be.equal(4);
             expect(parsed.hookInfos[0].curly).to.be.equal('hook1')
             expect(parsed.hookInfos[0].attribute).to.be.undefined
-            expect(parsed.hookInfos[0].type).to.be.equal(feather.annotations.HookType.PROPERTY)
+            expect(parsed.hookInfos[0].type).to.be.equal(featherTs.annotations.HookType.PROPERTY)
 
             expect(parsed.hookInfos[1].curly).to.be.equal('hook2')
             expect(parsed.hookInfos[1].attribute).to.be.equal('bla')
-            expect(parsed.hookInfos[1].type).to.be.equal(feather.annotations.HookType.ATTRIBUTE)
+            expect(parsed.hookInfos[1].type).to.be.equal(featherTs.annotations.HookType.ATTRIBUTE)
 
             expect(parsed.hookInfos[2].curly).to.be.equal('hook3')
             expect(parsed.hookInfos[2].attribute).to.be.undefined
-            expect(parsed.hookInfos[2].type).to.be.equal(feather.annotations.HookType.CLASS)
+            expect(parsed.hookInfos[2].type).to.be.equal(featherTs.annotations.HookType.CLASS)
 
             expect(parsed.hookInfos[3].curly).to.be.equal('hook4')
             expect(parsed.hookInfos[3].attribute).to.be.undefined
-            expect(parsed.hookInfos[3].type).to.be.equal(feather.annotations.HookType.TEXT)
+            expect(parsed.hookInfos[3].type).to.be.equal(featherTs.annotations.HookType.TEXT)
         })
 
         it('Template clones', () => {
