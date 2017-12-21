@@ -1,30 +1,30 @@
 import {featherStart} from './test-head'
 import {expect} from 'chai'
 import {assert} from 'chai'
-import ArrayListener = feather.arrays.ArrayListener;
+import ArrayListener = feather.arrays.ArrayListener
 
 function Plan(count, done) {
-    this.done = done;
-    this.count = count;
+    this.done = done
+    this.count = count
 }
 
 Plan.prototype.ok = function(expression) {
-    assert(expression);
+    assert(expression)
 
     if (this.count === 0) {
-        assert(false, 'Too many assertions called');
+        assert(false, 'Too many assertions called')
     } else {
-        this.count--;
+        this.count--
     }
 
     if (this.count === 0) {
-        this.done();
+        this.done()
     }
 }
 
 describe('Arrays', () => {
 
-    let window, feather, document;
+    let window, feather, document
     before(done => featherStart(w => (
         window = w,
         feather = w.feather,
@@ -43,7 +43,7 @@ describe('Arrays', () => {
         it('should copy array', () => {
             const arr = feather.arrays.range(5, 10),
                 copy = feather.arrays.from(arr)
-            copy[0] = 1;
+            copy[0] = 1
             expect(Array.isArray(copy)).to.be.true
             expect(copy.length).to.be.equal(arr.length)
             expect(arr[0]).to.be.equal(5)
@@ -61,8 +61,8 @@ describe('Arrays', () => {
 
     describe('Arrays.removeFromArray', () => {
         it('should remove elements from array', () => {
-            const range = feather.arrays.range;
-            const remove = feather.arrays.removeFromArray;
+            const range = feather.arrays.range
+            const remove = feather.arrays.removeFromArray
 
             const a = [1, 2, 3, 4],
                 b = [1, 2, 3, 4],
@@ -133,7 +133,7 @@ describe('Arrays', () => {
 
         it('unshift', (done) => {
             const observeArray = feather.arrays.observeArray,
-                  r1 = feather.arrays.range(1, 10);
+                  r1 = feather.arrays.range(1, 10)
             observeArray(r1, {
                 reverse() {
                     throw Error('don\'t come here')
@@ -209,7 +209,7 @@ describe('Arrays', () => {
 
         it('splice A', (done) => {
             const observeArray = feather.arrays.observeArray,
-                  r1 = feather.arrays.range(1, 10);
+                  r1 = feather.arrays.range(1, 10)
             observeArray(r1, {
                 reverse() {
                     throw Error('don\'t come here')
@@ -315,7 +315,7 @@ describe('Arrays', () => {
         it('multiple listeners', (done) => {
             const observeArray = feather.arrays.observeArray,
                   plan = new Plan(4, done),
-                  r1 = [2, 5, 4, 3, 6, 1];
+                  r1 = [2, 5, 4, 3, 6, 1]
 
             observeArray(r1, {
                 sort(indices: number[]) {

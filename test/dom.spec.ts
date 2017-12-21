@@ -3,7 +3,7 @@ import {expect} from 'chai'
 
 describe('Dom', () => {
 
-    let window, feather, document;
+    let window, feather, document
     before(done => featherStart(w => (
         window = w,
         feather = w.feather,
@@ -13,9 +13,9 @@ describe('Dom', () => {
     describe('selectorMatches', () => {
 
         it('should match ', () => {
-            const match = feather.dom.selectorMatches;
-            expect(match(document.querySelector('body'), 'body')).to.be.true;
-            expect(match(document.querySelector('title'), 'li')).to.be.false;
+            const match = feather.dom.selectorMatches
+            expect(match(document.querySelector('body'), 'body')).to.be.true
+            expect(match(document.querySelector('title'), 'li')).to.be.false
         })
     })
 })

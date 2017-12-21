@@ -4,7 +4,7 @@ import * as sinon from 'sinon'
 
 describe('Objects', () => {
 
-    let window, feather, sandbox;
+    let window, feather, sandbox
     before(done => loadPage(w => (
         window = w,
         feather = w.feather
@@ -16,7 +16,7 @@ describe('Objects', () => {
     describe('isObject', () => {
 
         it('{} should be an object', () => {
-            const isObject = feather.objects.isObject;
+            const isObject = feather.objects.isObject
 
             expect(isObject({})).to.be.true
             expect(isObject(Object.create(null))).to.be.true
@@ -83,20 +83,20 @@ describe('Objects', () => {
     describe('Observe object property', () => {
 
         interface City {
-            plc: number;
-            name: string;
+            plc: number
+            name: string
         }
 
         interface Address {
-            street: string;
-            home: boolean;
-            city: City;
+            street: string
+            home: boolean
+            city: City
         }
 
         interface User {
-            name: string;
-            mainAddress: Address;
-            additional: Address[];
+            name: string
+            mainAddress: Address
+            additional: Address[]
         }
 
         const city1: City = {
@@ -125,7 +125,7 @@ describe('Objects', () => {
             name: 'Matti Mattison',
             mainAddress: address1,
             additional: []
-        };
+        }
 
         class Test {
             constructor(public user?: User) {}
@@ -142,8 +142,8 @@ describe('Objects', () => {
 
         it('Should trigger callback', () => {
             const clock = sinon.useFakeTimers()
-            const test = new Test();
-            const observe = feather.objects.createObjectPropertyListener;
+            const test = new Test()
+            const observe = feather.objects.createObjectPropertyListener
             expect(test.user).to.be.undefined
             const spy = this.sinon.spy(test, 'callback')
             const spy2 = this.sinon.spy(test, 'callback2')
@@ -152,7 +152,7 @@ describe('Objects', () => {
             observe(test, 'user.mainAddress.city.plc', test.callback2)
             observe(test, 'user.additional', test.callback3)
             clock.tick(2)
-            test.user = user;
+            test.user = user
             expect(test.user).to.not.be.undefined
             spy.should.have.been.calledOnce
             spy.reset()
@@ -199,21 +199,21 @@ describe('Objects', () => {
 
         it('Can have multiple listeners', () => {
             const clock = sinon.useFakeTimers()
-            const test = new Test();
-            const observe = feather.objects.createObjectPropertyListener;
+            const test = new Test()
+            const observe = feather.objects.createObjectPropertyListener
             expect(test.user).to.be.undefined
             const spy = this.sinon.spy(test, 'callback')
-            observe(test, 'user', test.callback);
-            observe(test, 'user', test.callback);
+            observe(test, 'user', test.callback)
+            observe(test, 'user', test.callback)
             clock.tick(1)
-            test.user = user;
+            test.user = user
             spy.should.have.been.calledTwice
             spy.reset()
             clock.restore()
         })
 
         it('MergeArrayTypedMap', () => {
-            const merge = feather.objects.merge;
+            const merge = feather.objects.merge
             const a = {a: 1, b: 2}
             const b = {c: 3, d: 4}
             merge(a, b)

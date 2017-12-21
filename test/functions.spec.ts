@@ -3,7 +3,7 @@ import {expect} from 'chai'
 
 describe('Functions', () => {
 
-    let window, feather;
+    let window, feather
     before(done => featherStart(w => (
         window = w,
         feather = w.feather
@@ -12,7 +12,7 @@ describe('Functions', () => {
     describe('isFunction', () => {
 
         it('() => {} should be a function', () => {
-            const isFunction = feather.functions.isFunction;
+            const isFunction = feather.functions.isFunction
 
             expect(isFunction(Object.defineProperty)).to.be.true
             expect(isFunction(function() {

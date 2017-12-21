@@ -1,5 +1,5 @@
 import {featherStart} from './test-head'
-import * as sinon from 'sinon';
+import * as sinon from 'sinon'
 
 describe('Events', () => {
 
@@ -28,7 +28,7 @@ describe('Events', () => {
                   childButtonClick = this.sinon.spy(child, 'buttonClick'),
                   childRootClick = this.sinon.spy(child, 'rootClick'),
                   childIconClick = this.sinon.spy(child, 'iconClick'),
-                  childSpanClick = this.sinon.spy(child, 'spanClick');
+                  childSpanClick = this.sinon.spy(child, 'spanClick')
 
             const event = document.createEvent('HTMLEvents')
             event.initEvent('click', true, true)

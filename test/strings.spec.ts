@@ -13,19 +13,19 @@ describe('String Utils', () => {
 
         it('should replace token at beginning', () => {
             const s = feather.strings,
-                str = '{{test}} hello';
+                str = '{{test}} hello'
             expect(s.format(str, {test: 'world'})).to.be.equal('world hello')
         })
 
         it('should replace simple tokens', () => {
             const s = feather.strings,
-                str = 'hello {{test}}';
+                str = 'hello {{test}}'
             expect(s.format(str, {test: 'world'})).to.be.equal('hello world')
         })
 
         it('should replace deep values', () => {
             const s = feather.strings,
-                str = 'hello {{test.me}}';
+                str = 'hello {{test.me}}'
             expect(s.format(str, {test: {me: 'world'}})).to.be.equal('hello world')
         })
 

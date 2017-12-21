@@ -4,7 +4,7 @@ import {expect} from 'chai'
 
 describe('Hub', () => {
 
-    let window, feather, sandbox;
+    let window, feather, sandbox
     before(done => featherStart(w => (
         window = w,
         feather = w.feather
@@ -57,7 +57,7 @@ describe('Hub', () => {
         it('listener count stays stable', () => {
             const app = window.ef,
                   collect = feather.objects.collectAnnotationsFromTypeMap,
-                  subs = collect(feather.hub.subscribers, app);
+                  subs = collect(feather.hub.subscribers, app)
             let runs = 10
             expect(subs['message-down'].length).to.be.equal(1)
             expect(Object.keys(subs).length).to.be.equal(4)

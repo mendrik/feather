@@ -1,6 +1,6 @@
 import {featherStart} from './test-head'
 import {expect} from 'chai'
-import * as sinon from 'sinon';
+import * as sinon from 'sinon'
 
 describe('XHR', () => {
 
@@ -42,7 +42,7 @@ describe('XHR', () => {
             const app = window.ef as demo.ExtraFeatures,
                   spy = this.sinon.spy(app.postData, 'original')
 
-            var xhr = app.postData() as any
+            let xhr = app.postData() as any
             clock.tick(2)
             spy.should.have.been.calledOnce
             spy.should.have.been.calledWith({

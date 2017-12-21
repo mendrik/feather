@@ -15,7 +15,7 @@ describe('Routes', () => {
 
     it('initially', () => {
         const proto = demo.Application.prototype,
-            spy = sandbox.spy(proto, 'entry');
+            spy = sandbox.spy(proto, 'entry')
         feather.start()
         spy.should.have.been.calledOnce
         spy.should.have.been.calledOn(window.app)
@@ -24,7 +24,7 @@ describe('Routes', () => {
 
     it('after navigation event', () => {
         const proto = demo.Application.prototype,
-              spy = sandbox.spy(proto, 'entry');
+              spy = sandbox.spy(proto, 'entry')
         feather.start()
         window.app.route('/mypath')
         spy.should.have.been.calledOnce

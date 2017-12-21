@@ -35,11 +35,11 @@ const loadPage = (callback: Function) => {
         includeNodeLocations: true
     })
 
-    const window = dom.window;
+    const window = dom.window
 
 
     window.XMLHttpRequest = sinon.useFakeXMLHttpRequest()
-    window.requestAnimationFrame = (func) => func();
+    window.requestAnimationFrame = (func) => func()
     sinon.xhr.supportsCORS = true
 
     window['localStorage'] = {

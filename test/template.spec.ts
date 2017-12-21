@@ -3,7 +3,7 @@ import {expect} from 'chai'
 
 describe('Templates', () => {
 
-    let window, featherTs, document;
+    let window, featherTs, document
     before(done => featherStart(w => (
         window = w,
         featherTs = w.feather,
@@ -28,13 +28,13 @@ describe('Templates', () => {
         it('Template splits text nodes correctly', () => {
             const str = '<div>first: {{bla}} second: {{blub}}</div>',
                   pt = featherTs.annotations.getPreparsedTemplate,
-                  parsed = pt(str);
-            const childNodes = parsed.node.firstChild.childNodes;
-            expect(childNodes.length).to.be.equal(4);
-            expect(childNodes[0].textContent).to.be.equal('first: ');
-            expect(childNodes[1].textContent).to.be.equal('{{bla}}');
-            expect(childNodes[2].textContent).to.be.equal(' second: ');
-            expect(childNodes[3].textContent).to.be.equal('{{blub}}');
+                  parsed = pt(str)
+            const childNodes = parsed.node.firstChild.childNodes
+            expect(childNodes.length).to.be.equal(4)
+            expect(childNodes[0].textContent).to.be.equal('first: ')
+            expect(childNodes[1].textContent).to.be.equal('{{bla}}')
+            expect(childNodes[2].textContent).to.be.equal(' second: ')
+            expect(childNodes[3].textContent).to.be.equal('{{blub}}')
         })
 
 
@@ -44,17 +44,17 @@ describe('Templates', () => {
                     <AttributeWidget id="aw2" text={this.printStuff()} bool={false} func={this.printStuff} number={4}/>
                 `,
                 pt = featherTs.annotations.getPreparsedTemplate,
-                parsed = pt(str);
-            expect(parsed.node.children.length).to.be.equal(2);
-            expect(parsed.node.children[0].getAttribute('number')).to.be.equal('{3}');
-            expect(parsed.node.children[1].getAttribute('number')).to.be.equal('{4}');
+                parsed = pt(str)
+            expect(parsed.node.children.length).to.be.equal(2)
+            expect(parsed.node.children[0].getAttribute('number')).to.be.equal('{3}')
+            expect(parsed.node.children[1].getAttribute('number')).to.be.equal('{4}')
         })
 
         it('Template parses hooks', () => {
             const str = '<AttributeWidget {{hook1}} bla="{{hook2}}" class="bub {{hook3}}">in {{hook4}} text</AttributeWidget>',
                 pt = featherTs.annotations.getPreparsedTemplate,
                 parsed = pt(str)
-            expect(parsed.hookInfos.length).to.be.equal(4);
+            expect(parsed.hookInfos.length).to.be.equal(4)
             expect(parsed.hookInfos[0].curly).to.be.equal('hook1')
             expect(parsed.hookInfos[0].attribute).to.be.undefined
             expect(parsed.hookInfos[0].type).to.be.equal(featherTs.annotations.HookType.PROPERTY)
@@ -77,11 +77,11 @@ describe('Templates', () => {
                 pt = featherTs.annotations.getPreparsedTemplate,
                 parsed = pt(str),
                 cloned = parsed.asParsedTemplate()
-            expect(cloned.hooks.length).to.be.equal(3);
+            expect(cloned.hooks.length).to.be.equal(3)
             expect(cloned.doc.children.length).to.be.equal(3)
 
             const div1 = document.createElement('div'),
-                  div2 = document.createElement('div');
+                  div2 = document.createElement('div')
 
             div1.appendChild(parsed.node)
             div2.appendChild(cloned.doc)
