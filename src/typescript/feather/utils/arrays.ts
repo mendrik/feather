@@ -61,30 +61,30 @@ module feather.arrays {
         }
     }
 
-    function duckPunch<T>(key: MethodKey, arr: any) {
-        const old       = arr[key]
-        if (key === 'splice') {
-            // add docs that removing and re-adding elements to the same array kills event listeners
-            arr.splice = function(index, deleteCount) {
-                const addedItems = [].slice.call(arguments, 2),
-                      deletedItems = old.apply(arr, arguments)
-                notify(arr, key, [index, deleteCount, addedItems, deletedItems])
-                return deletedItems
-            }
+    function duckPunchSplice<T>(arr: any) {
+        const old = arr.splice
+        // add docs that removing and re-adding elements to the same array kills event listeners
+        arr.splice = function (index, deleteCount) {
+            const addedItems = [].slice.call(arguments, 2),
+                deletedItems = old.apply(arr, arguments)
+            notify(arr, 'splice', [index, deleteCount, addedItems, deletedItems])
+            return deletedItems
         }
-        else if (key === 'sort') {
-            arr.sort = (cmp) => {
-                // sort is a special case, we need to inform listeners how sorting has changed the array
-                const indices = range(0, arr.length - 1),
-                      args = cmp ? [
-                          arr.map ((e, i) => i)
-                             .sort((a, b) => cmp(arr[a], arr[b]))
-                             .map (e => indices[e])
-                      ] : indices,
-                      res = old.call(arr, cmp)
-                notify(arr, key, args)
-                return res
-            }
+    }
+
+    function duckPunchSort<T>(arr: any) {
+        const old = arr.sort
+        arr.sort = (cmp) => {
+            // sort is a special case, we need to inform listeners how sorting has changed the array
+            const indices = range(0, arr.length - 1),
+                  args = cmp ? [
+                      arr.map ((e, i) => i)
+                         .sort((a, b) => cmp(arr[a], arr[b]))
+                         .map (e => indices[e])
+                  ] : indices,
+                  res = old.call(arr, cmp)
+            notify(arr, 'sort', args)
+            return res
         }
     }
 
@@ -127,8 +127,8 @@ module feather.arrays {
                 arr.splice(0, 0, ...items)
                 return arr.length
             }
-            duckPunch('splice', arr)
-            duckPunch('sort', arr)
+            duckPunchSplice(arr)
+            duckPunchSort(arr)
             muteMethod('forEach', arr)
         }
         else {
@@ -162,8 +162,8 @@ module feather.arrays {
             },
             splice(index: number, deleteCount: number, added: Widget[], deleted: Widget[] = []) {
                 const patch = from<boolean>(nodeVisible),
-                    childWidgets = widget.childWidgets,
-                    filter = filterFactory()
+                      childWidgets = widget.childWidgets,
+                      filter = filterFactory()
 
                 // handle deleted items
                 nodeVisible.splice(index, deleteCount, ...added.map(v => false))
