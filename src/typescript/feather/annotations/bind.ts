@@ -28,7 +28,7 @@ module feather.observe {
 
     const boundProperties   = new WeakMap<any, TypedMap<Function[]>>()
     const binders           = new WeakMap<any, TypedMap<BindProperties>>()
-    const identity          = (el) => () => true
+    const identity          = () => () => true
 
     export interface BindProperties {
         templateName?:  string   // when pushing new widgets into an array, the template name to render the children with
@@ -363,13 +363,13 @@ module feather.observe {
 
     export const Bind = (props?: BindProperties) => (proto: Observable, property: string) => {
         const defProps: BindProperties = {
-                    templateName: 'default',
-                    localStorage: false,
-                    affectsArrays: [],
-                    property,
-                    html: false
-              },
-              finalProps = {...defProps, ...(props || {})}
+            templateName: 'default',
+            localStorage: false,
+            affectsArrays: [],
+            property,
+            html: false
+        },
+        finalProps = {...defProps, ...(props || {})}
         ensure(binders, proto, {[property]: finalProps})
     }
 

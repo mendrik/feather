@@ -41,8 +41,7 @@ describe('Objects', () => {
                         a: 1,
                         b: 2
                     }
-                },
-                test2 = ['a', 'b', 'c']
+                }
             expect(values(test)).to.be.deep.equal([1,2,3, {a: 1, b: 2}])
         })
     })
@@ -58,14 +57,16 @@ describe('Objects', () => {
                     c: 3,
                     d: {
                         a: 4,
-                        b: 5
-                    }
+                        b: 5,
+                    },
+                    f: () => 5
                 }
             expect(deepValue(test, 'a')).to.be.equal(1)
             expect(deepValue(test, 'e')).to.be.undefined
             expect(deepValue(test, 'd')).to.be.deep.equal({a: 4,  b: 5})
             expect(deepValue(test, 'd.a')).to.be.equal(4)
             expect(deepValue(test, 'd.c')).to.be.undefined
+            expect(deepValue(test, 'f')).to.be.equal(5)
 
             setDeepValue(test, 'a', 9)
             setDeepValue(test, 'd.b', 10)

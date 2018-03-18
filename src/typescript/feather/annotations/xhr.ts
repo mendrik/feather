@@ -93,8 +93,7 @@ module feather.xhr {
             const paramsCopy = {
                 ...params,
                 progress: (ev) => this.triggerDown('xhr-progress', ev),
-                body: params.body &&
-                    deepValue(this, params.body),
+                body: params.body && deepValue(this, params.body),
                 headers: (params.headers &&
                     Object.keys(params.headers)
                         .reduce((p, c) => ({...p, [c]: strFactory(params.headers[c])}), {})) || {},

@@ -5,6 +5,7 @@ module feather.objects {
     import ObjectChange   = feather.types.ObjectChange
     import Callback       = feather.types.Callback
     import isUndef        = feather.functions.isUndef
+    import isFunction = feather.functions.isFunction;
 
     export const isObject = (obj: any): boolean =>
         (obj !== null && typeof(obj) === 'object' && Object.prototype.toString.call(obj) === '[object Object]')
@@ -23,6 +24,9 @@ module feather.objects {
             obj = obj[pathArr[i]]
             if (isUndef(obj)) {
                 return
+            }
+            if (isFunction(obj)) {
+                return (obj as any)()
             }
         }
         return obj
