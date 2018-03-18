@@ -8,9 +8,9 @@ module demo {
     import Read      = feather.observe.Read
 
     export interface Person {
-        name: string,
-        noChange?: string,
-        siblings?: Person[],
+        name: string
+        noChange?: string
+        siblings?: Person[]
         mother?: Person
     }
 
