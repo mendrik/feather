@@ -15,7 +15,7 @@ module feather.observe {
         return isFunction(name) ? name() : name
     }
 
-    const getPath = (obj: Subscribable, property: string) => {
+    export const getPath = (obj: Subscribable, property: string) => {
         const segments = [property]
         let parent = obj
         do {

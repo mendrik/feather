@@ -28,6 +28,7 @@ module feather.observe {
 
     const boundProperties   = new WeakMap<any, TypedMap<Function[]>>()
     const binders           = new WeakMap<any, TypedMap<BindProperties>>()
+    const computed          = new WeakMap<any, TypedMap<string[]>>()
     const identity          = () => () => true
 
     export interface BindProperties {
@@ -299,7 +300,12 @@ module feather.observe {
                       isObj = isObject(value)
                 // annotated functions are pointless
                 if (isFunction(value)) {
-                    console.log('Binding to functions is not supported. Use a property with a transformer {{x:myfunc}}.')
+                    const computers = collect(computed, this)[property]
+                    if (isDef(computers)) {
+                        console.log('Got computed binding')
+                    } else {
+                        console.log('Binding to functions is not supported. Use a property with a transformer {{x:myfunc}}.')
+                    }
                     continue
                 }
                 // if hook has dot notation or we transform an object to a string or boolean
@@ -371,6 +377,10 @@ module feather.observe {
         },
         finalProps = {...defProps, ...(props || {})}
         ensure(binders, proto, {[property]: finalProps})
+    }
+
+    export const Computed = (...props: string[]) => (proto: Observable, property: string) => {
+        ensure(computed, proto, {[property]: props})
     }
 
     export interface Serializer {
