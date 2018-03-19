@@ -147,6 +147,17 @@ When set to true the property will be injected as unescaped html. The injected h
 root node. Feather will keep track of cleaning up multiple root nodes automatically. For example you can inject 
 some text with an email link without the need to wrap the whole message in a `<div>`.
 
+## @Computed <span>(feather.observe)</span>
+
+Allows to bind functions that are re-rendered whenever one of the 
+properties has changed. The function takes no arguments, but you can address
+the properties with `() => `${this.property1} ${this.property2}` 
+
+```
+  @Computed(...properties: string[])
+```
+
+
 ## @On <span>(feather.event)</span>
 
 With this decorator you can add event listeners to the root element of a widget. The event handling is done through 

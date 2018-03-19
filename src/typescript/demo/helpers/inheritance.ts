@@ -69,6 +69,7 @@ module demo {
                     </div>
                     <ul {{elements}}></ul>
                     <EventListener children="{2}"/>
+                    <Computed/>
                 </div>
             `)
         }

@@ -28,6 +28,7 @@ module feather.observe {
 
     const boundProperties   = new WeakMap<any, TypedMap<Function[]>>()
     const binders           = new WeakMap<any, TypedMap<BindProperties>>()
+    const computed          = new WeakMap<any, TypedMap<string[]>>()
     const identity          = () => () => true
 
     export interface BindProperties {
@@ -85,7 +86,7 @@ module feather.observe {
                     }
                 })
             }
-            if (conf.affectsArrays.length) {
+            if (conf && conf.affectsArrays.length) {
                 const n = conf.affectsArrays.length
                 let   pw: Subscribable = obj, i, arr
                 do {
@@ -273,11 +274,29 @@ module feather.observe {
         throw Error(`Couldn't resolve transformer function ${method}`)
     }
 
+    function bindComputers(widget: Observable, computers: string[], hook: Hook, transform: Function) {
+        const updateDom = () => {
+            hook.node.textContent = transform(widget[hook.property].call(widget))
+            return updateDom
+        }
+        computers.forEach(property => {
+            if (Array.isArray(widget[property])) {
+                observeArray(widget[property], {
+                    sort: updateDom,
+                    splice: updateDom
+                })
+            } else {
+                createListener(widget, null, property, updateDom)
+            }
+        })
+        updateDom()
+    }
+
     export class Observable extends RouteAware {
 
         attachHooks(hooks: Hook[], parent?: any) {
-            let   arrayTriggers,
-                  storableArrays
+            let   arrayTriggers: BindProperties[],
+                  storableArrays: BindProperties[]
             const context: Widget = parent || this,
                   instanceBinders = collect(binders, this)
             if (instanceBinders) {
@@ -299,7 +318,12 @@ module feather.observe {
                       isObj = isObject(value)
                 // annotated functions are pointless
                 if (isFunction(value)) {
-                    console.log('Binding to functions is not supported. Use a property with a transformer {{x:myfunc}}.')
+                    const computers = collect(computed, this)[property]
+                    if (isDef(computers)) {
+                        bindComputers(this, computers, hook, transform)
+                    } else {
+                        console.log('Binding to functions without @Computed() annotation is not supported. Use a property with a transformer {{x:myfunc}}.')
+                    }
                     continue
                 }
                 // if hook has dot notation or we transform an object to a string or boolean
@@ -358,6 +382,7 @@ module feather.observe {
         cleanUp() {
             super.cleanUp()
             boundProperties.delete(this)
+            computed.delete(this)
         }
     }
 
@@ -371,6 +396,10 @@ module feather.observe {
         },
         finalProps = {...defProps, ...(props || {})}
         ensure(binders, proto, {[property]: finalProps})
+    }
+
+    export const Computed = (...props: string[]) => (proto: Observable, property: string) => {
+        ensure(computed, proto, {[property]: props})
     }
 
     export interface Serializer {
