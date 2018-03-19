@@ -1,7 +1,7 @@
 import {featherStart} from './test-head'
 import {expect} from 'chai'
 
-describe('Style binding', () => {
+describe('Computed properties', () => {
 
     let window, feather, document
     before(done => featherStart(w => (
