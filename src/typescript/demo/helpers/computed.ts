@@ -22,16 +22,22 @@ module demo {
             this.render('default')
         }
 
+        public add() {
+            this.arr.push(new TinyElement())
+        }
+
         @Template()
         protected getBaseTemplate() {
             return (`
                 <div id="computed">
-                    {{fullname}}
+                    {{fullname:uppercase}}
                 </div>
             `)
         }
 
         @Computed('open', 'arr')
         fullname = () => `${this.open ? 'open' : 'closed'} ${this.arr.length}`
+
+        uppercase = (text: string) => text.toUpperCase()
     }
 }

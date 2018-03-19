@@ -13,6 +13,10 @@ describe('Style binding', () => {
     it('Binds computed correctly', () => {
         const inh = window.computed as demo.ComputedWidget,
               div = document.querySelector('#computed')
-        expect(div.textContent).to.be.equal('closed-3')
+        expect(div.textContent.trim()).to.be.equal('CLOSED 3')
+        inh.add()
+        expect(div.textContent.trim()).to.be.equal('CLOSED 4')
+        inh.open = true
+        expect(div.textContent.trim()).to.be.equal('OPEN 4')
     })
 })

@@ -86,7 +86,7 @@ module feather.observe {
                     }
                 })
             }
-            if (conf.affectsArrays.length) {
+            if (conf && conf.affectsArrays.length) {
                 const n = conf.affectsArrays.length
                 let   pw: Subscribable = obj, i, arr
                 do {
@@ -274,11 +274,29 @@ module feather.observe {
         throw Error(`Couldn't resolve transformer function ${method}`)
     }
 
+    function bindComputers(widget: Observable, computers: string[], hook: Hook, transform: Function) {
+        const updateDom = () => {
+            hook.node.textContent = transform(widget[hook.property].call(widget))
+            return updateDom
+        }
+        computers.forEach(property => {
+            if (Array.isArray(widget[property])) {
+                observeArray(widget[property], {
+                    sort: updateDom,
+                    splice: updateDom
+                })
+            } else {
+                createListener(widget, null, property, updateDom)
+            }
+        })
+        updateDom()
+    }
+
     export class Observable extends RouteAware {
 
         attachHooks(hooks: Hook[], parent?: any) {
-            let   arrayTriggers,
-                  storableArrays
+            let   arrayTriggers: BindProperties[],
+                  storableArrays: BindProperties[]
             const context: Widget = parent || this,
                   instanceBinders = collect(binders, this)
             if (instanceBinders) {
@@ -302,9 +320,9 @@ module feather.observe {
                 if (isFunction(value)) {
                     const computers = collect(computed, this)[property]
                     if (isDef(computers)) {
-                        console.log('Got computed binding')
+                        bindComputers(this, computers, hook, transform)
                     } else {
-                        console.log('Binding to functions is not supported. Use a property with a transformer {{x:myfunc}}.')
+                        console.log('Binding to functions without @Computed() annotation is not supported. Use a property with a transformer {{x:myfunc}}.')
                     }
                     continue
                 }
@@ -364,6 +382,7 @@ module feather.observe {
         cleanUp() {
             super.cleanUp()
             boundProperties.delete(this)
+            computed.delete(this)
         }
     }
 
