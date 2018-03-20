@@ -5,11 +5,11 @@ import * as sinon from 'sinon'
 describe('XHR', () => {
 
     let window, feather, sandbox, document
-    before(done => featherStart(w => (
+    before(async () => featherStart().then(w => (
         window = w,
         feather = w.feather,
         document = w.document
-    ) && done()))
+    )))
 
     beforeEach(() => this.sinon = sandbox = sinon.sandbox.create())
     afterEach(() => sandbox.restore())

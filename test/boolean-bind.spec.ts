@@ -4,11 +4,11 @@ import {expect} from 'chai'
 describe('Booleans', () => {
 
     let window, feather, document
-    before(done => featherStart(w => (
+    before(async () => featherStart().then(w => (
         window = w,
         feather = w.feather,
         document = w.document
-    ) && done()))
+    )))
 
     describe('property', () => {
 

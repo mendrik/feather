@@ -6,11 +6,11 @@ import * as sinon from 'sinon'
 describe('Local storage', () => {
 
     let window, feather, document, sandbox
-    before(done => featherStart(w => (
+    before(async () => featherStart().then(w => (
         window = w,
         feather = w.feather,
         document = w.document
-    ) && done()))
+    )))
 
     beforeEach(() => this.sinon = sandbox = sinon.sandbox.create())
     afterEach(() => sandbox.restore())

@@ -4,11 +4,11 @@ import {expect} from 'chai'
 describe('Bequeath', () => {
 
     let window, feather, document
-    before(done => featherStart(w => (
+    before(async () => featherStart().then(w => (
         window = w,
         feather = w.feather,
         document = w.document
-    ) && done()))
+    )))
 
     describe('Can bind primitives', () => {
 

@@ -26,7 +26,7 @@ const mockResponse = (server, url, file) => {
 
 const htmlSource = fs.readFileSync('test/pages/application.html', 'utf8')
 
-const loadPage = (callback: Function) => {
+const loadPage = () => new Promise((resolve, reject) => {
 
     const dom = new JSDOM(htmlSource, {
         resources: 'usable',
@@ -76,21 +76,19 @@ const loadPage = (callback: Function) => {
     window.document.addEventListener('DOMContentLoaded', () => {
         if (window.document.readyState === 'complete') {
             dom.reconfigure({ url: 'https://example.com/' })
-            callback(window.window)
+            resolve(window.window)
         }
     })
-}
+})
 
-const featherStart = (callback: Function) => {
-    loadPage(window => {
-        try {
-            window.blockRouting = true
-            window.feather.start()
-        } catch (e) {
-            console.log(e)
-        }
-        callback(window)
-    })
-}
+const featherStart = () => loadPage().then(window => {
+    try {
+        window.blockRouting = true
+        window.feather.start()
+    } catch (e) {
+        console.log(e)
+    }
+    return window
+})
 
 export {featherStart, loadPage}

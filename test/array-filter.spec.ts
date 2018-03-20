@@ -1,18 +1,16 @@
 import {featherStart} from './test-head'
 import {expect} from 'chai'
-import * as sinon from 'sinon'
 
 describe('Filtered arrays', () => {
 
     let window, feather, document, demo
 
-    before(done => featherStart(w => (
+    before(async () => featherStart().then(w => (
         window = w,
         feather = w.feather,
         document = w.document,
         demo = w.demo
-    ) && done()))
-
+    )))
 
     describe('Arrays', () => {
 

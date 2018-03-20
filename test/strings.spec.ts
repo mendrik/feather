@@ -4,10 +4,10 @@ import {expect} from 'chai'
 describe('String Utils', () => {
 
     let window, feather
-    before(done => featherStart(w => (
+    before(async () => featherStart().then(w => (
         window = w,
             feather = w.feather
-    ) && done()))
+    )))
 
     describe('format', () => {
 

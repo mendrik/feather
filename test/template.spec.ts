@@ -4,11 +4,11 @@ import {expect} from 'chai'
 describe('Templates', () => {
 
     let window, featherTs, document
-    before(done => featherStart(w => (
+    before(async () => featherStart().then(w => (
         window = w,
         featherTs = w.feather,
         document = w.document
-    ) && done()))
+    )))
 
     describe('Self closing tags', () => {
 

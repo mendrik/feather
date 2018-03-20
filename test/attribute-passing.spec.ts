@@ -4,10 +4,10 @@ import {expect} from 'chai'
 describe('Pass objects via attributes {}', () => {
 
     let window, document
-    before(done => featherStart(w => (
+    before(async () => featherStart().then(w => (
         window = w,
         document = w.document
-    ) && done()))
+    )))
 
     it('Binds different types correctly', () => {
         const aw1 = document.querySelector('#aw1 span'),

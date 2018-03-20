@@ -5,10 +5,10 @@ import {expect} from 'chai'
 describe('Hub', () => {
 
     let window, feather, sandbox
-    before(done => featherStart(w => (
+    before(async () => featherStart().then(w => (
         window = w,
         feather = w.feather
-    ) && done()))
+    )))
 
     beforeEach(() => this.sinon = sandbox = sinon.sandbox.create())
     afterEach(() => sandbox.restore())

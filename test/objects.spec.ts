@@ -5,10 +5,10 @@ import * as sinon from 'sinon'
 describe('Objects', () => {
 
     let window, feather, sandbox
-    before(done => loadPage(w => (
+    before(async () => loadPage().then(w => (
         window = w,
         feather = w.feather
-    ) && done()))
+    )))
 
     beforeEach(() => this.sinon = sandbox = sinon.sandbox.create())
     afterEach(() => sandbox.restore())

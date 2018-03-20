@@ -4,11 +4,11 @@ import * as sinon from 'sinon'
 describe('Routes', () => {
 
     let window, feather, sandbox, demo
-    beforeEach(done => loadPage(w => (
+    beforeEach(async () => loadPage().then(w => (
         window = w,
         feather = w.feather,
         demo = w.demo
-    ) && done()))
+    )))
 
     beforeEach(() => sandbox = sinon.sandbox.create())
     afterEach(() => sandbox.restore())
