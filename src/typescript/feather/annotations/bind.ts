@@ -275,21 +275,25 @@ module feather.observe {
     }
 
     function bindComputers(widget: Observable, computers: string[], hook: Hook, transform: Function) {
+        let oldValue
         const updateDom = () => {
-            hook.node.textContent = transform(widget[hook.property].call(widget))
+            const formatted = transform(widget[hook.property].call(widget))
+            if (oldValue !== formatted) {
+                if (hook.type === HookType.TEXT) {
+                    hook.node.textContent = formatted
+                } else if (hook.type === HookType.CLASS) {
+                    hook.node.classList.remove(oldValue)
+                    hook.node.classList.add(formatted)
+                } else if (hook.type === HookType.ATTRIBUTE || hook.type === HookType.PROPERTY) {
+                    hook.node.setAttribute(hook.attribute, formatted)
+                }
+                oldValue = formatted
+            }
             return updateDom
         }
         computers.forEach(property => {
-            if (Array.isArray(widget[property])) {
-                observeArray(widget[property], {
-                    sort: updateDom,
-                    splice: updateDom
-                })
-            } else {
-                createListener(widget, null, property, updateDom)
-            }
+            createListener(widget, null, property, updateDom())
         })
-        updateDom()
     }
 
     export class Observable extends RouteAware {

@@ -9,7 +9,7 @@ module demo {
     @Construct({selector: 'Computed'})
     export class ComputedWidget extends Widget {
 
-        @Bind() open: boolean
+        @Bind() open = false
         @Bind() arr: TinyElement[] = []
 
         constructor() {
