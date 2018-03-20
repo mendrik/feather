@@ -33,7 +33,6 @@
         "@types/power-assert": "1.4.29",
         "@types/sinon": "4.3.0",
         "@types/sinon-chai": "2.7.29",
-        "@types/es6-shim": "0.31.35",
         "autoprefixer": "8.1.0",
         "chai": "4.1.2",
         "jsdom": "11.5.1",

@@ -19,7 +19,6 @@
       "chai",
       "sinon-chai",
       "jsdom",
-      "es6-shim",
       "sinon"
     ]
   }
