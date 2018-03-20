@@ -285,7 +285,9 @@ module feather.observe {
                     if (oldValue) {
                         hook.node.classList.remove(oldValue)
                     }
-                    hook.node.classList.add(formatted)
+                    if (formatted) {
+                        hook.node.classList.add(formatted)
+                    }
                 } else if (hook.type === HookType.ATTRIBUTE || hook.type === HookType.PROPERTY) {
                     if (!formatted) {
                         hook.node.removeAttribute(hook.attribute)
