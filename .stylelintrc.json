@@ -9,7 +9,7 @@
     "color-hex-case": "lower",
     "color-hex-length": "short",
     "color-no-invalid-hex": true,
-    "color-named": "never",
+    "color-named": "always-where-possible",
     "comment-empty-line-before": "always",
     "comment-whitespace-inside": "always",
     "declaration-bang-space-after": "never",

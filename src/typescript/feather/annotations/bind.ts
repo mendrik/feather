@@ -157,15 +157,18 @@ module feather.observe {
             createListener(this, conf, hook.property, updateDom(value))
         }
         else if (hook.type === HookType.CLASS) { // <p class="red {{myVar}}">text goes here</p>
-            const classList = (val: any, fn: Function) => {
-                if (isDef(val)) {
-                    const nVal = transform(val)
-                    nVal && fn(nVal)
+            let oldValue
+            const updateDom = (val: any) => {
+                const nVal: string = transform(val)
+                if (nVal !== oldValue) {
+                    if (isDef(oldValue)) {
+                        el.classList.remove(oldValue)
+                    }
+                    if (isDef(nVal)) {
+                        el.classList.add(nVal)
+                    }
+                    oldValue = nVal
                 }
-            }
-            const updateDom = (val: any, old?: any) => {
-                classList(old, (v) => el.classList.remove(v))
-                classList(val, (v) => el.classList.add(v))
                 return updateDom
             }
             createListener(this, conf, hook.property, updateDom(value))

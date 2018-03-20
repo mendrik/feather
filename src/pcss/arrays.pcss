@@ -2,13 +2,13 @@
 
     tr.no-formatters {
 
-        td[li-count="2"]:nth-child(1) {
+        td[li-count='2']:nth-child(1) {
 
             > ul {
                 display: none;
             }
 
-            background-color: #008000;
+            background-color: green;
             &:after {
                 color: white;
                 content: 'OK';
@@ -18,20 +18,20 @@
 
     tr.formatters {
 
-        td[data-prop-a="2"][data-prop-b="0"]:nth-child(2) {
-            background-color: #008000;
+        td[data-prop-a='2'][data-prop-b='0']:nth-child(2) {
+            background-color: green;
             &:after {
                 content: 'OK';
             }
         }
 
-        td[contains*="2 yes"]:nth-child(3) {
-            background-color: #008000;
-            color: #ffffff;
+        td[contains*='2 yes']:nth-child(3) {
+            background-color: green;
+            color: white;
         }
 
         td.yes.off:nth-child(4) {
-            background-color: #008000;
+            background-color: green;
             &:after {
                 content: 'OK';
             }

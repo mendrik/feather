@@ -1,13 +1,13 @@
 module.exports = {
   plugins: [
-    require('stylelint'),
+    require('stylelint')({}),
     require('postcss-import')({}),
     require('postcss-mixins')({}),
-    require('postcss-math')({}),
-    require('precss')({}),
-    require('postcss-custom-properties')({}),
-    require('postcss-discard-comments')({}),
-    require('autoprefixer')({}),
-    require('postcss-clean')({})
+    require('postcss-for')({}),
+    require('postcss-nested')({}),
+    require('postcss-cssnext')({}),
+    require('postcss-calc')({}),
+    require('postcss-simple-vars')({}),
+    require('postcss-clean')({}),
   ]
 }

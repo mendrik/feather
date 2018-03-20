@@ -160,6 +160,8 @@ describe('Array', () => {
     describe('class - filter - changed', () => {
         it('should bind', () => {
             const propertyTd = document.querySelector('.arrays .formatters td:nth-child(4)')
+            const arrWidget = window.app.childWidgets.find(c => c.constructor['name'] === 'Arrays') as demo.Arrays
+            arrWidget.listB.splice(0, arrWidget.listB.length)
             expect(propertyTd.classList.contains('yes')).to.be.true
             expect(propertyTd.classList.contains('off')).to.be.true
         })

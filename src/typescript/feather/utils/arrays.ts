@@ -66,7 +66,7 @@ module feather.arrays {
         // add docs that removing and re-adding elements to the same array kills event listeners
         arr.splice = function (index, deleteCount) {
             const addedItems = [].slice.call(arguments, 2),
-                deletedItems = old.apply(arr, arguments)
+                  deletedItems = old.apply(arr, arguments)
             notify(arr, 'splice', [index, deleteCount, addedItems, deletedItems])
             return deletedItems
         }
