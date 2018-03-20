@@ -274,7 +274,8 @@ module feather.observe {
         throw Error(`Couldn't resolve transformer function ${method}`)
     }
 
-    function bindComputers(widget: Observable, computers: string[], hook: Hook, transform: Function) {
+    function bindComputers(widget: Observable, computers: string[],
+                           hook: Hook, transform: Function, binders: TypedMap<BindProperties>) {
         let oldValue
         const updateDom = () => {
             const formatted = transform(widget[hook.property].call(widget))
@@ -300,7 +301,8 @@ module feather.observe {
             return updateDom
         }
         computers.forEach(property => {
-            createListener(widget, null, property, updateDom())
+            const conf = binders[property] || {property, affectsArrays: []}
+            createListener(widget, conf, property, updateDom())
         })
     }
 
@@ -332,7 +334,7 @@ module feather.observe {
                 if (isFunction(value)) {
                     const computers = collect(computed, this)[property]
                     if (isDef(computers)) {
-                        bindComputers(this, computers, hook, transform)
+                        bindComputers(this, computers, hook, transform, instanceBinders || {})
                     } else {
                         console.log('Binding to functions without @Computed() annotation is not supported. Use a property with a transformer {{x:myfunc}}.')
                     }
