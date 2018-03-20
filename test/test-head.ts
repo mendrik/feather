@@ -81,7 +81,7 @@ const loadPage = () => new Promise((resolve, reject) => {
     })
 })
 
-const featherStart = () => loadPage().then(window => {
+const featherStart = () => loadPage().then((window: any) => {
     try {
         window.blockRouting = true
         window.feather.start()
