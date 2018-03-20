@@ -151,7 +151,7 @@ some text with an email link without the need to wrap the whole message in a `<d
 
 Allows to bind functions that are re-rendered whenever one of the 
 properties has changed. The function takes no arguments, but you can address
-the properties with `() => `${this.property1} ${this.property2}` 
+the properties with ``` () => `${this.property1} ${this.property2}` ``` 
 
 ```
   @Computed(...properties: string[])
