@@ -147,14 +147,15 @@ module feather.arrays {
     export function defaultArrayListener(widget: Widget, arr: Widget[], hook: Hook, conf: BindProperties,
                                          filterFactory: Function): ArrayListener<Widget> {
         const el = hook.node,
-              firstChild = el.firstElementChild // usually null, lists that share a parent with other nodes are prepended.
+              firstChild = el.firstElementChild, // usually null, lists that share a parent with other nodes are prepended.
+              forTemplate = conf.templateName
         let nodeVisible: boolean[] = []
         return {
             sort(indices: any[]) {
                 const copy: boolean[] = []
                 for (let i = 0; i < indices.length; i++) {
                     if (nodeVisible[indices[i]]) {
-                        el.appendChild(arr[i].element)
+                        el.appendChild(arr[i].element(forTemplate))
                     }
                     copy[i] = nodeVisible[indices[i]]
                 }
@@ -169,7 +170,7 @@ module feather.arrays {
                 nodeVisible.splice(index, deleteCount, ...added.map(v => false))
 
                 if (deleteCount) {
-                    deleted.forEach(del => el.removeChild(del.element))
+                    deleted.forEach(del => el.removeChild(del.element(forTemplate)))
                     removeFromArray(childWidgets, deleted)
                     destroyListeners(deleted)
                 }
@@ -177,9 +178,9 @@ module feather.arrays {
                     childWidgets.push(...added)
                     for (const item of added) {
                         item.parentWidget = widget
-                        if (!item.element) {
+                        if (!item.element(forTemplate)) {
                             const parsed = item.getParsed(conf.templateName)
-                            item.bindToElement(parsed.first)
+                            item.bindToElement(parsed.first, forTemplate)
                         }
                     }
                 }
@@ -188,11 +189,11 @@ module feather.arrays {
                     patch[i] = filter(arr[i])
                     if (patch[i] && !nodeVisible[i]) {
                         const nextVisible = nodeVisible.indexOf(true, i),
-                            refNode     = ~nextVisible ? arr[nextVisible].element : firstChild
-                        el.insertBefore(arr[i].element, refNode)
+                              refNode     = ~nextVisible ? arr[nextVisible].element(forTemplate) : firstChild
+                        el.insertBefore(arr[i].element(forTemplate), refNode)
                     }
                     else if (!patch[i] && nodeVisible[i]) {
-                        el.removeChild(arr[i].element)
+                        el.removeChild(arr[i].element(forTemplate))
                     }
                 }
                 nodeVisible = patch

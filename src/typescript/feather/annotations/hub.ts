@@ -5,7 +5,6 @@ module feather.hub {
     import ensure        = feather.objects.ensure
     import collect       = feather.objects.collectAnnotationsFromTypeMap
     import WidgetFactory = feather.boot.WidgetFactory
-    import getPath = feather.observe.getPath;
 
     export const subscribers    = new WeakMap<any, TypedMap<string[]>>()
 

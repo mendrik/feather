@@ -6,6 +6,8 @@ module feather.event {
     import ensure                      = feather.objects.ensure
     import merge                       = feather.objects.merge
     import isUndef                     = feather.functions.isUndef
+    import TypedMap                    = feather.types.TypedMap
+    import values                      = feather.objects.values
 
     export enum Scope {
         Direct,
@@ -18,6 +20,7 @@ module feather.event {
         selector?:       string
         preventDefault?: boolean
         bubble?:         boolean
+        forTemplate?:    string
     }
 
     export interface Handler extends EventConfig {
@@ -44,8 +47,8 @@ module feather.event {
         ensure(listenerDeregistry, el, [{event: event, fn: listener}])
     }
 
-    function attachDelegatedEvent(context: EventAware, event: string, handlers: Handler[]) {
-        const root = context.element
+    function attachDelegatedEvent(context: EventAware, forTemplate: string, event: string, handlers: Handler[]) {
+        const root = context.element(forTemplate)
         addListener(root, event, (ev: Event) => {
             let el: HTMLElement = ev.target as HTMLElement
             do {
@@ -68,22 +71,34 @@ module feather.event {
     }
 
     export class EventAware extends MediaQueryAware {
-        element: Element
+        private _element: TypedMap<Element> = {}
 
-        attachEvents() {
-            this.attachDelegates(this.handlers(Scope.Delegate))
-            this.attachDirect(this.handlers(Scope.Direct))
+        element(forTemplate: string = 'default'): Element {
+            return this._element[forTemplate] || this._element['default']
+        }
+
+        setElement(forTemplate: string = 'default', element: Element) {
+            return this._element[forTemplate] = element
+        }
+
+        allElements(): Element[] {
+            return values(this._element)
+        }
+
+        attachEvents(forTemplate: string = 'default') {
+            this.attachDelegates(forTemplate, this.handlers(Scope.Delegate))
+            this.attachDirect(forTemplate, this.handlers(Scope.Direct))
         }
 
         handlers = (scope: Scope): HandlersMap =>
             collectAnnotationsFromArray(eventHandlers[scope], this)
             .reduce((p, c: Handler) => merge(p, {[c.event]: [c]}), {})
 
-        attachDirect(handlerMap: HandlersMap) {
-            const root = this.element
+        attachDirect(forTemplate: string, handlerMap: HandlersMap) {
             Object.keys(handlerMap).forEach(event => {
                 const handlers: Handler[] = handlerMap[event]
                 for(const handler of handlers) {
+                    const root = this.element(forTemplate)
                     const el = handler.selector ? root.querySelector(handler.selector) : root
                     if (el) {
                         addListener(el, event, (ev) => {
@@ -100,32 +115,34 @@ module feather.event {
                         console.warn(`${handler.selector} didn't match anything inside the template`)
                     }
                 }
-                this.eventRegistered(this, event, handlers, Scope.Direct)
+                this.eventRegistered(this, forTemplate, event, handlers, Scope.Direct)
             })
         }
 
-        attachDelegates(handlerMap: HandlersMap) {
+        attachDelegates(forTemplate: string, handlerMap: HandlersMap) {
             Object.keys(handlerMap).forEach(event => {
                 const handlers = handlerMap[event]
-                attachDelegatedEvent(this, event, handlers)
-                this.eventRegistered(this, event, handlers, Scope.Delegate)
+                attachDelegatedEvent(this, forTemplate, event, handlers)
+                this.eventRegistered(this, forTemplate, event, handlers, Scope.Delegate)
             })
         }
 
         // noinspection JSUnusedLocalSymbols
-        eventRegistered(context: any, event: string, handler: Handler[], scope: Scope) {
+        eventRegistered(context: any, forTemplate: string, event: string, handlers: Handler[], scope: Scope) {
             // use for whatever
         }
 
         cleanUp() {
             super.cleanUp()
-            const listeners = listenerDeregistry.get(this.element)
-            if (listeners) {
-                for (const l of listeners) {
-                    this.element.removeEventListener(l.event, l.fn)
+            this.allElements().forEach(element => {
+                const listeners = listenerDeregistry.get(element)
+                if (listeners) {
+                    for (const l of listeners) {
+                        element.removeEventListener(l.event, l.fn)
+                    }
+                    listenerDeregistry.delete(element)
                 }
-                listenerDeregistry.delete(this.element)
-            }
+            })
         }
     }
 

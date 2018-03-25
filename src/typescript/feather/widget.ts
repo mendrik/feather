@@ -5,6 +5,7 @@ module feather.core {
     import ParsedTemplate  = feather.annotations.ParsedTemplate
     import WidgetFactory   = feather.boot.WidgetFactory
     import removeFromArray = feather.arrays.removeFromArray
+    import TypedMap        = feather.types.TypedMap
 
     export interface Initializable {
     }
@@ -22,13 +23,12 @@ module feather.core {
     }
 
     export abstract class Widget extends Observable implements Initializable {
-        element: Element
         id?: string|StringGenerator
 
-        bindToElement(element: Element) {
-            this.element = element
+        bindToElement(element: Element, forTemplate: string = 'default') {
+            this.setElement(forTemplate, element)
             this.init(element)
-            this.attachEvents()
+            this.attachEvents(forTemplate)
             this.initRoutes()
             this.attachMediaListeners()
         }
@@ -37,13 +37,13 @@ module feather.core {
         protected render(templateName: string = 'default', placement: RenderPlacement = RenderPlacement.append) {
             const parsed = this.getParsed(templateName)
             if (placement === RenderPlacement.replace) {
-                this.element.innerHTML = ''
+                this.element(templateName).innerHTML = ''
             }
             if (placement === RenderPlacement.prepend) {
-                this.element.insertBefore(parsed.doc, this.element.firstChild)
+                this.element(templateName).insertBefore(parsed.doc, this.element(templateName).firstChild)
             }
             else {
-                this.element.appendChild(parsed.doc)
+                this.element(templateName).appendChild(parsed.doc)
             }
         }
 
