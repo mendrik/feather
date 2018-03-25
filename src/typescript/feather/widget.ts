@@ -22,10 +22,9 @@ module feather.core {
     }
 
     export abstract class Widget extends Observable implements Initializable {
-        element: Element
         id?: string|StringGenerator
 
-        bindToElement(element: Element) {
+        bindToElement(element: Element, templateName?: string) {
             this.element = element
             this.init(element)
             this.attachEvents()

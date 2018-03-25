@@ -179,7 +179,7 @@ module feather.arrays {
                         item.parentWidget = widget
                         if (!item.element) {
                             const parsed = item.getParsed(conf.templateName)
-                            item.bindToElement(parsed.first)
+                            item.bindToElement(parsed.first, conf.templateName)
                         }
                     }
                 }
