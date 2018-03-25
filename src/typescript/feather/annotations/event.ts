@@ -18,7 +18,6 @@ module feather.event {
         selector?:       string
         preventDefault?: boolean
         bubble?:         boolean
-        templateName?:   string
     }
 
     export interface Handler extends EventConfig {
@@ -71,22 +70,22 @@ module feather.event {
     export class EventAware extends MediaQueryAware {
         element: Element
 
-        attachEvents(templateName?: string) {
-            this.attachDelegates(this.handlers(Scope.Delegate), templateName)
-            this.attachDirect(this.handlers(Scope.Direct), templateName)
+        attachEvents() {
+            this.attachDelegates(this.handlers(Scope.Delegate))
+            this.attachDirect(this.handlers(Scope.Direct))
         }
 
         handlers = (scope: Scope): HandlersMap =>
             collectAnnotationsFromArray(eventHandlers[scope], this)
             .reduce((p, c: Handler) => merge(p, {[c.event]: [c]}), {})
 
-        attachDirect(handlerMap: HandlersMap, templateName?: string) {
+        attachDirect(handlerMap: HandlersMap) {
             const root = this.element
             Object.keys(handlerMap).forEach(event => {
                 const handlers: Handler[] = handlerMap[event]
                 for(const handler of handlers) {
                     const el = handler.selector ? root.querySelector(handler.selector) : root
-                    if (el && handler.templateName === templateName) {
+                    if (el) {
                         addListener(el, event, (ev) => {
                             if (handler.preventDefault) {
                                 ev.preventDefault()
@@ -105,10 +104,9 @@ module feather.event {
             })
         }
 
-        attachDelegates(handlerMap: HandlersMap, templateName?: string) {
+        attachDelegates(handlerMap: HandlersMap) {
             Object.keys(handlerMap).forEach(event => {
                 const handlers = handlerMap[event]
-                    .filter((h: Handler) => h.templateName === templateName)
                 attachDelegatedEvent(this, event, handlers)
                 this.eventRegistered(this, event, handlers, Scope.Delegate)
             })
