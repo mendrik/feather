@@ -225,7 +225,7 @@ module feather.annotations {
             templates.forEach((map, proto) => Object.keys(map).forEach(template => {
                 const method = map[template]
                 try {
-                    const str = method.call({})
+                    const str = method.call(proto)
                     parsedTemplateCache[str] = getPreparsedTemplate(str)
                 } catch (e) {
                     console.warn(`Template method ${method} in ${proto.constructor.name} is not a pure function.`, e)
