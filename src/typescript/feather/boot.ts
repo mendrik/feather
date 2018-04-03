@@ -5,6 +5,7 @@ module feather.boot {
     import Widget        = feather.core.Widget
     import isDef         = feather.functions.isDef
     import from          = feather.arrays.from
+    import deepValue = feather.objects.deepValue
 
     export interface Blueprint {
         selector: string
@@ -26,7 +27,7 @@ module feather.boot {
         const m = (value || '').match(/^{(.+?)}\/?$/i)
         if (m) {
             const js = m[1]
-            value = context[js] || (function(str) {
+            value = deepValue(context, js) || (function(str) {
                 return eval(str)
             }).bind(context)(js)
             if (isDef(value)) {
