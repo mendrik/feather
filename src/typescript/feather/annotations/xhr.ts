@@ -44,46 +44,52 @@ module feather.xhr {
         }
     }
 
-    export let sendRequest = (conf: RestConfig, success: (data) => void, error: (err: string|Event, xhr?: XMLHttpRequest) => void) => {
-        const xhr = new XMLHttpRequest()
+    export let sendRequest = (conf: RestConfig, success: (data) => void,
+                              error: (err: string|Event, xhr?: XMLHttpRequest) => void): Promise<any> => {
+        return new Promise((resolve, reject) => {
+            const xhr = new XMLHttpRequest()
 
-        conf = merge({...defaultRestConfig}, conf)
+            conf = merge({...defaultRestConfig}, conf)
 
-        xhr.open(conf.method, conf.url, conf.async)
+            xhr.open(conf.method, conf.url, conf.async)
 
-        xhr.timeout = conf.timeout
+            xhr.timeout = conf.timeout
 
-        if (xhr.setRequestHeader) {
-            for (const key of Object.keys(conf.headers)) {
-                xhr.setRequestHeader(key, conf.headers[key] as string)
-            }
-        }
-
-        xhr.addEventListener('readystatechange', () => {
-            if (xhr.readyState === 4) {
-                const status = ~~(xhr.status/100)
-                if (status === 2 || status === 3) {
-                    success(conf.responseFilter(xhr.responseText))
-                }
-                else {
-                    error(conf.responseFilter(xhr.responseText), xhr)
+            if (xhr.setRequestHeader) {
+                for (const key of Object.keys(conf.headers)) {
+                    xhr.setRequestHeader(key, conf.headers[key] as string)
                 }
             }
-        })
 
-        for (const ev of ['timeout', 'error', 'abort']) {
-            xhr.addEventListener(ev, (ev: Event) => {
-                error(ev)
+            xhr.addEventListener('readystatechange', () => {
+                if (xhr.readyState === 4) {
+                    const status = ~~(xhr.status/100)
+                    const result = conf.responseFilter(xhr.responseText)
+                    if (status === 2 || status === 3) {
+                        success(result)
+                        resolve(result)
+                    }
+                    else {
+                        error(result, xhr)
+                        reject(result)
+                    }
+                }
             })
-        }
 
-        if (conf.progress) {
-            xhr.addEventListener('progress', conf.progress, false)
-        }
+            for (const ev of ['timeout', 'error', 'abort']) {
+                xhr.addEventListener(ev, (ev: Event) => {
+                    error(ev)
+                })
+            }
 
-        xhr.send(conf.requestFilter(conf.body))
+            if (conf.progress) {
+                xhr.addEventListener('progress', conf.progress, false)
+            }
 
-        return xhr
+            xhr.send(conf.requestFilter(conf.body))
+
+            return xhr
+        })
     }
 
     export let Rest = (params: RestConfig) => (proto: Widget, method: string, desc: PropertyDescriptor) => {

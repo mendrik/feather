@@ -1,4 +1,4 @@
 module.exports = [
     "src/javascripts/console.js",
-    "src/javascripts/typescript.js"
+    "node_modules/tslib/tslib.js"
 ]

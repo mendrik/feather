@@ -28,7 +28,7 @@ module demo {
         }
 
         @Rest({url: '/post/{{post.data.test}}', method: Method.POST, body: 'post.data'})
-        postData(data?: any) {
+        async postData(data?: any) {
             //
         }
 

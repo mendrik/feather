@@ -108,16 +108,16 @@ module feather.observe {
                          createListener: Function) {
         if (hook.type === HookType.ATTRIBUTE || hook.type === HookType.PROPERTY) {
             const el = (hook.node as HTMLElement),
-                  attributeName = hook.attribute || hook.property,
-                  updateDom = (val) => {
-                      if (typeof el[attributeName] === 'boolean') {
-                          el[attributeName] = !!transform(val)
-                      }
-                      else {
-                          setOrRemoveAttribute(el, attributeName, !!transform(val), '')
-                      }
-                      return updateDom
-                  }
+                attributeName = hook.attribute || hook.property,
+                updateDom = (val) => {
+                    if (typeof el[attributeName] === 'boolean') {
+                        el[attributeName] = !!transform(val)
+                    }
+                    else {
+                        setOrRemoveAttribute(el, attributeName, !!transform(val), '')
+                    }
+                    return updateDom
+                }
             createListener(this, conf, hook.property, updateDom(value))
         }
         else {
