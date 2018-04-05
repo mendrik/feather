@@ -15,7 +15,7 @@ module feather.annotations {
     const ALL_CURLIES            = /{{(.*?)}}/g
     const templates              = new Map<any, TypedMap<Function>>()
     const parsedTemplateCache    = {} as Map<string, PreparsedTemplate>
-    export const selfClosingTags = /(<([^<>]+)(\s+[^<>]+(=[^<>]+|=["][^"]*["]|=['][^']*[']|={{?[^}]*?}?})?)*)\s*\/>/gmi
+    export const selfClosingTags = /(<([^<>\s]+)(\s+[^<>\s]+(=[\w\d]+|=["][^"]*["]|=['][^']*[']|={{?[^}]*?}?})?)*)\s*\/>/gmi
     export const openTags        = '$1></$2>'
 
     export enum HookType {
