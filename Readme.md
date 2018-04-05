@@ -10,7 +10,8 @@ With friendly support of:
 A feather-light and fast framework written in typescript with the following features:
 
 * Each component is holding logic, view and model in a single file
-* Components automatically build a hierarchical tree
+* Components are instantiated via CSS selectors, so it's easy to have component-mixins
+* Components build a traversable hierarchical tree
 * Message hub between components and singletons
 * Easy REST consumption
 * Routing via hash or history API 
