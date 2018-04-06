@@ -4,7 +4,7 @@ import {expect} from 'chai'
 describe('Templates', () => {
 
     let window, featherTs, document
-    before(async () => featherStart().then(w => (
+    before(async () => featherStart().then((w: any) => (
         window = w,
         featherTs = w.feather,
         document = w.document

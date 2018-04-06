@@ -4,7 +4,7 @@ import {expect} from 'chai'
 describe('Dom', () => {
 
     let window, feather, document
-    before(async () => featherStart().then(w => (
+    before(async () => featherStart().then((w: any) => (
         window = w,
         feather = w.feather,
         document = w.document

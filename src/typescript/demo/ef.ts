@@ -23,13 +23,13 @@ module demo {
         }
 
         @Rest({url: '/get/{{post.data.test}}'})
-        getData(data?: any) {
+        async getData(data?: any) {
             //
         }
 
         @Rest({url: '/post/{{post.data.test}}', method: Method.POST, body: 'post.data'})
         async postData(data?: any) {
-            //
+            return data
         }
 
         @Subscribe('xhr-failure')

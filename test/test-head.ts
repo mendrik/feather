@@ -58,7 +58,7 @@ const loadPage = () => new Promise((resolve, reject) => {
             const doc = window.document,
                   template = doc.createElement('template')
             template.innerHTML = source
-            return doc.importNode((template as HTMLTemplateElement).content, true)
+            return doc.importNode((template as any).content, true)
         }
     })
 
@@ -81,7 +81,7 @@ const loadPage = () => new Promise((resolve, reject) => {
     })
 })
 
-const featherStart = () => loadPage().then((window: any) => {
+const featherStart = async () => loadPage().then((window: any) => {
     try {
         window.blockRouting = true
         window.feather.start()

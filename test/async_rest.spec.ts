@@ -5,7 +5,7 @@ import * as sinon from 'sinon'
 describe('XHR', () => {
 
     let window, feather, sandbox, document
-    before(async () => featherStart().then(w => (
+    before(async () => featherStart().then((w: any) => (
         window = w,
         feather = w.feather,
         document = w.document
@@ -24,36 +24,26 @@ describe('XHR', () => {
 
     describe('Rest', () => {
 
-        it('GET fetches data', () => {
-            const clock = sinon.useFakeTimers()
+        it('GET fetches data', async () => {
             const app = window.ef as demo.ExtraFeatures,
                   spy = this.sinon.spy(app.getData, 'original')
-            app.getData()
-            clock.tick(2)
+            const data = await app.getData()
             spy.should.have.been.calledOnce
-            spy.should.have.been.calledWith({
+            expect(data).to.be.deep.equal({
                 response: true,
                 method: 'GET'
             })
         })
 
-        it('POST fetches data', () => {
-            const clock = sinon.useFakeTimers()
-            const app = window.ef as demo.ExtraFeatures,
-                  spy = this.sinon.spy(app.postData, 'original')
-            app.postData()
-            clock.tick(2)
+        it('POST fetches data', async () => {
+            const app = window.ef as demo.ExtraFeatures
+            const spy = this.sinon.spy(app.postData, 'original')
+            const data = await app.postData()
             spy.should.have.been.calledOnce
-            spy.should.have.been.calledWith({
+            expect(data).to.be.deep.equal({
                 response: true,
                 method: 'POST'
             })
-            /*
-               todo: find out how to test this legacy test
-               expect(xhr.requestBody).to.be.equal('{"test":1}')
-               expect(xhr.requestHeaders).to.be.deep.equal(feather.xhr.defaultRestConfig.headers)
-               expect(xhr.url).to.be.equal('/post/1')
-            */
         })
     })
 })

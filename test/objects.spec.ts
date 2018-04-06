@@ -5,7 +5,7 @@ import * as sinon from 'sinon'
 describe('Objects', () => {
 
     let window, feather, sandbox
-    before(async () => loadPage().then(w => (
+    before(async () => loadPage().then((w: any) => (
         window = w,
         feather = w.feather
     )))
@@ -156,45 +156,45 @@ describe('Objects', () => {
             test.user = user
             expect(test.user).to.not.be.undefined
             spy.should.have.been.calledOnce
-            spy.reset()
+            spy.resetHistory()
 
             const newName = 'Peter Peterson'
             test.user.name = newName
             spy.should.have.been.calledOnce
             expect(test.user.name).to.be.equal(newName)
-            spy.reset()
+            spy.resetHistory()
 
             test.user.mainAddress.city.plc = 600
             spy2.should.have.been.calledTwice
-            spy2.reset()
+            spy2.resetHistory()
 
             test.user.mainAddress.city = city2
             spy2.should.have.been.calledOnce
-            spy2.reset()
+            spy2.resetHistory()
 
             test.user.mainAddress.city.plc = 700
             spy2.should.have.been.calledOnce
-            spy2.reset()
+            spy2.resetHistory()
 
             test.user.additional.push(address1)
             spy3.should.have.been.calledTwice
-            spy3.reset()
+            spy3.resetHistory()
 
             test.user.additional = []
             spy3.should.have.been.calledOnce
-            spy3.reset()
+            spy3.resetHistory()
 
             test.user.additional.push(address2)
             spy3.should.have.been.calledOnce
-            spy3.reset()
+            spy3.resetHistory()
 
             test.user.additional[0].city = city1
             spy3.should.have.been.calledOnce
-            spy3.reset()
+            spy3.resetHistory()
 
             test.user.additional[0].city.plc = 900
             spy3.should.have.been.calledOnce
-            spy3.reset()
+            spy3.resetHistory()
             clock.restore()
         })
 
@@ -209,7 +209,7 @@ describe('Objects', () => {
             clock.tick(1)
             test.user = user
             spy.should.have.been.calledTwice
-            spy.reset()
+            spy.resetHistory()
             clock.restore()
         })
 

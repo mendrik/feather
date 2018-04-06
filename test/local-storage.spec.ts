@@ -6,7 +6,7 @@ import * as sinon from 'sinon'
 describe('Local storage', () => {
 
     let window, feather, document, sandbox
-    before(async () => featherStart().then(w => (
+    before(async () => featherStart().then((w: any) => (
         window = w,
         feather = w.feather,
         document = w.document

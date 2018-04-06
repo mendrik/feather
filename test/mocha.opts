@@ -1,3 +1,2 @@
 --require ts-node/register
 --recursive ./test
---no-deprecation

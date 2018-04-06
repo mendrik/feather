@@ -4,7 +4,7 @@ import {expect} from 'chai'
 describe('Pass objects via attributes {}', () => {
 
     let window, document
-    before(async () => featherStart().then(w => (
+    before(async () => featherStart().then((w: any) => (
         window = w,
         document = w.document
     )))

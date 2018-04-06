@@ -4,7 +4,7 @@ import * as sinon from 'sinon'
 describe('Routes', () => {
 
     let window, feather, sandbox, demo
-    beforeEach(async () => loadPage().then(w => (
+    beforeEach(async () => loadPage().then((w: any) => (
         window = w,
         feather = w.feather,
         demo = w.demo

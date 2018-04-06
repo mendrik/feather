@@ -6,7 +6,7 @@ describe('Array', () => {
 
     let window, feather, sandbox, document
 
-    before(async () => featherStart().then(w => (
+    before(async () => featherStart().then((w: any) => (
         window = w,
         feather = w.feather,
         document = w.document

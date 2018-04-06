@@ -21,7 +21,7 @@
         "pretest": "npm-run-all build:feather build:demo",
         "start": "npm-run-all --parallel min:lib watch:feather watch:demo watch:css",
         "build": "npm run min:feather",
-        "test": "mocha ./test/**/*.spec.ts"
+        "test": "_mocha --require ts-node/register ./test/**/*.spec.ts"
     },
     "author": "Andreas Herd",
     "license": "ISC",

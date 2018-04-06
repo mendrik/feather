@@ -79,6 +79,7 @@ module feather.xhr {
             for (const ev of ['timeout', 'error', 'abort']) {
                 xhr.addEventListener(ev, (ev: Event) => {
                     error(ev)
+                    reject(ev)
                 })
             }
 
@@ -107,7 +108,7 @@ module feather.xhr {
             }
             return sendRequest(paramsCopy, desc.value.original.bind(this), (err, xhr: XMLHttpRequest) => {
                 if (xhr && xhr.status) {
-                    this.triggerDown('xhr-failure-'+xhr.status, err, xhr)
+                    this.triggerDown('xhr-failure-'+xhr.status, err)
                 }
                 else if (err) {
                     const type = (err as Event).type
